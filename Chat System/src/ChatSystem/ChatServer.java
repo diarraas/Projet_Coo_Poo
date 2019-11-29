@@ -25,13 +25,15 @@ public class ChatServer implements ServerFunctions {
 	@Override
 	public void accept() throws IOException {
 		exp = server_socket.accept();
+		onliners.add(exp);
 	}
 
 	@Override
-	public Message receive_message (Socket destinateur) throws IOException {
-		//BufferedReader in = new BufferedReader(new InputStreamReader(exp.getInputStream()));
-		//PrintWriter out = new PrintWriter(exp.getOutputStream(),true);
-        //dest = dest2 ;
+	public Message receive_message (Socket destinataire) throws IOException {
+		BufferedReader in = new BufferedReader(new InputStreamReader(exp.getInputStream()));
+        dest = destinataire ;
+		PrintWriter out = new PrintWriter(dest.getOutputStream(),true);
+		out.println(in.readLine());        
 		return null ;
 	}
 

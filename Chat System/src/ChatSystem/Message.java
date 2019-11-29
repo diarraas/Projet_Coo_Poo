@@ -1,5 +1,5 @@
 package ChatSystem;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 
 public class Message {
 	Profile exp ;
@@ -10,7 +10,6 @@ public class Message {
 	public Message(Profile sender, Profile receiver, String text) {
 		exp = sender ;
 		dest = receiver ;
-		SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
-		date = formatter.format(System.currentTimeMillis());		
+		date = LocalDateTime.now().toString();		
 	}
 }
