@@ -13,7 +13,7 @@ public interface ChatFunctions {
     
     public void show_users();
     
-    public void send_message();
+    public void send_message(Profile dest);
     
-    public void end_session();
+    public void end_session() throws IOException;
 }

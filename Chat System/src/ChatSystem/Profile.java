@@ -16,6 +16,8 @@ static int justAthought = 0 ;
     
     private Socket client_socket ;
     
+    Chat_server server_socket ;
+    
     private InetAddress server_address ;
 
 	private int server_port ;
@@ -86,13 +88,13 @@ static int justAthought = 0 ;
     
     }
     
-    public void send_message(){
-    
+    public void send_message(Profile dest){
+    	
     }
     
-    public void end_session(){
-        status = false ;
-    
+    public void end_session() throws IOException {
+        server_socket.close_connection(client_socket);
+    	status = false ;
     }
     
     public int getId(){
