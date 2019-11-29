@@ -1,12 +1,12 @@
 package ChatSystem;
 import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.*;
 import java.io.InputStreamReader;
 import java.net.*;
 
 public class Profile implements ChatFunctions {
 
-static int justAthought = 0 ;
+	static int justAthought = 0 ;
     
     private int id ;
     
@@ -16,23 +16,17 @@ static int justAthought = 0 ;
     
     private Socket client_socket ;
     
-    Chat_server server_socket ;
+    ChatServer server_socket ;
     
-    private InetAddress server_address ;
-
-	private int server_port ;
     
-    public Profile(String log) throws IOException{
+    
+    public Profile(String log) {
         login = log ;
         
         // id = find unique random number
          id = justAthought ;
          
-         justAthought ++ ;
-                 
-        status = true ;
-        
-        client_socket = new Socket(server_address,server_port);
+         justAthought ++ ;        
     }
     
     
@@ -75,9 +69,11 @@ static int justAthought = 0 ;
 
     }
     
-    public void authentify (){
+    public void authentify () throws IOException {
         if(SystemRegister.users.contains(this)){
+            client_socket = new Socket(server_socket.getServer_address(),server_socket.getServer_port(),InetAddress.getLocalHost(),9000);
             status = true ;
+    		SystemRegister.add_online_user(this);
         } else {
             System.out.println("Erreur d'authentification");
         }
@@ -88,8 +84,13 @@ static int justAthought = 0 ;
     
     }
     
-    public void send_message(Profile dest){
-    	
+    public void send_message(Profile dest) throws IOException {
+    	System.out.println("Entrez un message");
+    	BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    	String msg = reader.readLine() ;
+    	PrintWriter out = new PrintWriter(client_socket.getOutputStream(),true);
+    	out.println(msg);
+    	server_socket.receive_message(dest.client_socket);
     }
     
     public void end_session() throws IOException {
@@ -117,24 +118,6 @@ static int justAthought = 0 ;
 
 	public void setStatus(boolean status) {
 		this.status = status;
-	}
-	
-    public InetAddress getServer_address() {
-		return server_address;
-	}
-
-	public void setServer_address(InetAddress server_address) {
-		this.server_address = server_address;
-	}
-
-
-	public int getServer_port() {
-		return server_port;
-	}
-
-
-	public void setServer_port(int server_port) {
-		this.server_port = server_port;
 	}
     
 }

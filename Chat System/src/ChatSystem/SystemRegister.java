@@ -25,16 +25,16 @@ public class SystemRegister {
 	    }
 	    
 	    public static boolean verify_unicity(String login){
-	        boolean is_unique = users.get(0).getLogin().equalsIgnoreCase(login) ;
-	        if(is_unique){
+	        boolean not_unic = users.get(0).getLogin().equalsIgnoreCase(login) ;
+	        if(not_unic){
 	            ListIterator<Profile> iterator = users.listIterator(1) ;
 	            Profile temp = null ;
-	            while(is_unique && iterator.hasNext()){
+	            while(not_unic && iterator.hasNext()){
 	                temp = iterator.next() ;
-	                is_unique = temp.getLogin().equalsIgnoreCase(login) ;
+	                not_unic = temp.getLogin().equalsIgnoreCase(login) ;
 	            }
 	        }
-	        return is_unique ;        
+	        return !not_unic ;        
 	    }
 	    
 }

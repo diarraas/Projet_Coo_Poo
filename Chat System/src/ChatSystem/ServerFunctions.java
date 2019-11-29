@@ -6,12 +6,12 @@ public interface ServerFunctions {
 	
 	//Listens and accept connections from a client_socket and returns said socket
 	
-	public Socket accept();
+	public void accept () throws IOException;
 	
 	
-	//Retrieves streams/packets from a socket and return said streams in Message form
+	//Retrieves streams packets from a socket and return said streams in Message form
 	
-	public Message receive_message(Socket exp) throws IOException ;
+	public Message receive_message(Socket dest) throws IOException ;
 	
 	
 	//When a new client connects to server, server notifies the registers

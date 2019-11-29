@@ -9,11 +9,11 @@ public interface ChatFunctions {
     
     public void change_login () throws IOException ;
     
-    public void authentify();
+    public void authentify() throws IOException ;
     
     public void show_users();
     
-    public void send_message(Profile dest);
+    public void send_message(Profile dest) throws IOException;
     
     public void end_session() throws IOException;
 }
