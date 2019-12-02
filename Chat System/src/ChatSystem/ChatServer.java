@@ -18,8 +18,12 @@ public class ChatServer implements ServerFunctions {
 	
 	private ServerSocket server_socket;
 	
+	private static int MAX_CLIENT = 50 ;
+	
 	public ChatServer()  throws IOException {
-		server_socket = new ServerSocket(12000,50,InetAddress.getLocalHost());
+		server_port = 1025 + 65535 * ((int) Math.random());
+		server_address = InetAddress.getLocalHost() ;
+		server_socket = new ServerSocket(server_port,MAX_CLIENT,server_address);
 	}
 	
 	@Override
@@ -29,12 +33,20 @@ public class ChatServer implements ServerFunctions {
 	}
 
 	@Override
-	public Message receive_message (Socket destinataire) throws IOException {
+	public void receive_message (Socket destinataire) throws IOException {
 		BufferedReader in = new BufferedReader(new InputStreamReader(exp.getInputStream()));
         dest = destinataire ;
-		PrintWriter out = new PrintWriter(dest.getOutputStream(),true);
-		out.println(in.readLine());        
-		return null ;
+        if(is_online(dest)){
+        	PrintWriter out = new PrintWriter(dest.getOutputStream(),true);
+        	out.println(in.readLine());        
+        }else{
+        	PrintWriter out = new PrintWriter(exp.getOutputStream(),true);
+        	out.println("Recipient offline");
+        }
+	}
+
+	private boolean is_online(Socket dest2) {
+		return onliners.contains(dest2);
 	}
 
 	@Override
@@ -51,10 +63,6 @@ public class ChatServer implements ServerFunctions {
 	
 	public InetAddress getServer_address() {
 		return server_address;
-	}
-
-	public void setServer_address(InetAddress server_address) {
-		this.server_address = server_address;
 	}
 
 	

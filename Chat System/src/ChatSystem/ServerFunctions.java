@@ -9,9 +9,9 @@ public interface ServerFunctions {
 	public void accept () throws IOException;
 	
 	
-	//Retrieves streams packets from a socket and return said streams in Message form
+	//Retrieves streams packets from a socket
 	
-	public Message receive_message(Socket dest) throws IOException ;
+	public void receive_message(Socket dest) throws IOException ;
 	
 	
 	//When a new client connects to server, server notifies the registers

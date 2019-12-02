@@ -5,8 +5,6 @@ import java.io.InputStreamReader;
 import java.net.*;
 
 public class Profile implements ChatFunctions {
-
-	static int justAthought = 0 ;
     
     private int id ;
     
@@ -24,9 +22,8 @@ public class Profile implements ChatFunctions {
         login = log ;
         
         // id = find unique random number
-         id = justAthought ;
+        id = 65555 *((int) Math.random()) ;
          
-         justAthought ++ ;        
     }
     
     
@@ -70,12 +67,24 @@ public class Profile implements ChatFunctions {
     }
     
     public void authentify () throws IOException {
-        if(SystemRegister.users.contains(this)){
-            client_socket = new Socket(server_socket.getServer_address(),server_socket.getServer_port(),InetAddress.getLocalHost(),9000);
-            status = true ;
-    		SystemRegister.add_online_user(this);
+    	if(SystemRegister.users.contains(this)){
+	    	System.out.println("Entrez un login pour se connecter");
+	        BufferedReader reader =
+	                   new BufferedReader(new InputStreamReader(System.in));
+	        String log = reader.readLine();
+	        
+	        while(!this.login.equalsIgnoreCase(log)){
+	        	System.out.println("Erreur de connexion");
+	            reader =
+	                       new BufferedReader(new InputStreamReader(System.in));
+	            log = reader.readLine();
+	        }
+	        
+	            client_socket = new Socket(server_socket.getServer_address(),server_socket.getServer_port(),InetAddress.getLocalHost(),9000);
+	            status = true ;
+	    		SystemRegister.add_online_user(this);
         } else {
-            System.out.println("Erreur d'authentification");
+            System.out.println("Veuillez créer un compte");
         }
     
     }
