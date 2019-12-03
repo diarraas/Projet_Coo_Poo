@@ -1,19 +1,16 @@
 package ChatSystem;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 public interface ChatFunctions {
 	
-	public Profile create_account() throws IOException ;
+	public Profile create_account() ;
     
-    public void change_login () throws IOException ;
+    public void change_login () ;
     
-    public void authentify() throws IOException ;
+    public void authentify() ;
     
     public void show_users();
     
-    public void send_message(Profile dest) throws IOException;
+    public void send_message(Profile dest);
     
-    public void end_session() throws IOException;
+    public void end_session();
 }

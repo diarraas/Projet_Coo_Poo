@@ -13,11 +13,24 @@ public class SystemRegister {
 	    public static void update_online_users (){}
 	    
 	    public static void add_user (Profile user){
-	        users.add(user.getId(), user);
+	        users.add(user);
 	    }
 	    
 	    public static void add_online_user(Profile user){
 	        onliners.add(user);
+	    }
+	    
+	    public static Profile findProfileByLogin(String log){
+            Profile temp = null ;
+	    	boolean found = users.get(0).getLogin().equalsIgnoreCase(log) ;
+	        if(!found){
+	            ListIterator<Profile> iterator = users.listIterator(1) ;
+	            while(!found && iterator.hasNext()){
+	                temp = iterator.next() ;
+	                found = temp.getLogin().equalsIgnoreCase(log) ;
+	            }
+	        }
+	    	return temp ;
 	    }
 	    
 	    public static void remove_user(Profile user, List<Profile> list){

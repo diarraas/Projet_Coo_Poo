@@ -20,29 +20,41 @@ public class ChatServer implements ServerFunctions {
 	
 	private static int MAX_CLIENT = 50 ;
 	
-	public ChatServer()  throws IOException {
-		server_port = 1025 + 65535 * ((int) Math.random());
-		server_address = InetAddress.getLocalHost() ;
-		server_socket = new ServerSocket(server_port,MAX_CLIENT,server_address);
+	public ChatServer() {
+		try {
+			server_port = 1025 + 65535 * ((int) Math.random());
+			server_address = InetAddress.getLocalHost() ;
+			server_socket = new ServerSocket(server_port,MAX_CLIENT,server_address);
+		}catch(Exception e) {
+			System.out.println("Erreur création du server");
+		}
 	}
 	
 	@Override
-	public void accept() throws IOException {
-		exp = server_socket.accept();
-		onliners.add(exp);
+	public void accept() {
+		try {
+			exp = server_socket.accept();
+			onliners.add(exp);
+		}catch (Exception e) {
+			System.out.println("Erreur d'acception connexion");
+		}
 	}
 
 	@Override
-	public void receive_message (Socket destinataire) throws IOException {
-		BufferedReader in = new BufferedReader(new InputStreamReader(exp.getInputStream()));
-        dest = destinataire ;
-        if(is_online(dest)){
-        	PrintWriter out = new PrintWriter(dest.getOutputStream(),true);
-        	out.println(in.readLine());        
-        }else{
-        	PrintWriter out = new PrintWriter(exp.getOutputStream(),true);
-        	out.println("Recipient offline");
-        }
+	public void receive_message (Socket destinataire){
+		try {
+			BufferedReader in = new BufferedReader(new InputStreamReader(exp.getInputStream()));
+	        dest = destinataire ;
+	        if(is_online(dest)){
+	        	PrintWriter out = new PrintWriter(dest.getOutputStream(),true);
+	        	out.println(in.readLine());        
+	        }else{
+	        	PrintWriter out = new PrintWriter(exp.getOutputStream(),true);
+	        	out.println("Recipient offline");
+	        }
+		}catch (Exception e) {
+			System.out.println("Erreur de reception du message");
+		}
 	}
 
 	private boolean is_online(Socket dest2) {
@@ -57,7 +69,11 @@ public class ChatServer implements ServerFunctions {
 
 	@Override
 	public void close_connection(Socket client) {
-		// TODO Auto-generated method stub
+		try{
+			if(is_online(client)) client.close() ;
+		}catch(Exception e){
+			System.out.println("Erreur fermeture de connection");
+		}
 
 	}
 	
