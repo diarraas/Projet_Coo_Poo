@@ -38,14 +38,17 @@ public class SystemRegister {
 	    }
 	    
 	    public static boolean verify_unicity(String login){
-	        boolean not_unic = users.get(0).getLogin().equalsIgnoreCase(login) ;
-	        if(not_unic){
-	            ListIterator<Profile> iterator = users.listIterator(1) ;
-	            Profile temp = null ;
-	            while(not_unic && iterator.hasNext()){
-	                temp = iterator.next() ;
-	                not_unic = temp.getLogin().equalsIgnoreCase(login) ;
-	            }
+	    	boolean not_unic = false ;
+	    	if(users.size() != 0) {
+		    	not_unic = users.get(0).getLogin().equalsIgnoreCase(login) ;
+		        if(not_unic){
+		            ListIterator<Profile> iterator = users.listIterator(1) ;
+		            Profile temp = null ;
+		            while(not_unic && iterator.hasNext()){
+		                temp = iterator.next() ;
+		                not_unic = temp.getLogin().equalsIgnoreCase(login) ;
+		            }
+		        }
 	        }
 	        return !not_unic ;        
 	    }
