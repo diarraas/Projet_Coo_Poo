@@ -1,7 +1,7 @@
-package ChatSystem;
+//package ChatSystem;
 import java.util.* ;
 public class SystemRegister {
-	 public static List<Profile> onliners ;
+	 	public static List<Profile> onliners ;
 	    
 	    public static List<Profile> users ;
 	    
