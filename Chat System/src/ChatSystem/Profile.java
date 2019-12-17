@@ -3,7 +3,7 @@ import java.io.BufferedReader;
 import java.io.*;
 import java.io.InputStreamReader;
 import java.net.*;
-import java.util.Enumeration;
+import java.util.*;
 
 class Profile {
     
@@ -11,7 +11,7 @@ class Profile {
     
     private String login ;
     
-	private boolean status ;
+    private boolean status ;
     
     private Socket client_socket ;
     
@@ -25,45 +25,45 @@ class Profile {
     
     public TCP_Server listening_server ;
         
-    public UDP_receiver login_listener ;
     
     public Profile(String log) {
         try {
 	    	login = log ;
-	        // id = find unique random number
 	        id = 65535 *((int) Math.random()) ;
 	        server_port = 1024 + id ;
 	        server_address = InetAddress.getLocalHost();
-	        listening_server = new TCP_Server(this);
-	        System.out.println("serveur message ok");
-	        
-	        Runnable r = new Runnable() {
+	        listening_server = new TCP_Server(this);	
+	        Runnable login_listener = new Runnable() {
 	            public void run() {
 	            	try {
 	            		DatagramSocket socket = new DatagramSocket(BROADCAST_PORT);
 		                byte[] buf = new byte[256];
 	         	        while (true) {
-	         	            DatagramPacket packet = new DatagramPacket(buf, buf.length);
-	         	            socket.receive(packet);
-	         	            InetAddress address = packet.getAddress();
-	         	            int port = packet.getPort();
-	         	            packet = new DatagramPacket(buf, buf.length, address, port);
-	         	            String received = new String(packet.getData(), 0, packet.getLength());
-	         	             
-	         	            if (received.equals("online")) {
-	         	            	System.out.println("New login");
-	         	            	socket.send(packet);
-	         	            }
-	         	            else System.out.println("Online not received");
+					    DatagramPacket packet = new DatagramPacket(buf, buf.length);
+			 	            socket.receive(packet);
+			 	            InetAddress address = packet.getAddress();
+			 	            int port = packet.getPort();
+			 	            packet = new DatagramPacket(buf, buf.length, address, port);
+			 	            String received = new String(packet.getData(), 0, packet.getLength());
+			 	            socket.send(packet);
 	         	        }
 	         	        
-	         	       // socket.close();
-	         	        
-	                 }catch(Exception e) {}
+	                  } catch ( Exception e) {
+	                  	System.out.println("Erreur création du serveur d'écoute connexion");
+	                  }
 	                 
 	            }
 	        };
-	        new Thread(r).start();
+	        /*
+	        Runnable listening_server = new Runnable() {
+	        	public void run(){
+	        		try {
+	        			while()
+	        		}
+	        	}
+	        };*/
+	        new Thread(login_listener).start();
+	        new Thread(listening_server).start();
 	        System.out.println("serveur login ok");
         }catch(Exception e) {
         	System.out.println("Erreur creation socket serveur");
@@ -149,28 +149,30 @@ class Profile {
     	*/
     	try {
     		System.out.println("Authentification");
-    		System.out.println("Envoi message online");
-	    	DatagramSocket socket = new DatagramSocket(BROADCAST_PORT);
-	    	
+    		DatagramSocket socket = new DatagramSocket(server_port + 10);
 	    	InetAddress broadcast = null ;
 	    	socket.setBroadcast(true);
-	    	Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
-
-	    	while(e.hasMoreElements()) {
-	    		NetworkInterface interfaceReseau = e.nextElement();
-				if (interfaceReseau.getDisplayName().contains("eth0")) {
-					broadcast = interfaceReseau.getInterfaceAddresses().get(1).getBroadcast() ;
-				}
-	    	}
-	        byte[] buffer = "online".getBytes();
-	        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, broadcast, BROADCAST_PORT);
-	        socket.send(packet);
-	        socket.setBroadcast(false);
-	        socket.close();
-	        status = true ;
+    		DatagramPacket packet = null ;
+    		Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
+		while (en.hasMoreElements()) {
+		      NetworkInterface ni = en.nextElement();
+		      List<InterfaceAddress> list = ni.getInterfaceAddresses();
+		      Iterator<InterfaceAddress> it = list.iterator();
+		      while (it.hasNext()) {
+				InterfaceAddress ia = it.next();
+				broadcast = ia.getBroadcast();
+				if(broadcast !=null){
+					packet = new DatagramPacket("online".getBytes(), "online".getBytes().length, broadcast, BROADCAST_PORT);
+	       				socket.send(packet);
+					socket.setBroadcast(false);
+					socket.close();
+					status = true ;
+		      		}
+			}
+		}    		
 	        
-    	}catch(Exception e) {
-    		
+    	} catch(Exception e) {
+ 
     		System.out.println("Erreur connection");
     	
     	}
@@ -194,17 +196,18 @@ class Profile {
     }*/
     
     public void send_message(String dest){
-    	try {
-    		Profile rec = SystemRegister.findProfileByLogin(dest);
-            client_socket = new Socket(rec.getServer_address(),rec.getServer_port(),InetAddress.getLocalHost(),9000);
+    		try {
+    			Profile rec = SystemRegister.findProfileByLogin(dest);
+	        	client_socket = new Socket(rec.getServer_address(),rec.getServer_port(),InetAddress.getLocalHost(),server_port);
 	    
-            System.out.println("Entrez un message");
-	    	BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-	    	String msg = reader.readLine() ;
+            		System.out.println("Entrez un message");
+	    		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+	    		String msg = reader.readLine() ;
 	    	
-	    	PrintWriter out = new PrintWriter(client_socket.getOutputStream(),true);
-	    	out.println(msg);
-    	}catch (Exception e) {
+	    		PrintWriter out = new PrintWriter(client_socket.getOutputStream(),true);
+	    		out.println(msg);
+	    		
+    		}catch (Exception e) {
 			System.out.println("Erreur envoi de message");
     	}
     }
@@ -271,94 +274,10 @@ class Profile {
 		this.server_address = server_address;
 	}
 
-
 	public ServerSocket getServer_socket() {
 		return server_socket;
 	}
     
-}
-
-/*
-
-class UDP_listener extends Thread {
-	 
-    private DatagramSocket socket;
-    private boolean running;
-    private byte[] buf = new byte[100];
- 
-    public UDP_listener(int port) {
-    	try {
-    		socket = new DatagramSocket(port);
-    	}catch(PortUnreachableException e) {
-    		System.out.println("Port busy");
-    	}catch(Exception e) {
-    		System.out.println("Another issue");
-    	}
-    }
- 
-    public void run() {
-        running = true;
-        try {
-	        while (running) {
-	            DatagramPacket packet 
-	              = new DatagramPacket(buf, buf.length);
-	            socket.receive(packet);
-	            InetAddress address = packet.getAddress();
-	            int port = packet.getPort();
-	            packet = new DatagramPacket(buf, buf.length, address, port);
-	            String received 
-	              = new String(packet.getData(), 0, packet.getLength());
-	             
-	            if (received.equals("online")) {
-	            	System.out.println("New login");
-	            	socket.send(packet);
-	            }
-	        }
-	        
-	        socket.close();
-	        
-        }catch(Exception e) { }
-        
-    }
-}
-
-
-*/
-
-
-class UDP_receiver extends Thread{
-	 
-    DatagramSocket socket;
-    byte[] buf = new byte[256];
-    int listening_port ;
-    
- 
-    public UDP_receiver(int port) {
-    	try {
-    		socket = new DatagramSocket(port);
-    		listening_port = port ;
-    	}catch(PortUnreachableException e) {
-    		System.out.println("Port busy");
-    	}catch(Exception e) {
-    		System.out.println("Another issue");
-    	}
-    }
- 
-    public void run() {
-        try {
-	       
-        	DatagramPacket packet = new DatagramPacket(buf, buf.length);
-        	
-        	socket.receive(packet);
-        	int port = packet.getPort();
-        	String received = new String(packet.getData(), 0, packet.getLength());
-        	System.out.println(received);
-        	socket.close();
-	        
-        }catch(Exception e) { }
-        
-    }
-     
 }
 
 class WorkerRunnable implements Runnable {
