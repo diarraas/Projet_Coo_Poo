@@ -1,11 +1,11 @@
-//package ChatSystem;
+package ChatSystem;
 import java.io.BufferedReader;
 import java.io.*;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.util.*;
 
-class Profile {
+public class Profile {
     
     private int id ;
     
@@ -23,50 +23,74 @@ class Profile {
     
     public static int BROADCAST_PORT = 4445 ;
     
-    public TCP_Server listening_server ;
+    public static int MAX_LOG = 50 ;
         
-    
+        
     public Profile(String log) {
         try {
-	    	login = log ;
+	    	//Basic id data
+        	login = log ;
 	        id = 65535 *((int) Math.random()) ;
 	        server_port = 1024 + id ;
+	        
+	        //Ip address of the local host
 	        server_address = InetAddress.getLocalHost();
-	        listening_server = new TCP_Server(this);	
+
+	        //Continuously listens on to new login
 	        Runnable login_listener = new Runnable() {
 	            public void run() {
+	            	
 	            	try {
-	            		DatagramSocket socket = new DatagramSocket(BROADCAST_PORT);
 		                byte[] buf = new byte[256];
 	         	        while (true) {
-					    DatagramPacket packet = new DatagramPacket(buf, buf.length);
+	         	        	DatagramSocket socket = new DatagramSocket(BROADCAST_PORT + 22) ;// Sometimes the broadcast port is used;
+	         	        	DatagramPacket packet = new DatagramPacket(buf, buf.length);
 			 	            socket.receive(packet);
-			 	            InetAddress address = packet.getAddress();
-			 	            int port = packet.getPort();
-			 	            packet = new DatagramPacket(buf, buf.length, address, port);
 			 	            String received = new String(packet.getData(), 0, packet.getLength());
-			 	            socket.send(packet);
+			 	            if(received.contentEquals("online")) {
+			 	            	InetAddress address = packet.getAddress();
+			 	            	int port = packet.getPort();
+			 	            	packet = new DatagramPacket(buf, buf.length, address, port);
+			 	            	socket.send(packet);
+			 	            	System.out.println("Nouvelle connexion, màj de la liste des onliners\t" + received);
+			 	            }else if(received.contentEquals("offline")) {
+			 	            	System.out.println("Nouvelle deconnexion, màj de la liste des onliners\t" + received);
+			 	            }
+		            		socket.close();
 	         	        }
 	         	        
 	                  } catch ( Exception e) {
-	                  	System.out.println("Erreur création du serveur d'écoute connexion");
+	                  		System.out.println("Erreur création du serveur d'écoute connexion en raison de :\t" + e.getMessage() );
 	                  }
 	                 
 	            }
 	        };
-	        /*
+	        
+	        //Continuously listens on to every message the host can receive from other connected users
 	        Runnable listening_server = new Runnable() {
 	        	public void run(){
 	        		try {
-	        			while()
+	        		    Socket remote ;
+	        		    server_socket = new ServerSocket(server_port+333,MAX_LOG,server_address);
+	        			while(true) {
+	        				remote = server_socket.accept();
+	        				BufferedReader in = new BufferedReader(new InputStreamReader(remote.getInputStream()));
+	                        String input = in.readLine() ;
+	                        System.out.println("Client sent : \t" + input);
+	                        remote.close();
+	        			}
+	        		}catch(Exception e) {
+	        			System.out.println("Erreur creation du serveur message en raison de : \t " + e.getMessage());
 	        		}
 	        	}
-	        };*/
+	        };
+	        
+	        //Launching background tasks (listening servers)
 	        new Thread(login_listener).start();
 	        new Thread(listening_server).start();
-	        System.out.println("serveur login ok");
+
         }catch(Exception e) {
-        	System.out.println("Erreur creation socket serveur");
+        	System.out.println("Erreur creation de nouveau profile en raison de : \t " + e.getMessage());
         }
     }
     
@@ -120,33 +144,11 @@ class Profile {
 	        login = newLog ;
 	
 	    }catch( Exception e) {
-			System.out.println("Erreur changement de login");
+			System.out.println("Erreur changement de login en raison de : \t" + e.getMessage());
 	    }
     }*/
     
     public void authentify () {
-    	/*try {
-	    	if(SystemRegister.users.contains(this)){
-		    	System.out.println("Entrez un login pour se connecter");
-		        BufferedReader reader =
-		                   new BufferedReader(new InputStreamReader(System.in));
-		        String log = reader.readLine();
-		        
-		        while(!this.login.equalsIgnoreCase(log)){
-		        	System.out.println("Erreur de connexion");
-		            reader =
-		                       new BufferedReader(new InputStreamReader(System.in));
-		            log = reader.readLine();
-		        }
-		            status = true ;
-		    		SystemRegister.add_online_user(this);
-	        } else {
-	            System.out.println("Veuillez cr�er un compte");
-	        }
-    	} catch(Exception e) {
-			System.out.println("Erreur de connexion");
-    	}
-    	*/
     	try {
     		System.out.println("Authentification");
     		DatagramSocket socket = new DatagramSocket(server_port + 10);
@@ -154,53 +156,38 @@ class Profile {
 	    	socket.setBroadcast(true);
     		DatagramPacket packet = null ;
     		Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
-		while (en.hasMoreElements()) {
-		      NetworkInterface ni = en.nextElement();
-		      List<InterfaceAddress> list = ni.getInterfaceAddresses();
-		      Iterator<InterfaceAddress> it = list.iterator();
-		      while (it.hasNext()) {
-				InterfaceAddress ia = it.next();
-				broadcast = ia.getBroadcast();
-				if(broadcast !=null){
-					packet = new DatagramPacket("online".getBytes(), "online".getBytes().length, broadcast, BROADCAST_PORT);
-	       				socket.send(packet);
-					socket.setBroadcast(false);
-					socket.close();
-					status = true ;
-		      		}
-			}
-		}    		
+    		while (en.hasMoreElements()) {
+    			NetworkInterface ni = en.nextElement();
+    			List<InterfaceAddress> list = ni.getInterfaceAddresses();
+    			Iterator<InterfaceAddress> it = list.iterator();
+    			while (it.hasNext()) {
+    				InterfaceAddress ia = it.next();
+    				broadcast = ia.getBroadcast();
+    				if(broadcast !=null){
+    					packet = new DatagramPacket("online".getBytes(), "online".getBytes().length, broadcast, BROADCAST_PORT + 22);
+    					socket.send(packet);
+    					socket.setBroadcast(false);
+    					status = true ;
+    				}
+    			}
+    		}
+			
+    		socket.close();
 	        
     	} catch(Exception e) {
  
-    		System.out.println("Erreur connection");
+    		System.out.println("Erreur connection en raison de : \t " + e.getMessage());
     	
     	}
     	
     }
     
-    public void show_users() {
-    
-    }
-    /*
-    public String messaging() {
-    	String msg = "" ;
-        try {
-	    	System.out.println("Entrez un message");
-	        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-	    	msg = reader.readLine() ;
-        } catch(Exception e) {
-        	System.out.println("Erreur generation du message");
-        }
-    	return msg ;
-    }*/
-    
     public void send_message(String dest){
-    		try {
+    	/*	try {
     			Profile rec = SystemRegister.findProfileByLogin(dest);
 	        	client_socket = new Socket(rec.getServer_address(),rec.getServer_port(),InetAddress.getLocalHost(),server_port);
 	    
-            		System.out.println("Entrez un message");
+            	System.out.println("Entrez un message");
 	    		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 	    		String msg = reader.readLine() ;
 	    	
@@ -209,28 +196,53 @@ class Profile {
 	    		
     		}catch (Exception e) {
 			System.out.println("Erreur envoi de message");
+    	}*/
+    	
+    	try {
+    		client_socket = new Socket(this.getServer_address(),this.getServer_port()+333); // Change needed : sending to self for now
+        	System.out.println("Entrez un message");
+    		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    		String msg = reader.readLine() ;
+    		PrintWriter out = new PrintWriter(client_socket.getOutputStream(),true);
+    		out.println(msg);
+    		client_socket.close();
+    	} catch(Exception e) {
+    		System.out.println("Erreur d'envoi en raison de : \t " + e.getMessage());
+    	}
+    }    
+    
+    public void end_session() {
+    	try {
+    		System.out.println("Déconnexion");
+    		DatagramSocket socket = new DatagramSocket(server_port + 20);
+	    	InetAddress broadcast = null ;
+	    	socket.setBroadcast(true);
+    		DatagramPacket packet = null ;
+    		Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
+    		while (en.hasMoreElements()) {
+    			NetworkInterface ni = en.nextElement();
+    			List<InterfaceAddress> list = ni.getInterfaceAddresses();
+    			Iterator<InterfaceAddress> it = list.iterator();
+    			while (it.hasNext()) {
+    				InterfaceAddress ia = it.next();
+    				broadcast = ia.getBroadcast();
+    				if(broadcast !=null){
+    					packet = new DatagramPacket("offline".getBytes(), "offline".getBytes().length, broadcast, BROADCAST_PORT + 22);
+    					socket.send(packet);
+    					socket.setBroadcast(false);
+    					status = true ;
+    				}
+    			}
+    		}
+			
+    		socket.close();
+    		
+    	} catch(Exception e) {
+ 
+    		System.out.println("Erreur connection en raison de : \t " + e.getMessage());
+    	
     	}
     }
-    
-   /* public void receive_message() {
-    	try {	    
-	    	BufferedReader reader = new BufferedReader(new InputStreamReader(client_socket.getInputStream()));
-	    	String msg = reader.readLine() ;
-	    	System.out.println(msg);
-    	}catch (Exception e) {
-			System.out.println("Erreur reception de message");
-    	}
-    }*/
-    
-    
-    /*public void end_session() {
-    	try {
-    		server_socket.close();
-    		status = false ;
-    	}catch(Exception e) {
-    		System.out.println("Erreur fermeture de connexion");
-    	}
-    }*/
     
     public int getId(){
         return id ;
@@ -277,89 +289,7 @@ class Profile {
 	public ServerSocket getServer_socket() {
 		return server_socket;
 	}
-    
-}
-
-class WorkerRunnable implements Runnable {
-
-    protected Socket clientSocket = null;
-    protected String serverText   = null;
-
-    public WorkerRunnable(Socket clientSocket, String serverText) {
-        this.clientSocket = clientSocket;
-        this.serverText   = serverText;
-    }
-
-    public void run() {
-        try {
-            InputStream input  = clientSocket.getInputStream();
-            OutputStream output = clientSocket.getOutputStream();
-            long time = System.currentTimeMillis();
-            output.write((this.serverText).getBytes());
-            output.close();
-            System.out.println("New Message");
-            System.out.println(new BufferedReader(new InputStreamReader(input)).readLine());
-            input.close();
-            System.out.println("Request processed: " + time);
-        } catch (IOException e) {
-            //report exception somewhere.
-            e.printStackTrace();
-        }
-    }
-}
-
-
-class TCP_Server implements Runnable{
-
-    protected int serverPort = 0;
-    protected ServerSocket serverSocket = null;
-    protected boolean isStopped = false;
-    protected Thread runningThread = null;
-    protected Profile current_user ;
-    
-    public TCP_Server (Profile who){
-    	current_user = who ;
-        this.serverPort = current_user.getServer_port();
-    }
-   
-    public void run(){
-        synchronized(this){
-            this.runningThread = Thread.currentThread();
-        }
-        openServerSocket();
-        while(! isStopped()){
-            Socket clientSocket = null;
-            try {
-                clientSocket = this.serverSocket.accept();
-            } catch (IOException e) {
-                if(isStopped()) {
-                    System.out.println("Server Stopped.") ;
-                    return;
-                }
-                throw new RuntimeException(
-                    "Error accepting client connection", e);
-            }
-            new Thread(new WorkerRunnable(clientSocket, "Message transmis")).start();
-        }
-        System.out.println("Server Stopped.") ;
-    }
-
-    private synchronized boolean isStopped() {
-        return this.isStopped;
-    }
-
-    public synchronized void stop(){
-        this.isStopped = true;
-        try {
-            this.serverSocket.close();
-        } catch (IOException e) {
-            throw new RuntimeException("Error closing server", e);
-        }
-    }
-
-    private void openServerSocket() {
-         this.serverSocket = current_user.getServer_socket();
-        
-    }
 
 }
+
+

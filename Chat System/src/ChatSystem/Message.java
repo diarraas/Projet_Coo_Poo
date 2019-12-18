@@ -1,13 +1,13 @@
-//package ChatSystem;
+package ChatSystem;
 import java.time.LocalDateTime;
-
+import java.net.*;
 public class Message {
-	Profile exp ;
-	Profile dest ;
+	Socket exp ;
+	Socket dest ;
 	String date ;
 	String body ;
 	
-	public Message(Profile sender, Profile receiver, String text) {
+	public Message(Socket sender, Socket receiver, String text) {
 		exp = sender ;
 		dest = receiver ;
 		date = LocalDateTime.now().toString();		

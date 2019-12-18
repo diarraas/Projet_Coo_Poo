@@ -1,23 +1,31 @@
-//package ChatSystem;
+package ChatSystem;
+import java.net.*;
 import java.util.* ;
 public class SystemRegister {
 	 	public static List<Profile> onliners ;
 	    
 	    public static List<Profile> users ;
 	    
+	    public static List<Message> user_messages ;
+	    
 	    public static void update_users(Profile user){
-	        remove_user(user, users) ;
 	    
 	    }
 	    
-	    public static void update_online_users (){}
+	    public static void update_online_users (Profile user){
+	    	
+	    }
+	    
+	    public static void update_messages(Message msg) {
+	    	
+	    }
 	    
 	    public static void add_user (Profile user){
 	        users.add(user);
 	    }
 	    
 	    public static void add_online_user(Profile user){
-	        onliners.add(user);
+	    	if(!onliners.contains(user)) onliners.add(user);
 	    }
 	    
 	    public static Profile findProfileByLogin(String log){
@@ -34,7 +42,14 @@ public class SystemRegister {
 	    }
 	    
 	    public static void remove_user(Profile user, List<Profile> list){
-	        list.remove(user.getId());
+	    	Profile temp = null ;
+		    boolean found = false;
+		       if(!found){
+		           ListIterator<Profile> iterator = users.listIterator(1) ;
+		           while(!found && iterator.hasNext()){
+		               temp = iterator.next() ;
+		           }
+		      }
 	    }
 	    
 	    public static boolean verify_unicity(String login){
@@ -50,7 +65,11 @@ public class SystemRegister {
 		            }
 		        }
 	        }
-	        return !not_unic ;        
+	        
+	    	return !not_unic ;        
 	    }
 	    
+	    public static Profile findProfileByAddress (InetAddress addr) {
+	    	return null ;
+	    } 
 }

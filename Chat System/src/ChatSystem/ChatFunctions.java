@@ -1,4 +1,4 @@
-//package ChatSystem;
+package ChatSystem;
 
 public interface ChatFunctions {
 	
