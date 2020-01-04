@@ -2,54 +2,50 @@ package ChatSystem;
 import java.net.*;
 import java.util.* ;
 public class SystemRegister {
-	 	public static List<Profile> onliners ;
+	 	public static List<Profile> onliners = new ArrayList<Profile>() ;
 	    
-	    public static List<Profile> users ;
+	    public static List<Profile> users = new ArrayList<Profile>();
 	    
-	    public static List<Message> user_messages ;
-	    
-	    public static void update_users(Profile user){
-	    
-	    }
-	    
-	    public static void update_online_users (Profile user){
-	    	
-	    }
+	    public static List<Message> user_messages  = new ArrayList<Message>() ;
 	    
 	    public static void update_messages(Message msg) {
-	    	
+	    	user_messages.add(msg);
+	    }
+	    
+	    public static List<Message> retrieve_messages(Profile user){
+	    	List<Message> retrieved = new ArrayList<Message>();
+	    	ListIterator<Message> iterator = retrieved.listIterator() ;
+	    	Message current_msg ;
+	        while(iterator.hasNext()){
+	        	current_msg = iterator.next();
+	        	if(current_msg.exp == user.getIp_address()||current_msg.dest == user.getIp_address()) retrieved.add(current_msg);
+	        }
+	    	return retrieved ;
 	    }
 	    
 	    public static void add_user (Profile user){
-	        users.add(user);
+	    	if(users.size() != 0 && !users.contains(user)) users.add(user);
+	    	if(users.size() == 0) users.add(user);
 	    }
 	    
 	    public static void add_online_user(Profile user){
-	    	if(!onliners.contains(user)) onliners.add(user);
+	    	if(onliners.size() != 0 && !onliners.contains(user)) onliners.add(user);
+	    	if(onliners.size() == 0) onliners.add(user);
 	    }
 	    
 	    public static Profile findProfileByLogin(String log){
             Profile temp = null ;
-	    	boolean found = users.get(0).getLogin().equalsIgnoreCase(log) ;
-	        if(!found){
-	            ListIterator<Profile> iterator = users.listIterator(1) ;
-	            while(!found && iterator.hasNext()){
-	                temp = iterator.next() ;
-	                found = temp.getLogin().equalsIgnoreCase(log) ;
-	            }
+	    	boolean found = false ;
+	        ListIterator<Profile> iterator = users.listIterator() ;
+	        while(!found && iterator.hasNext()){
+	        	temp = iterator.next() ;
+	            found = temp.getLogin().equalsIgnoreCase(log) ;
 	        }
 	    	return temp ;
 	    }
 	    
 	    public static void remove_user(Profile user, List<Profile> list){
-	    	Profile temp = null ;
-		    boolean found = false;
-		       if(!found){
-		           ListIterator<Profile> iterator = users.listIterator(1) ;
-		           while(!found && iterator.hasNext()){
-		               temp = iterator.next() ;
-		           }
-		      }
+	    	if(list.size() != 0) list.remove(user);
 	    }
 	    
 	    public static boolean verify_unicity(String login){
@@ -70,6 +66,13 @@ public class SystemRegister {
 	    }
 	    
 	    public static Profile findProfileByAddress (InetAddress addr) {
-	    	return null ;
+	    	Profile temp = null ;
+	    	boolean found = false ;
+	        ListIterator<Profile> iterator = users.listIterator() ;
+	        while(!found && iterator.hasNext()){
+	        	temp = iterator.next() ;
+	            found = temp.getIp_address() == addr ;
+	        }
+	    	return temp ;
 	    } 
 }
