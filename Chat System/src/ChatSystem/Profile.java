@@ -23,7 +23,15 @@ public class Profile {
     
     private int logout_port ;
     
+    private int change_port ;
+    
+    private int client_port ;
+    
     private InetAddress ip_address ;
+    
+    private List<InetAddress> onliners ;
+    
+    private List<InetAddress> users ;
     
     public static int BROADCAST_PORT = 4445 ;
     
@@ -39,7 +47,11 @@ public class Profile {
 	        server_port = 1024 + id ;
 	        login_port = server_port + 50 ;
 	        logout_port = login_port + 50 ;
+	        change_port = logout_port + 50 ;
+	        client_port = change_port + 50 ;
 	        status = true ;
+	        onliners = new ArrayList<InetAddress>();
+	        users = new ArrayList<InetAddress>();
 	        
 	        //Ip address of the local host
 	        ip_address = InetAddress.getLocalHost();	        
@@ -62,16 +74,24 @@ public class Profile {
 				 	            InetAddress address = packet.getAddress();
 			 	            	int port = packet.getPort();
 			 	            	Profile user = SystemRegister.findProfileByAddress(address);
-				 	           
+				 	            System.out.println(user.toString());
 			 	            	if(received.contentEquals("online")) {
 				 	            	packet = new DatagramPacket(buf, buf.length, address, port);
 				 	            	socket.send(packet);
-				 	            	System.out.println("Nouvelle connexion, maj de la liste des onliners\t" + received);
+				 	            	System.out.println("Nouvelle connexion, maj de la liste des onliners\t" );
+				 	            	SystemRegister.add_user(user);
 				 	            	SystemRegister.add_online_user(user);
+				 	            	System.out.println(SystemRegister.users.toString());
 				 	            
 			 	            	}else if(received.contentEquals("offline")) {
-				 	            	System.out.println("Nouvelle deconnexion, maj de la liste des onliners\t" + received);
+				 	            	System.out.println("Nouvelle deconnexion, maj de la liste des onliners\t");
 				 	            	SystemRegister.remove_user(user, SystemRegister.onliners);
+				 	            	System.out.println(SystemRegister.users.toString());
+
+				 	            }else if(received.contentEquals("login change")) {
+				 	            	System.out.println("Changement de login, new user name is \t" + user.getLogin());
+				 	            	System.out.println(SystemRegister.users.toString());
+				 	   			
 				 	            }
 			 	            	socket.close();
 	         	        	}
@@ -141,7 +161,7 @@ public class Profile {
     	
     	return new_account ;
     }
-    
+   
     
     public void change_login() {
     	try {
@@ -160,7 +180,38 @@ public class Profile {
 	            isUnic = SystemRegister.verify_unicity(newLog);
 	        }
 	        
-	        login = newLog ;
+	        this.setLogin(newLog);
+	        
+	        try {
+	    		System.out.println("Notification changement de login");
+	    		DatagramSocket socket = new DatagramSocket(change_port,ip_address);
+		    	InetAddress broadcast = null ;
+		    	socket.setBroadcast(true);
+	    		DatagramPacket packet = null ;
+	    		Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
+	    		while (en.hasMoreElements()) {
+	    			NetworkInterface ni = en.nextElement();
+	    			List<InterfaceAddress> list = ni.getInterfaceAddresses();
+	    			Iterator<InterfaceAddress> it = list.iterator();
+	    			while (it.hasNext()) {
+	    				InterfaceAddress ia = it.next();
+	    				broadcast = ia.getBroadcast();
+	    				if(broadcast !=null){
+	    					packet = new DatagramPacket("login change".getBytes(), "login change".getBytes().length, broadcast, BROADCAST_PORT);
+	    					socket.send(packet);
+	    					socket.setBroadcast(false);
+	    					status = true ;
+	    				}
+	    			}
+	    		}
+				
+	    		socket.close();
+		        
+	    	} catch(Exception e) {
+	 
+	    		System.out.println("Erreur connexion en raison de : \t " + e.getMessage());
+	    	
+	    	}
 	
 	    }catch( Exception e) {
 			System.out.println("Erreur changement de login en raison de : \t" + e.getMessage());
@@ -170,7 +221,7 @@ public class Profile {
     public void authentify () {
     	try {
     		System.out.println("Authentification");
-    		DatagramSocket socket = new DatagramSocket(login_port);
+    		DatagramSocket socket = new DatagramSocket(login_port,ip_address);
 	    	InetAddress broadcast = null ;
 	    	socket.setBroadcast(true);
     		DatagramPacket packet = null ;
@@ -183,7 +234,7 @@ public class Profile {
     				InterfaceAddress ia = it.next();
     				broadcast = ia.getBroadcast();
     				if(broadcast !=null){
-    					packet = new DatagramPacket("online".getBytes(), "online".getBytes().length, broadcast, BROADCAST_PORT + 22);
+    					packet = new DatagramPacket("online".getBytes(), "online".getBytes().length, broadcast, BROADCAST_PORT);
     					socket.send(packet);
     					socket.setBroadcast(false);
     					status = true ;
@@ -201,10 +252,23 @@ public class Profile {
     	
     }
     
-    public void send_message(String dest_user){
+    public void send_message(InetAddress dest,int dest_port){
+    /*public void send_message(String dest_user){
     	try {
     		Profile dest = SystemRegister.findProfileByLogin(dest_user);
-    		client_socket = new Socket(this.getIp_address(),dest.getServer_port()); // Change needed : sending to self for now
+    		client_socket = new Socket(dest.getIp_address(),dest.getServer_port(),ip_address,client_port); // Change needed : sending to self for now
+        	System.out.println("Entrez un message");
+    		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    		String msg = reader.readLine() ;
+    		PrintWriter out = new PrintWriter(client_socket.getOutputStream(),true);
+    		out.println(msg);
+    		client_socket.close();
+    	} catch(Exception e) {
+    		System.out.println("Erreur d'envoi en raison de : \t " + e.getMessage());
+    	}*/
+    	
+    	try {
+    		client_socket = new Socket(dest,dest_port,ip_address,client_port); // Change needed : sending to self for now
         	System.out.println("Entrez un message");
     		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     		String msg = reader.readLine() ;
@@ -214,12 +278,13 @@ public class Profile {
     	} catch(Exception e) {
     		System.out.println("Erreur d'envoi en raison de : \t " + e.getMessage());
     	}
+    	
     }    
     
     public void end_session() {
     	try {
     		System.out.println("Deconnexion");
-    		DatagramSocket socket = new DatagramSocket(logout_port);
+    		DatagramSocket socket = new DatagramSocket(logout_port,ip_address);
 	    	InetAddress broadcast = null ;
 	    	socket.setBroadcast(true);
     		DatagramPacket packet = null ;
@@ -232,7 +297,7 @@ public class Profile {
     				InterfaceAddress ia = it.next();
     				broadcast = ia.getBroadcast();
     				if(broadcast != null){
-    					packet = new DatagramPacket("offline".getBytes(), "offline".getBytes().length, broadcast, BROADCAST_PORT + 22);
+    					packet = new DatagramPacket("offline".getBytes(), "offline".getBytes().length, broadcast, BROADCAST_PORT);
     					socket.send(packet);
     					socket.setBroadcast(false);
     					status = false ;
