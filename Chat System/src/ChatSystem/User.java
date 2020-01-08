@@ -22,7 +22,7 @@ private int id ;
     public User(String log) {
     	//Basic id data
     	login = log ;
-        id = 65535 *((int) Math.random()) ;
+        id = ((int) (Math.random()*65535)) ;
         serverPort = 1024 + id ;
         clientPort = serverPort + 50 ;
         status = true ;

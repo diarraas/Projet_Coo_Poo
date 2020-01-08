@@ -29,10 +29,6 @@ public class Profile {
     
     private InetAddress ip_address ;
     
-    private List<InetAddress> onliners ;
-    
-    private List<InetAddress> users ;
-    
     public static int BROADCAST_PORT = 4445 ;
     
     public static int MAX_LOG = 50 ;
@@ -49,9 +45,7 @@ public class Profile {
 	        logout_port = login_port + 50 ;
 	        change_port = logout_port + 50 ;
 	        client_port = change_port + 50 ;
-	        status = true ;
-	        onliners = new ArrayList<InetAddress>();
-	        users = new ArrayList<InetAddress>();
+	        status = true ;	       
 	        
 	        //Ip address of the local host
 	        ip_address = InetAddress.getLocalHost();	        

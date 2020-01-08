@@ -19,7 +19,7 @@ public class ChatSession {
     }
     
     public void addMessage(Message msg) {
-    	SystemRegister.update_messages(msg);
+    //	SystemRegister.update_messages(msg);
     	sent_messages.add(msg);
     }
 }

@@ -12,9 +12,7 @@ public class LocalUser extends User {
     private ServerSocket server_socket ;
     
     private List<RemoteUser> onliners ;
-    
-    private List<RemoteUser> users ;
-    
+        
     public static int BROADCAST_PORT = 4445 ;
     
     public static int MAX_LOG = 50 ;
@@ -25,7 +23,6 @@ public class LocalUser extends User {
     	try {
 	    	//Basic id data
 	        onliners = new ArrayList<RemoteUser>();
-	        users = new ArrayList<RemoteUser>();
 	        
 	        //Ip address of the local host
 	        setIpAddress(InetAddress.getLocalHost());	        
@@ -44,20 +41,25 @@ public class LocalUser extends User {
 		         	        	DatagramPacket packet = new DatagramPacket(buf, buf.length);
 				 	            socket.receive(packet);
 				 	            String received = new String(packet.getData(), 0, packet.getLength());
-				 	            
+				 	            String infos[] = received.split(" ");
 				 	            InetAddress address = packet.getAddress();
+				 	            String name = infos[0];
 				 	            RemoteUser newUser =  new RemoteUser(name,address);
 			 	            	int port = packet.getPort();
-			 	            	if(received.contentEquals("online")) {
+				 	            newUser.setServerPort(port);
+			 	            	if(infos[1].contentEquals("online")) {
 				 	            	packet = new DatagramPacket(buf, buf.length, address, port);
 				 	            	socket.send(packet);
 				 	            	System.out.println("Nouvelle connexion, maj de la liste des onliners\t" );
+				 	            	onliners.add(newUser);
 				 	            
-			 	            	}else if(received.contentEquals("offline")) {
+			 	            	}else if(infos[1].contentEquals("offline")) {
 				 	            	System.out.println("Nouvelle deconnexion, maj de la liste des onliners\t");
+				 	            	if(onliners.size() != 0)	onliners.remove(newUser);
 
-				 	            }else if(received.contentEquals("login change")) {
+				 	            }else if(infos[1].contentEquals("change")) {
 				 	            	System.out.println("Changement de login, new user name is \t" + newUser.getLogin());
+				 	            	(findUserByAddress(address)).setLogin(name);
 				 	   			
 				 	            }
 			 	            	socket.close();
@@ -69,6 +71,7 @@ public class LocalUser extends User {
 	                  }
 	                 
 	            }
+
 	        };
 	        
 	        //Continuously listens on to every message the host can receive from other connected users
@@ -119,6 +122,8 @@ public class LocalUser extends User {
 	       }
 	        
 	       new_account = new LocalUser(log);
+	       
+	       
 	        
     	}catch (Exception e) {
 			System.out.println("Erreur creation de compte en raison \t " + e.getMessage());
@@ -129,6 +134,10 @@ public class LocalUser extends User {
     }
    
     
+    
+    // use maven
+    //
+    
     public void change_login() {
     	try {
 	        // test unicity of login ------ 
@@ -136,6 +145,7 @@ public class LocalUser extends User {
 	        BufferedReader reader =
 	                   new BufferedReader(new InputStreamReader(System.in));
 	        String newLog = reader.readLine(); 
+	       /*
 	        boolean isUnic = SystemRegister.verify_unicity(newLog);
 	        while(!isUnic){
 	            //choose as many times as desired ....
@@ -145,12 +155,12 @@ public class LocalUser extends User {
 	            newLog = reader.readLine() ;
 	            isUnic = SystemRegister.verify_unicity(newLog);
 	        }
-	        
+	        */
 	        this.setLogin(newLog);
 	        
 	        try {
 	    		System.out.println("Notification changement de login");
-	    		DatagramSocket socket = new DatagramSocket(getClientPort(),getIpAddress());
+	    		DatagramSocket socket = new DatagramSocket(getServerPort(),getIpAddress());
 		    	InetAddress broadcast = null ;
 		    	socket.setBroadcast(true);
 	    		DatagramPacket packet = null ;
@@ -163,7 +173,7 @@ public class LocalUser extends User {
 	    				InterfaceAddress ia = it.next();
 	    				broadcast = ia.getBroadcast();
 	    				if(broadcast !=null){
-	    					packet = new DatagramPacket("login change".getBytes(), "login change".getBytes().length, broadcast, BROADCAST_PORT);
+	    					packet = new DatagramPacket(("" + getLogin() + " change").getBytes(), ("" + getLogin() + " change").getBytes().length, broadcast, BROADCAST_PORT);
 	    					socket.send(packet);
 	    					socket.setBroadcast(false);
 	    				}
@@ -186,11 +196,12 @@ public class LocalUser extends User {
     public void authentify () {
     	try {
     		System.out.println("Authentification");
-    		DatagramSocket socket = new DatagramSocket(getClientPort(),getIpAddress());
+    		DatagramSocket socket = new DatagramSocket(getServerPort(),getIpAddress());
 	    	InetAddress broadcast = null ;
 	    	socket.setBroadcast(true);
     		DatagramPacket packet = null ;
     		Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
+    		
     		while (en.hasMoreElements()) {
     			NetworkInterface ni = en.nextElement();
     			List<InterfaceAddress> list = ni.getInterfaceAddresses();
@@ -198,12 +209,19 @@ public class LocalUser extends User {
     			while (it.hasNext()) {
     				InterfaceAddress ia = it.next();
     				broadcast = ia.getBroadcast();
-    				if(broadcast !=null){
-    					packet = new DatagramPacket("online".getBytes(), "online".getBytes().length, broadcast, BROADCAST_PORT);
+    				if(broadcast != null){
+    					System.out.println("Login : " + getLogin());
+    					packet = new DatagramPacket(("" + getLogin() + " online").getBytes(), (getLogin() + " online").getBytes().length, broadcast, BROADCAST_PORT);
+    					System.out.println("Longueur byte : " + (getLogin() + " online").getBytes().length);
+    					System.out.println("Port Serveur" + getServerPort());
+    					System.out.println("Packet : \t" + packet.toString());
+    					System.out.println("Addresse de broadcast \t" + broadcast.toString());
     					socket.send(packet);
+    					System.out.println("Packet sent");
     					socket.setBroadcast(false);
     					setStatus(true) ;
     				}
+    				
     			}
     		}
 			
@@ -217,7 +235,7 @@ public class LocalUser extends User {
     	
     }
     
-    public void send_message(InetAddress dest,int dest_port){
+    public void send_message(String dest){
     /*public void send_message(String dest_user){
     	try {
     		LocalUser dest = SystemRegister.findUserByLogin(dest_user);
@@ -233,7 +251,8 @@ public class LocalUser extends User {
     	}*/
     	
     	try {
-    		client_socket = new Socket(dest,dest_port,getIpAddress(),getClientPort()); // Change needed : sending to self for now
+    		RemoteUser remote = findUserByLogin(dest);
+    		client_socket = new Socket(remote.getIpAddress(),remote.getServerPort(),getIpAddress(),getClientPort()); // Change needed : sending to self for now
         	System.out.println("Entrez un message");
     		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     		String msg = reader.readLine() ;
@@ -249,7 +268,7 @@ public class LocalUser extends User {
     public void end_session() {
     	try {
     		System.out.println("Deconnexion");
-    		DatagramSocket socket = new DatagramSocket(getClientPort(),getIpAddress());
+    		DatagramSocket socket = new DatagramSocket(getServerPort(),getIpAddress());
 	    	InetAddress broadcast = null ;
 	    	socket.setBroadcast(true);
     		DatagramPacket packet = null ;
@@ -262,7 +281,7 @@ public class LocalUser extends User {
     				InterfaceAddress ia = it.next();
     				broadcast = ia.getBroadcast();
     				if(broadcast != null){
-    					packet = new DatagramPacket((getLogin() + "offline").getBytes(), "offline".getBytes().length, broadcast, BROADCAST_PORT);
+    					packet = new DatagramPacket(("" + getLogin() + " offline").getBytes(), (getLogin() + " offline").getBytes().length, broadcast, BROADCAST_PORT);
     					socket.send(packet);
     					socket.setBroadcast(false);
     					setStatus(false) ;
@@ -279,4 +298,30 @@ public class LocalUser extends User {
     	}
     }
     
+    
+	   public RemoteUser findUserByAddress(InetAddress address) {
+			RemoteUser temp = null ;
+	    	boolean found = false ;
+	        ListIterator<RemoteUser> iterator = onliners.listIterator() ;
+	        while(iterator.hasNext() && !found){
+	        	temp = iterator.next() ;
+	            found = temp.getIpAddress() == address ;
+	        }
+	        if(temp == null || !found)	return null ;
+	    	return temp ;
+		}
+	   
+	   public RemoteUser findUserByLogin(String log) {
+			RemoteUser temp = null ;
+	    	boolean found = false ;
+	        ListIterator<RemoteUser> iterator = onliners.listIterator() ;
+	        while(iterator.hasNext() && !found){
+	        	temp = iterator.next() ;
+	            found = temp.getLogin().equalsIgnoreCase(log);
+	        }
+	        
+	        if(temp == null || !found)	return null ;
+	    	return temp ;
+		}
+	   
 }
