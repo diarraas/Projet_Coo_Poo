@@ -35,7 +35,7 @@ public class Profile {
         	
 	    	//Basic id data
         	login = log ;
-	        id = 65535 *((int) Math.random()) ;
+	        id = ((int) Math.random()*65535) ;
 	        server_port = 1024 + id ;
 	        login_port = server_port + 50 ;
 	        logout_port = login_port + 50 ;
