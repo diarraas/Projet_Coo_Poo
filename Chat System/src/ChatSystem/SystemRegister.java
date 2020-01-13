@@ -12,13 +12,13 @@ public class SystemRegister {
 	    	user_messages.add(msg);
 	    }
 	    
-	    public static List<Message> retrieve_messages(Profile user){
+	    public static List<Message> retrieve_messages(Profile exp, Profile dest){
 	    	List<Message> retrieved = new ArrayList<Message>();
-	    	ListIterator<Message> iterator = retrieved.listIterator() ;
+	    	ListIterator<Message> iterator = user_messages.listIterator() ;
 	    	Message current_msg ;
 	        while(iterator.hasNext()){
 	        	current_msg = iterator.next();
-	        	if(current_msg.exp == user.getIp_address()||current_msg.dest == user.getIp_address()) retrieved.add(current_msg);
+	        	if(current_msg.exp == exp.getIp_address() && current_msg.dest == dest.getIp_address()) retrieved.add(current_msg);
 	        }
 	    	return retrieved ;
 	    }
@@ -37,10 +37,12 @@ public class SystemRegister {
             Profile temp = null ;
 	    	boolean found = false ;
 	        ListIterator<Profile> iterator = users.listIterator() ;
-	        while(!found && iterator.hasNext()){
+	        System.out.println("Begin research by login...");
+	        while(iterator.hasNext() && !found){
 	        	temp = iterator.next() ;
 	            found = temp.getLogin().equalsIgnoreCase(log) ;
 	        }
+	        if(temp == null || !found)	return null ;
 	    	return temp ;
 	    }
 	    
