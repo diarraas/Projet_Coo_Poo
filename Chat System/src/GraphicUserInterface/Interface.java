@@ -17,7 +17,7 @@ public class Interface implements ActionListener {
     public Interface(String[] ponline) {
     	
     	//Create and set up the window.
-        JFrame frame = new JFrame("Bonjour");
+        JFrame frame = new JFrame("ChatWindow");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //frame.setResizable(false);
         Container pane = frame.getContentPane();
@@ -37,7 +37,7 @@ public class Interface implements ActionListener {
 		c.anchor = GridBagConstraints.LINE_START;
 		pane.add(onliners,c);
 		
-		//Création et ajout des boutons correspondant aux people connectés
+		//Création et ajout des boutons correspondant aux people connectés (pas dans cette classe, tableau dynamique)
 		for(index = 1; index<(noms.length);index++) {
 			
 			button = new JButton(noms[index-1]);	
@@ -75,8 +75,9 @@ public class Interface implements ActionListener {
 		aff_border.setBorder(border);
 		aff_inner.setBorder(border);
 		
-		aff_border.setBounds(500,0,500, (noms.length * 410)/15 );
+		//aff_border.setBounds(500,0,500, (noms.length * 410)/15 );
 		aff_border.setMaximumSize(new Dimension(500,(noms.length*410)/15));
+		aff_border.setMinimumSize(new Dimension(500,(noms.length*410)/15));
 		
 		c.gridx = 1;
 		c.gridy = 1;
@@ -87,6 +88,8 @@ public class Interface implements ActionListener {
 		aff_border.add(aff_inner);
 		
 		pane.add(aff_border,c);
+		
+		System.out.println("Fenetre = " + frame.getSize());
 		
 		frame.pack();
         frame.setVisible(true);
