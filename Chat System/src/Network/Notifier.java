@@ -4,23 +4,23 @@ import java.net.* ;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import Data.*;
 
 public class Notifier {
 	
 	private DatagramSocket senderSocket ;
-	private InetAddress ipAddress ;
 	private byte[] buf = new byte[256];
 	private int port = 12245 ;
+	private LocalUser localHost ;
 	public static InetAddress broadcastAddr;
 	
 	
-	public Notifier(){
+	public Notifier(LocalUser user){
+		localHost = user ;
 		try{
 			
-			senderSocket = new DatagramSocket();
+			senderSocket = new DatagramSocket(port);
 			senderSocket.setBroadcast(true);
-			senderSocket.connect(InetAddress.getLocalHost(), port);
-			ipAddress = senderSocket.getLocalAddress();
 			InetAddress broadcast = null ;	    	
 	    	Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
     		
@@ -41,7 +41,7 @@ public class Notifier {
 			
 		} catch(Exception e) {
 			 
-    		System.out.println("Erreur de création du NotificationSender en raison de : \t " + e.getMessage());
+    		System.out.println("Erreur de crï¿½ation du NotificationSender en raison de : \t " + e.getMessage());
     	
     	}
 		
@@ -49,8 +49,8 @@ public class Notifier {
 	
 	public void notifyLoginChange(){
 		try {
-			
-			buf = "change".getBytes();
+			String infos = localHost.getLogin() + " change " + localHost.getIpAddress() + " " + localHost.getServerPort() ; 
+			buf = infos.getBytes();
 			DatagramPacket packet = new DatagramPacket(buf,buf.length,broadcastAddr,BroadcastServer.BROADCAST_PORT);
 			senderSocket.send(packet);
 
@@ -65,7 +65,8 @@ public class Notifier {
 	public void notifyAuthentification(){
 		try {
 			
-			buf = "login".getBytes();
+			String infos = localHost.getLogin() + " login " + " " + localHost.getServerPort() ;  
+			buf = infos.getBytes();
 			DatagramPacket packet = new DatagramPacket(buf,buf.length,broadcastAddr,BroadcastServer.BROADCAST_PORT);
 			senderSocket.send(packet);
 
@@ -80,7 +81,8 @@ public class Notifier {
 	public void notifyDisconnection(){
 		try {
 			
-			buf = "off".getBytes();
+			String infos = localHost.getLogin() + " logoff " + " " + localHost.getServerPort() ;  
+			buf = infos.getBytes();
 			DatagramPacket packet = new DatagramPacket(buf,buf.length,broadcastAddr,BroadcastServer.BROADCAST_PORT);
 			senderSocket.send(packet);
 
@@ -90,6 +92,8 @@ public class Notifier {
     	
     	}
 	}
+	
+
 	
 	public void close() {
 		senderSocket.close();

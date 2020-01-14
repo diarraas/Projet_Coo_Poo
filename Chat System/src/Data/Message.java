@@ -5,21 +5,19 @@ import java.net.*;
 public class Message implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private InetAddress exp ;
-	private InetAddress dest ;
+	private User exp ;
+	private User dest ;
 	private String date ;
 	private String body ;
 	
-	public Message(InetAddress sender, InetAddress receiver, String text) {
+	public Message(User sender, User receiver, String text) {
 		exp = sender ;
 		dest = receiver ;
 		date = LocalDateTime.now().toString();	
 		body = text ;
 	}
 	
-	/**
 	public String toString(){
-		return ("\n De : \t" + SystemRegister.findProfileByAddress(exp).toString() + "\n A : \t " + SystemRegister.findProfileByAddress(dest).toString() + "\n Le : \t" + date + "\n Message : \t" + body);
+		return ("\n De : \t" + exp + "\n A : \t " + dest + "\n Le : \t" + date + "\n Message : \t" + body);
 	}
-	**/
 }
