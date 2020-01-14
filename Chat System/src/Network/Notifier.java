@@ -4,7 +4,7 @@ import java.net.* ;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import Data.*;
+import Data.* ;
 
 public class Notifier {
 	
@@ -70,11 +70,26 @@ public class Notifier {
 			DatagramPacket packet = new DatagramPacket(buf,buf.length,broadcastAddr,BroadcastServer.BROADCAST_PORT);
 			senderSocket.send(packet);
 			byte[] response = new byte [500];
-			DatagramPacket RespondingPacket = new DatagramPacket(response,response.length);	
-			RespondingPacket.setPort(BroadcastServer.BROADCAST_PORT); /// Xwhats the distant port ??										
+			DatagramPacket RespondingPacket = new DatagramPacket(response,response.length);								
 			senderSocket.receive(RespondingPacket);
 			String received = new String(RespondingPacket.getData(), 0, packet.getLength());
-			System.out.println(received);
+			
+			while(received != null){
+			    String newInfo[] = received.split(" ");
+			    InetAddress address; int port ;
+			    address = InetAddress.getByName(newInfo[2]);
+			    if(!newInfo[0].contentEquals(localHost.getLogin())) {
+			    	port = Integer.parseInt(newInfo[3].trim());
+			    	RemoteUser newUser = new RemoteUser(newInfo[0],address,port);
+			    	synchronized(this){
+			    		localHost.addUser(newUser);
+			    	}
+			    }
+			    
+		        senderSocket.receive(RespondingPacket);
+			    received = new String(RespondingPacket.getData(), 0, packet.getLength());
+		    }
+			
 		} catch(Exception e) {
 			 
     		System.out.println("Erreur de notification de connexion en raison de : \t " + e.getMessage());

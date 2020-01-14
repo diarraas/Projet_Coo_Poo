@@ -37,12 +37,18 @@ public class BroadcastServer extends Thread {
 	         	if(infos[1].contentEquals("login")) {
 	         		InetAddress address = packet.getAddress();
 		            int port = packet.getPort();
+		            String myinfos = localHost.getLogin() + " login " + localHost.getIpAddress().getHostAddress() + " " + localHost.getServerPort() ;  
+			        buf = myinfos.getBytes();
 	         		packet = new DatagramPacket(buf, buf.length, address, port);
 		            broadcastSocket.send(packet);
 		            address = InetAddress.getByName(infos[2]);
 		            port = Integer.parseInt(infos[3].trim());
 		            System.out.println("Nouvelle connexion, maj de la liste des onliners\t" );
-		            localHost.addUser(new RemoteUser(infos[0],address,port));
+		            RemoteUser newUser = new RemoteUser(infos[0],address,port);
+		            System.out.println("");
+		            synchronized(this){
+		               localHost.addUser(newUser);
+		            }
 		            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
 	         	}else if(infos[1].contentEquals("logoff")) {
 		           	System.out.println("Nouvelle deconnexion, maj de la liste des onliners\t");   	
@@ -58,6 +64,7 @@ public class BroadcastServer extends Thread {
 		        
 			}catch(Exception e){
 	    		System.out.println("Erreur de lancement du serveur UDP en raison de : \t " + e.getMessage());
+	    		e.printStackTrace();
 			}
 		}
 		broadcastSocket.close();

@@ -1,6 +1,5 @@
 package Data;
 import Network.* ;
-
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -142,11 +141,12 @@ public class LocalUser extends User {
     }
     
     public void addUser(RemoteUser user){
-    	onliners.add(user) ;
+    	if((onliners.size() != 0 && !onliners.contains(user)) || onliners.size() == 0)  onliners.add(user) ;
+
     }
     
     public void removeUser(RemoteUser user){
-    	if(onliners.size() != 0) onliners.remove(user);
+    	if(onliners.size() != 0 && onliners.contains(user)) onliners.remove(user);
     }
     
 	public RemoteUser findUserByAddress(InetAddress address) {
