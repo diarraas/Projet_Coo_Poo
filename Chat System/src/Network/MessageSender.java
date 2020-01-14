@@ -10,8 +10,7 @@ public class MessageSender {
 	
 	public MessageSender(LocalUser user, InetAddress remoteAddr, int remotePort){
 		try{
-			localHost = user ;
-			
+			localHost = user ;	
 			clientSocket = new Socket(serverAddr, serverPort);
 		}catch(Exception e){
 			
@@ -35,13 +34,17 @@ public class MessageSender {
 	
 	public void sendMessage(String msg){
 		try {
-			Message sentMessage = new Message(localHost.getIpAddress(),serverAddr,msg);	
-	    	byte[] serialized_msg = serialize(sentMessage);			    	
+			System.out.println("Sending message");
+			Message sentMessage = new Message(localHost,localHost.findUserByAddress(serverAddr),msg);	
+			PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),true);
+    		out.println(sentMessage.toString());
+			/**byte[] serialized_msg = serialize(sentMessage);			    	
 	    	OutputStream os = clientSocket.getOutputStream();		//retrieves the output stream of the socket
 	        os.write(serialized_msg,0,serialized_msg.length);		//writes the bytes into the stream
 	        os.flush();												//flushes the stream
-	        os.close();	        									//closes the stream
-	        clientSocket.close();
+	        os.close();*/	        									//closes the stream
+	        
+			clientSocket.close();
 		}catch(Exception e){
 			
 		}

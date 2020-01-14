@@ -4,7 +4,8 @@ import java.net.*;
 import Data.*;
 
 public class MessageListener extends Thread{
-    public static int MAX_LOG = 50 ;
+    
+	public static int MAX_LOG = 50 ;
 	private ServerSocket serverSocket;
 	private LocalUser localHost ;
 	private boolean	running ;
@@ -34,20 +35,28 @@ public class MessageListener extends Thread{
 	public void run(){
 		while(isRunning()){
 			try{
+				System.out.println("Listening...");
 				Socket remote = serverSocket.accept();
-				byte [] byte_data = new byte [65535];					
+				System.out.println("Message accepted");
+				BufferedReader in = new BufferedReader(new InputStreamReader(remote.getInputStream()));
+                String input = in.readLine() ;
+                System.out.println("Client sent : \t" + input);				
+				
+                /*
+				byte [] byteData = new byte [65535];					
 		        InputStream is = remote.getInputStream();				
-		        int bytesRead = is.read(byte_data,0,byte_data.length);	
+		        int bytesRead = is.read(byteData,0,byteData.length);	
 		        int current = bytesRead;
-		        do {
-		           bytesRead = is.read(byte_data, current, (byte_data.length-current));
+		        while(bytesRead > -1) {
+		           bytesRead = is.read(byteData, current, (byteData.length-current));
 		           if(bytesRead >= 0) current += bytesRead;
-		        } while(bytesRead > -1);
+		        } 
 
-		        Object data = deserialize(byte_data);	
-		        
-	        	Message packet_msg = (Message) data;
-	        	
+		        Object data = deserialize(byteData);	
+				System.out.println("Message deserialized");
+	        	Message msg = (Message) data;
+	        	*/
+					        	
 		        //localHost.addMessage(message,pseudo);  ---------- find a way to add sent message to exchange session
 			}catch(Exception e){
 				

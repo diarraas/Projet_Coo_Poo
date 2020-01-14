@@ -9,10 +9,7 @@ public class ChatSystem {
 			//tests
 			LocalUser user = LocalUser.create_account();
 			user.authentify();
-			System.out.println("Donner pseudo to send");
-			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		    String here = in.readLine() ;
-			user.send_message(here);
+			user.send_message(user.getLogin());
 			
 		
 			//Profile user =  Profile.create_account();

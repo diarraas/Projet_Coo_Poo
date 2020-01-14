@@ -75,4 +75,8 @@ private int id ;
 	public void setIpAddress(InetAddress ipAddress) {
 		this.ipAddress = ipAddress;
 	}
+	
+	public String toString() {
+		return ("User : \t " + login + " \t @Ip : \t" + ipAddress.toString() +"   :   "+ serverPort);
+	}
 }
