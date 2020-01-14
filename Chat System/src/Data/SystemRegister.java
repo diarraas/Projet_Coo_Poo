@@ -1,7 +1,8 @@
-package ChatSystem;
+package Data;
 import java.net.*;
 import java.util.* ;
 public class SystemRegister {
+	/**
 	 	public static List<Profile> onliners = new ArrayList<Profile>() ;
 	    
 	    public static List<Profile> users = new ArrayList<Profile>();
@@ -77,4 +78,5 @@ public class SystemRegister {
 	        }
 	    	return temp ;
 	    } 
+**/
 }

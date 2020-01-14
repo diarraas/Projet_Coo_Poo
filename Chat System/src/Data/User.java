@@ -1,4 +1,4 @@
-package ChatSystem;
+package Data;
 
 import java.net.InetAddress;
 
@@ -22,7 +22,7 @@ private int id ;
     public User(String log) {
     	//Basic id data
     	login = log ;
-        id = ((int) (Math.random()*65535)) ;
+        id = ((int) (Math.random()*6553)) ;
         serverPort = 1024 + id ;
         clientPort = serverPort + 50 ;
         status = true ;
