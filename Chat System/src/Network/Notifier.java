@@ -49,7 +49,7 @@ public class Notifier {
 	
 	public void notifyLoginChange(){
 		try {
-			String infos = localHost.getLogin() + " change " + localHost.getIpAddress() + " " + localHost.getServerPort() ; 
+			String infos = localHost.getLogin() + " change " + localHost.getIpAddress().getHostAddress() + " " + localHost.getServerPort() ; 
 			buf = infos.getBytes();
 			DatagramPacket packet = new DatagramPacket(buf,buf.length,broadcastAddr,BroadcastServer.BROADCAST_PORT);
 			senderSocket.send(packet);
@@ -65,7 +65,7 @@ public class Notifier {
 	public void notifyAuthentification(){
 		try {
 			
-			String infos = localHost.getLogin() + " login " + " " + localHost.getServerPort() ;  
+			String infos = localHost.getLogin() + " login " + localHost.getIpAddress().getHostAddress() + " " + localHost.getServerPort() ;  
 			buf = infos.getBytes();
 			DatagramPacket packet = new DatagramPacket(buf,buf.length,broadcastAddr,BroadcastServer.BROADCAST_PORT);
 			senderSocket.send(packet);
@@ -81,7 +81,7 @@ public class Notifier {
 	public void notifyDisconnection(){
 		try {
 			
-			String infos = localHost.getLogin() + " logoff " + " " + localHost.getServerPort() ;  
+			String infos = localHost.getLogin() + " logoff " + localHost.getIpAddress().getHostAddress() + " " + localHost.getServerPort() ;  
 			buf = infos.getBytes();
 			DatagramPacket packet = new DatagramPacket(buf,buf.length,broadcastAddr,BroadcastServer.BROADCAST_PORT);
 			senderSocket.send(packet);

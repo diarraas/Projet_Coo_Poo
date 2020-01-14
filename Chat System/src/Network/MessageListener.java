@@ -11,10 +11,10 @@ public class MessageListener extends Thread{
 	private boolean	running ;
 	
 	public MessageListener(LocalUser user){
+		
 		try{
 			localHost = user ;
 			serverSocket = new ServerSocket(localHost.getServerPort(),MAX_LOG,localHost.getIpAddress());
-			running = true ;
 		}catch(Exception e){
 			
 		}
@@ -34,32 +34,29 @@ public class MessageListener extends Thread{
 	
 	public void run(){
 		while(isRunning()){
+			
 			try{
-				System.out.println("Listening...");
-				Socket remote = serverSocket.accept();
-				System.out.println("Message accepted");
-				BufferedReader in = new BufferedReader(new InputStreamReader(remote.getInputStream()));
-                String input = in.readLine() ;
-                System.out.println("Client sent : \t" + input);				
 				
-                /*
+				Socket remote = serverSocket.accept();
 				byte [] byteData = new byte [65535];					
 		        InputStream is = remote.getInputStream();				
 		        int bytesRead = is.read(byteData,0,byteData.length);	
 		        int current = bytesRead;
+
 		        while(bytesRead > -1) {
 		           bytesRead = is.read(byteData, current, (byteData.length-current));
 		           if(bytesRead >= 0) current += bytesRead;
 		        } 
 
-		        Object data = deserialize(byteData);	
-				System.out.println("Message deserialized");
+		        Object data = deserialize(byteData);
 	        	Message msg = (Message) data;
-	        	*/
-					        	
-		        //localHost.addMessage(message,pseudo);  ---------- find a way to add sent message to exchange session
+	        	String dest = msg.getDest();
+	        	
+	        	//System.out.println(msg.toString());
+		       localHost.findSessionWith(dest).addMessage(msg);
+		        
 			}catch(Exception e){
-				
+		    	System.out.println("Erreur de lancement du serveur TCP en raison de : \t " + e.getMessage());
 			}
 		}
 	}

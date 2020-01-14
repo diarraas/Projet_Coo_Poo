@@ -10,10 +10,12 @@ public class MessageSender {
 	
 	public MessageSender(LocalUser user, InetAddress remoteAddr, int remotePort){
 		try{
-			localHost = user ;	
+			localHost = user ;
+			serverAddr = remoteAddr ;
+			serverPort = remotePort ;
 			clientSocket = new Socket(serverAddr, serverPort);
 		}catch(Exception e){
-			
+			System.out.println("Erreur de création du client TCP en raison de : \t " + e.getMessage());
 		}
 
 	}
@@ -27,26 +29,23 @@ public class MessageSender {
 		    os.writeObject(packet);
 		    data = out.toByteArray();
 	    }catch(Exception e){
-	    	
+	    	System.out.println("Erreur de serialisation en raison de : \t " + e.getMessage());
 	    }
 	    return data;
 	}
 	
 	public void sendMessage(String msg){
 		try {
-			System.out.println("Sending message");
-			Message sentMessage = new Message(localHost,localHost.findUserByAddress(serverAddr),msg);	
-			PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),true);
-    		out.println(sentMessage.toString());
-			/**byte[] serialized_msg = serialize(sentMessage);			    	
-	    	OutputStream os = clientSocket.getOutputStream();		//retrieves the output stream of the socket
-	        os.write(serialized_msg,0,serialized_msg.length);		//writes the bytes into the stream
-	        os.flush();												//flushes the stream
-	        os.close();*/	        									//closes the stream
-	        
+			Message sentMessage = new Message(localHost.findUserByAddress(serverAddr).getLogin(),msg);
+			byte[] serialized = serialize(sentMessage);			    	
+	    	OutputStream os = clientSocket.getOutputStream();		
+	        os.write(serialized,0,serialized.length);
+	        os.flush();												
+	        os.close();	        									
 			clientSocket.close();
 		}catch(Exception e){
-			
+	    	System.out.println("Erreur d'envoi de message en raison de : \t " + e.getMessage());
+
 		}
 		
 	}

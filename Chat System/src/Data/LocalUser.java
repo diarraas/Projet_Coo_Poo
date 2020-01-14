@@ -7,7 +7,7 @@ import java.util.*;
 
 public class LocalUser extends User {
    
-    private BroadcastServer broadcastServer ;
+	private BroadcastServer broadcastServer ;
     
     private MessageListener messageServer ;
     
@@ -27,6 +27,7 @@ public class LocalUser extends User {
 	        onliners = new ArrayList<RemoteUser>();
 	        ongoing = new ArrayList<ChatSession>();
 	        setStatus(true);
+	        
 	        //Ip address of the local host
 	        setIpAddress(InetAddress.getLocalHost());	        
 	        
@@ -39,14 +40,14 @@ public class LocalUser extends User {
 	        broadcastServer.start();
 	        messageServer.start();
 	        
-	        System.out.println("New User created");
+	        //System.out.println("New User created");
 	        
         }catch(Exception e) {
         	System.out.println("Erreur creation de nouveau LocalUser en raison de : \t " + e.getMessage());
         }
     }
     
-    public static LocalUser create_account(){
+    public static LocalUser createAccount(){
     	String log = "" ;
     	LocalUser newAccount = null;
     	System.out.println("Choisissez un login");
@@ -59,8 +60,8 @@ public class LocalUser extends User {
 	        	log = reader.readLine();
 	        }*/
 			newAccount = new LocalUser(log);
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+	    	System.out.println("Erreur de création de compte en raison de : \t " + e.getMessage());
 		} 
     	return newAccount ;
     }
@@ -68,7 +69,7 @@ public class LocalUser extends User {
     // use maven
     //
     
-    public void change_login() {
+    public void changeLogin() {
     	try {
 	        System.out.println("Entrez un nouveau login");
 	        BufferedReader reader =
@@ -91,25 +92,25 @@ public class LocalUser extends User {
     	setStatus(true);
     }
     
-    public void send_message(String dest){
+    public void sendMessage(String dest){
     	RemoteUser remote = findUserByLogin(dest);
     	InetAddress remoteAddr = remote.getIpAddress();
     	int remotePort = remote.getServerPort();
-    	System.out.println(remote.toString());
+
     	messageClient = new MessageSender(this,remoteAddr,remotePort);
+    	
     	System.out.println("Entrer un message --- 0 pour arreter");
     	
     	try {
 	    	BufferedReader reader =
 	                new BufferedReader(new InputStreamReader(System.in));
 	    	String msg = reader.readLine(); 
-	    	//while(msg != "0") {
+	    	while(msg != "0") {
 	    		messageClient.sendMessage(msg);
-	    		//reader =
-		          //      new BufferedReader(new InputStreamReader(System.in));
-		    	//msg = reader.readLine(); 
-	    	//}
-	    	System.out.println("Message sent");
+	    		reader =
+		              new BufferedReader(new InputStreamReader(System.in));
+		    	msg = reader.readLine(); 
+	    	}
     	}catch(Exception e) {
     		System.out.println("Erreur d'écriture du message en raison de : \t" + e.getMessage());
     	}
@@ -131,11 +132,12 @@ public class LocalUser extends User {
 
     }
     
-    public void startSession(RemoteUser user){
-    	if(onliners.contains(user)){
-    		ongoing.add(new ChatSession(this,user));
+    public void startSession(String dest){
+    	RemoteUser user = findUserByLogin(dest);
+    	if(user != null){
+    		ongoing.add(new ChatSession(getLogin(),dest));
     	}else {
-    		System.out.println("Utilisateurs offline");
+    		System.out.println("Utilisateur offline ou non existant");
     	}
     }
     
@@ -144,7 +146,7 @@ public class LocalUser extends User {
     }
     
     public void removeUser(RemoteUser user){
-    	onliners.remove(user);
+    	if(onliners.size() != 0) onliners.remove(user);
     }
     
 	public RemoteUser findUserByAddress(InetAddress address) {
@@ -174,14 +176,14 @@ public class LocalUser extends User {
     	return temp ;
 	}
 
-	public ChatSession findSessionWith(RemoteUser dest) {
+	public ChatSession findSessionWith(String dest) {
 		ChatSession retrieved = null ;
 		boolean found = false;
 		ListIterator<ChatSession> iterator = ongoing.listIterator() ;
 	       
 	    while(iterator.hasNext() && !found){
 	     	retrieved = iterator.next() ;
-	        found = retrieved.getDest() == dest ;
+	        found = retrieved.getDest().contentEquals(dest) ;
 	    }
 	        
 	    if(!found)	return null ;

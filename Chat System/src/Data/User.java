@@ -3,7 +3,8 @@ package Data;
 import java.net.InetAddress;
 
 public class User {
-private int id ;
+	
+	private int id ;
     
     private String login ;
     

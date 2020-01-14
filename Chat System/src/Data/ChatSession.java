@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatSession {
-	private User exp ;
-	private User dest ;
-    private List<Message> sent_messages ;
+	private String exp ;
+	private String dest ;
+    private List<Message> sentMessages ;
 
-    public ChatSession(User send, User rec) {
+    public ChatSession(String send, String rec) {
     	exp = send ;
     	dest = rec ;
-        sent_messages  = new ArrayList<Message>() ;
+    	sentMessages  = new ArrayList<Message>() ;
     }
     
     /**
@@ -21,21 +21,21 @@ public class ChatSession {
     **/
 
     public void addMessage(Message msg) {
-    	sent_messages.add(msg);
+    	sentMessages.add(msg);
     }
 
-	public User getExp() {
+	public String getExp() {
 		return exp;
 	}
 
 
-	public User getDest() {
+	public String getDest() {
 		return dest;
 	}
 
 
-	public List<Message> getSent_messages() {
-		return sent_messages;
+	public List<Message> getSentMessages() {
+		return sentMessages;
 	}
 
 
