@@ -69,7 +69,12 @@ public class Notifier {
 			buf = infos.getBytes();
 			DatagramPacket packet = new DatagramPacket(buf,buf.length,broadcastAddr,BroadcastServer.BROADCAST_PORT);
 			senderSocket.send(packet);
-
+			byte[] response = new byte [500];
+			DatagramPacket RespondingPacket = new DatagramPacket(response,response.length);	
+			RespondingPacket.setPort(BroadcastServer.BROADCAST_PORT); /// Xwhats the distant port ??										
+			senderSocket.receive(RespondingPacket);
+			String received = new String(RespondingPacket.getData(), 0, packet.getLength());
+			System.out.println(received);
 		} catch(Exception e) {
 			 
     		System.out.println("Erreur de notification de connexion en raison de : \t " + e.getMessage());
