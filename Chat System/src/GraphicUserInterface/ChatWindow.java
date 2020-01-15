@@ -11,11 +11,12 @@ public class ChatWindow implements ActionListener {
 	public static JPanel aff_inner = new JPanel();
 	public static JLabel aff_txt = new JLabel();
 	public static JLabel aff_nom = new JLabel(); 
+	public static JFrame frame;
 
     public ChatWindow(String[] ponline) {
     	
     	//Create and set up the window.
-        JFrame frame = new JFrame("ChatWindow");
+        frame = new JFrame("ChatWindow");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //frame.setResizable(false);
         Container pane = frame.getContentPane();
@@ -87,8 +88,6 @@ public class ChatWindow implements ActionListener {
 		
 		pane.add(aff_border,c);
 		
-		System.out.println("Fenetre = " + frame.getSize());
-		
 		frame.pack();
         frame.setVisible(true);
 	
@@ -99,11 +98,13 @@ public class ChatWindow implements ActionListener {
 		// Affichage de la personne avec qui on ouvre une session
 		aff_nom.setText("Conversation avec " + e.getActionCommand());
 		
+		aff_inner.remove(aff_txt);
+		
 		aff_txt.setText(e.getActionCommand());
-    	
 		
 		aff_border.setSize(aff_border.getWidth()-13, aff_border.getHeight()-27);
     	
+		aff_inner.add(aff_txt);    	
     	
     }
 
