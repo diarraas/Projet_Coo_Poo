@@ -27,4 +27,13 @@ public class Message implements Serializable {
 	public String getExp() {
 		return exp;
 	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public String getBody() {
+		return body;
+	}
+	
 }
