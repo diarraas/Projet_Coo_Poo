@@ -16,7 +16,7 @@ public class MessageListener extends Thread{
 			localHost = user ;
 			serverSocket = new ServerSocket(localHost.getServerPort(),MAX_LOG,localHost.getIpAddress());
 		}catch(Exception e){
-			
+	    	System.out.println("Erreur de création du serveur TCP en raison de : \t " + e.getMessage());
 		}
 	}
 	
@@ -38,6 +38,7 @@ public class MessageListener extends Thread{
 			try{
 				
 				Socket remote = serverSocket.accept();
+				
 				byte [] byteData = new byte [65535];					
 		        InputStream is = remote.getInputStream();				
 		        int bytesRead = is.read(byteData,0,byteData.length);	
@@ -50,10 +51,12 @@ public class MessageListener extends Thread{
 
 		        Object data = deserialize(byteData);
 	        	Message msg = (Message) data;
-	        	String dest = msg.getDest();
+                String exp = msg.getExp();
+				localHost.startSession(exp);
+			    System.out.println(exp + "  is trynna talk to ya");
 	        	
-	        	//System.out.println(msg.toString());
-		       localHost.findSessionWith(dest).addMessage(msg);
+	        	System.out.println(msg.toString());
+		        localHost.findSessionWith(exp).addMessage(msg);
 		        
 			}catch(Exception e){
 		    	System.out.println("Erreur de lancement du serveur TCP en raison de : \t " + e.getMessage());

@@ -1,15 +1,17 @@
 package Network;
 
+import java.io.IOException;
 import java.net.* ;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+
 import Data.* ;
 
 public class Notifier {
 	
 	private DatagramSocket senderSocket ;
-	private byte[] buf = new byte[256];
+	private byte[] buf = new byte[65535];
 	private int port = 12245 ;
 	private LocalUser localHost ;
 	public static InetAddress broadcastAddr;
@@ -62,38 +64,39 @@ public class Notifier {
 	}
 
 
-	public void notifyAuthentification(){
+	public void notifyAuthentification() {
 		try {
 			
 			String infos = localHost.getLogin() + " login " + localHost.getIpAddress().getHostAddress() + " " + localHost.getServerPort() ;  
 			buf = infos.getBytes();
 			DatagramPacket packet = new DatagramPacket(buf,buf.length,broadcastAddr,BroadcastServer.BROADCAST_PORT);
 			senderSocket.send(packet);
-			byte[] response = new byte [500];
+			byte[] response = new byte [65535];
 			DatagramPacket RespondingPacket = new DatagramPacket(response,response.length);								
 			senderSocket.receive(RespondingPacket);
 			String received = new String(RespondingPacket.getData(), 0, packet.getLength());
-			
+
 			while(received != null){
 			    String newInfo[] = received.split(" ");
-			    InetAddress address; int port ;
+			    InetAddress address;
 			    address = InetAddress.getByName(newInfo[2]);
 			    if(!newInfo[0].contentEquals(localHost.getLogin())) {
-			    	port = Integer.parseInt(newInfo[3].trim());
-			    	RemoteUser newUser = new RemoteUser(newInfo[0],address,port);
+			    	RemoteUser newUser = new RemoteUser(newInfo[0],address);
 			    	synchronized(this){
 			    		localHost.addUser(newUser);
 			    	}
 			    }
 			    
-		        senderSocket.receive(RespondingPacket);
+			    senderSocket.setSoTimeout(5000);
+			    senderSocket.receive(RespondingPacket);
 			    received = new String(RespondingPacket.getData(), 0, packet.getLength());
 		    }
 			
-		} catch(Exception e) {
-			 
-    		System.out.println("Erreur de notification de connexion en raison de : \t " + e.getMessage());
-    	
+			System.out.println("Outta RECEIVE");
+			
+		}catch(IOException e) {
+    		System.out.println("FIn mise a jour onliners");
+
     	}
 	}
 
@@ -118,4 +121,4 @@ public class Notifier {
 	public void close() {
 		senderSocket.close();
 	}
-}
+}			    

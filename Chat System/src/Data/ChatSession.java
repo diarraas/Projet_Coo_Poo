@@ -7,11 +7,13 @@ public class ChatSession {
 	private String exp ;
 	private String dest ;
     private List<Message> sentMessages ;
+    private boolean active ;
 
     public ChatSession(String send, String rec) {
     	exp = send ;
     	dest = rec ;
     	sentMessages  = new ArrayList<Message>() ;
+    	active = true ;
     }
     
     /**
@@ -21,7 +23,7 @@ public class ChatSession {
     **/
 
     public void addMessage(Message msg) {
-    	sentMessages.add(msg);
+    	if(this!= null)	sentMessages.add(msg);
     }
 
 	public String getExp() {
@@ -36,6 +38,14 @@ public class ChatSession {
 
 	public List<Message> getSentMessages() {
 		return sentMessages;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 

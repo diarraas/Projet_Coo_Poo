@@ -9,7 +9,7 @@ public class BroadcastServer extends Thread {
 	
     public static int BROADCAST_PORT = 4445 ;
     private DatagramSocket broadcastSocket;
-	private byte[] buf = new byte[256];
+	private byte[] buf = new byte[65535];
 	private LocalUser localHost ;
 	private boolean running ;
 
@@ -34,6 +34,7 @@ public class BroadcastServer extends Thread {
 	        	broadcastSocket.receive(packet);
 	            String received = new String(packet.getData(), 0, packet.getLength());
 	            String[] infos = received.split(" ");
+	            System.out.println("GOT NEW BC length \t" + packet.getLength());
 	         	if(infos[1].contentEquals("login")) {
 	         		InetAddress address = packet.getAddress();
 		            int port = packet.getPort();
@@ -41,11 +42,10 @@ public class BroadcastServer extends Thread {
 			        buf = myinfos.getBytes();
 	         		packet = new DatagramPacket(buf, buf.length, address, port);
 		            broadcastSocket.send(packet);
-		            address = InetAddress.getByName(infos[2]);
-		            port = Integer.parseInt(infos[3].trim());
+		            address = InetAddress.getByName(infos[2]);		            
 		            System.out.println("Nouvelle connexion, maj de la liste des onliners\t" );
-		            RemoteUser newUser = new RemoteUser(infos[0],address,port);
-		            System.out.println("");
+		            RemoteUser newUser = new RemoteUser(infos[0],address);
+		            
 		            synchronized(this){
 		               localHost.addUser(newUser);
 		            }

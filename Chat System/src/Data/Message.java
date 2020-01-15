@@ -4,11 +4,13 @@ import java.io.Serializable;
 public class Message implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	private String exp;
 	private String dest ;
 	private String date ;
 	private String body ;
 	
-	public Message(String receiver, String text) {
+	public Message(String sender, String receiver, String text) {
+		exp = sender ;
 		dest = receiver ;
 		date = LocalDateTime.now().toString();	
 		body = text ;
@@ -20,5 +22,9 @@ public class Message implements Serializable {
 
 	public String getDest() {
 		return dest;
+	}
+	
+	public String getExp() {
+		return exp;
 	}
 }

@@ -1,16 +1,26 @@
 package Data;
 
-/**			Remplir database and make requests
-import java.net.InetAddress;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.sql.Timestamp;
-import java.util.Date;
-**/
-public class Database {
+import java.sql.*;
 
+
+
+public class Database {
+	private static String login = "tpservlet_09";
+	private static String psw = "fee6Ooth";
+	private static String url = "mysql://srv-bdens.insa-toulouse.fr:3306";
+	
+	public static void launchDatabase() {
+		try{  
+			Class.forName("com.mysql.cj.jdbc.Driver");  
+			Connection con= DriverManager.getConnection("jdbc:"+url+"/"+login,login,psw);  
+			Statement stmt=con.createStatement();
+
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void main(String args[]) {
+		launchDatabase();
+	}
 }

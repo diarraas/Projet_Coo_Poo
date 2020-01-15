@@ -5,7 +5,7 @@ import java.net.*;
 import java.util.*;
 
 public class LocalUser extends User {
-   
+	   
 	private BroadcastServer broadcastServer ;
     
     private MessageListener messageServer ;
@@ -27,20 +27,30 @@ public class LocalUser extends User {
 	        ongoing = new ArrayList<ChatSession>();
 	        setStatus(true);
 	        
-	        //Ip address of the local host
-	        setIpAddress(InetAddress.getLocalHost());	        
+	        //Find non local ip address
 	        
-	        //Creation and launch of servers
+	        Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
+            
+            for (; n.hasMoreElements();) {
+                NetworkInterface e = n.nextElement();
+                Enumeration<InetAddress> a = e.getInetAddresses();
+                for (; a.hasMoreElements();) {
+                    InetAddress addr = a.nextElement();
+                    if ((addr instanceof Inet4Address) && !addr.isLoopbackAddress()) {
+                        setIpAddress(addr);
+                    }
+                }
+            }
+	        
 	        broadcastServer = new BroadcastServer(this);
 	        messageServer = new MessageListener(this);
-	        broadcastClient = new Notifier(this);
 	        broadcastServer.setRunning(true);
 	    	messageServer.setRunning(true);
 	        broadcastServer.start();
 	        messageServer.start();
-	        
-	        //System.out.println("New User created");
-	        
+	        broadcastClient = new Notifier(this);
+	       
+	        	        
         }catch(Exception e) {
         	System.out.println("Erreur creation de nouveau LocalUser en raison de : \t " + e.getMessage());
         }
@@ -53,7 +63,7 @@ public class LocalUser extends User {
     	try {
     		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 			log = reader.readLine();
-		/*	while(findUserByLogin(log) != null) {
+		/*	while(findUserByLogin(log) != null) {		//Verify unicity eventually
 	        	reader =
 		                   new BufferedReader(new InputStreamReader(System.in));
 	        	log = reader.readLine();
@@ -64,7 +74,7 @@ public class LocalUser extends User {
 		} 
     	return newAccount ;
     }
-   
+
     // use maven
     //
     
@@ -95,7 +105,7 @@ public class LocalUser extends User {
     	RemoteUser remote = findUserByLogin(dest);
     	InetAddress remoteAddr = remote.getIpAddress();
     	int remotePort = remote.getServerPort();
-
+        System.out.println("Dest User " +remote.toString());
     	messageClient = new MessageSender(this,remoteAddr,remotePort);
     	
     	System.out.println("Entrer un message --- 0 pour arreter");
@@ -109,22 +119,17 @@ public class LocalUser extends User {
 	    		reader =
 		              new BufferedReader(new InputStreamReader(System.in));
 		    	msg = reader.readLine(); 
+		    	messageClient.close();
+		    	messageClient = new MessageSender(this,remoteAddr,remotePort);
 	    	}
     	}catch(Exception e) {
     		System.out.println("Erreur d'écriture du message en raison de : \t" + e.getMessage());
     	}
     }    
     
-    public void disconnect() {
+    public void disconnect() { //Dont disconnect just yet ---- synchronize
     	
     	broadcastClient.notifyDisconnection();
-    	
-    	try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-    	
     	broadcastServer.setRunning(false);
     	messageServer.setRunning(false);
     	setStatus(false);
@@ -140,7 +145,7 @@ public class LocalUser extends User {
     	}
     }
     
-    public void addUser(RemoteUser user){
+    public synchronized void addUser(RemoteUser user){
     	if((onliners.size() != 0 && !onliners.contains(user)) || onliners.size() == 0)  onliners.add(user) ;
 
     }
@@ -188,6 +193,12 @@ public class LocalUser extends User {
 	        
 	    if(!found)	return null ;
 	    return retrieved;
+	}
+	
+	public void endSession(String dest) {
+		ChatSession session  = findSessionWith(dest) ;
+		session.setActive(false);
+		ongoing.remove(session);
 	}
 	
 	public List<RemoteUser> getOnliners() {

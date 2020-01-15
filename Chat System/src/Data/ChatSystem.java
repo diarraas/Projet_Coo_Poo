@@ -9,7 +9,7 @@ public class ChatSystem {
 			//tests
 			LocalUser user = LocalUser.createAccount();
 			user.authentify();
-			Thread.sleep(2000);
+			Thread.sleep(2000); 
 			BufferedReader reader =
 	                new BufferedReader(new InputStreamReader(System.in));
 			String me = reader.readLine();

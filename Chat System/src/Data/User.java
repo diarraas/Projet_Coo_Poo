@@ -10,10 +10,8 @@ public class User {
     
     private boolean status ;
                 
-    private int serverPort ;
-                
-    private int clientPort ;
-    
+    public static int serverPort = 12537 ;
+                    
     private InetAddress ipAddress ;
     
     public User() {
@@ -23,9 +21,7 @@ public class User {
     public User(String log) {
     	//Basic id data
     	login = log ;
-        id = ((int) (Math.random()*6553)) ;
-        serverPort = 1024 + id ;
-        clientPort = serverPort + 50 ;
+        id = ((int) (Math.random()*999)) ;
         status = true ;
     }
 
@@ -56,19 +52,7 @@ public class User {
 	public int getServerPort() {
 		return serverPort;
 	}
-
-	public void setServerPort(int serverPort) {
-		this.serverPort = serverPort;
-	}
-
-	public int getClientPort() {
-		return clientPort;
-	}
-
-	public void setClientPort(int clientPort) {
-		this.clientPort = clientPort;
-	}
-
+	
 	public InetAddress getIpAddress() {
 		return ipAddress;
 	}
