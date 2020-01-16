@@ -1,10 +1,16 @@
 package GraphicUserInterface;
 
 import java.awt.*;
+import Data.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.*;
+
+import Data.RemoteUser;
 
 public class ChatWindow implements ListSelectionListener{
 	
@@ -16,8 +22,9 @@ public class ChatWindow implements ListSelectionListener{
 	
 	public static JList list;
 	public static DefaultListModel listModel;
-
-    public ChatWindow(String[] ponline) {
+	private static LocalUser localHost ;
+	
+    public ChatWindow(List<RemoteUser> noms) {
     	
     	//Create and set up the window.
         frame = new JFrame("ChatWindow");
@@ -28,9 +35,7 @@ public class ChatWindow implements ListSelectionListener{
 	    JButton button;
 	    int index;
 		pane.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-		String[] noms = ponline;
-		
+		GridBagConstraints c = new GridBagConstraints();		
 		
 		
 		//affichage label "People Online"
@@ -43,7 +48,7 @@ public class ChatWindow implements ListSelectionListener{
 		
 		//Création et ajout des people connectés (pas dans cette classe, tableau dynamique)
 		listModel = new DefaultListModel();
-		for(index = 1; index<(noms.length);index++) {
+		for(index = 1; index<(noms.length);index++) { //Foutre un itérateur
 			listModel.addElement(noms[index-1]);			
 		}
 		
@@ -133,7 +138,7 @@ public class ChatWindow implements ListSelectionListener{
 
     public static void main(String[] args) {
     	
-    	String[] noms = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q"};
+    	List<RemoteUser> noms = localHost.getOnliners();
         new ChatWindow(noms);
     }
 }
