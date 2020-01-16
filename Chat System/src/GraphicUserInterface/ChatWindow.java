@@ -117,12 +117,12 @@ public class ChatWindow implements ListSelectionListener{
         }
     }
     
-    public void newConnected(String newC) {
+    public static void newConnected(String newC) {
     	int index = -1;
     	listModel.insertElementAt(newC,index);
     }
     
-    public void newDisconnected (String newDc) {
+    public static void newDisconnected (String newDc) {
     	for(int index = 0; index < listModel.getSize(); index ++) {
     		if (listModel.getElementAt(index)== newDc) {
     			listModel.removeElementAt(index);

@@ -2,12 +2,17 @@ package GraphicUserInterface;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+
 import javax.swing.*;
+import Data.*;
 
 public class LoginWindow implements ActionListener, KeyListener {
 	
-	public JTextField nouveauLogin;
-	public JTextField connectLogin;
+	private JTextField nouveauLogin;
+	private JTextField connectLogin;
+	private LocalUser localHost;
+	
 	
 	public LoginWindow() {	
 	
@@ -74,18 +79,43 @@ public class LoginWindow implements ActionListener, KeyListener {
 	
 	}
 	
-	
+	/** 
+	 * 				/!\      GUIDE LINE POUR KENTIN       /!\
+	 *  
+	 * Need to implement logout button
+	 * __________________change login button
+	 * When window closes ---- you're disconnected
+	 * Print on screen (not console) when a login already exists in BDD (authentify or createAccount will return null)
+	 * Same goes for an incorrect login ---- un pop up maybe ?
+	 * Informe le user quand son compte est bien créé et qu'il peut se connecter
+	 * PRIVATIZEEEEEEEEE
+	 * je suppose que click sur login de qqun -> startSession(qqun) buuuut there's a method send message ---- you need to figure out how to use both
+	 * Need a way to stop session ---- you cant just quit --- il faut permettre à l'utilisateur de mettre fin à une session unilatéralement 
+	 * Maybe add a refresh button qui actualise la liste des connectés
+	 * Il ya des null pointer PAS DE PANIQUE c'est normal ------- mets la ligne 11 en commentaire
+	 * 
+	 * 
+	 * **/
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand() == "Verifier") {
 			
 			String loginNew = getLogin(nouveauLogin);
-			System.out.println(loginNew); //vérifier que le login est disponible
+			localHost = LocalUser.createAccount(loginNew);
+			localHost = localHost.authentify(loginNew);
+			 
+			//System.out.println(loginNew);
 			
 		}
 		else if (e.getActionCommand() == "Se connecter")
 		{
 			String loginConnect = getLogin(connectLogin);
-			System.out.println(loginConnect);
+			localHost = localHost.authentify(loginConnect);
+			System.out.println("Authentified");
+			localHost.startSession(localHost.getLogin());
+			localHost.sendMessage(localHost.getLogin(),"CINNAMOOOOOON ");
+			//ArrayList<Message> me = Database.getHistory(localHost.getLogin(), localHost.getLogin());
+			
+			//System.out.println(me.toString());
 		}
 	}
 	

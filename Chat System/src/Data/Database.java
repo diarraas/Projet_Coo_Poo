@@ -1,10 +1,9 @@
 package Data;
 
+import java.net.InetAddress;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
-
 
 public class Database {
 	private static String login = "tpservlet_09";
@@ -94,9 +93,19 @@ public class Database {
 			Statement stmt = con.createStatement();
 			int idSender = findId(sender);
 			int idRecipient = findId(recipient);
-			ResultSet set = stmt.executeQuery("SELECT * FROM Message WHERE exp ="+idSender+" AND dest ="+idRecipient);
+			if(idSender == 0 || idRecipient == 0 ) return null ;
+			ResultSet set1 = stmt.executeQuery("SELECT * FROM Message WHERE exp ="+idSender+" AND dest ="+idRecipient);
+			ResultSet set2 = stmt.executeQuery("SELECT * FROM Message WHERE exp ="+idRecipient+" AND dest ="+idSender);
+			System.out.println("");
+			while (set1.next()) {
+				retrieved.add(new Message(findLogin(set1.getInt("exp")),findLogin(set1.getInt("dest")),set1.getString("body")));
+			}
 			
-			set.close();
+			while (set2.next()) {
+				retrieved.add(new Message(findLogin(set2.getInt("exp")),findLogin(set2.getInt("dest")),set2.getString("body")));
+			}
+			set1.close();
+			set2.close();
 			con.close();
 		}catch(Exception e) {
 			System.out.println("Erreur de connection à la BDD en raison de \t" + e.getMessage());
@@ -105,6 +114,23 @@ public class Database {
 		return retrieved ;
 	}
 	
+	public static String findLogin(int id) {
+		String result = "";
+		try {
+			Connection con = startNewConnection();
+			Statement stmt = con.createStatement();
+			ResultSet set = stmt.executeQuery("SELECT login FROM User WHERE id = "+id);
+			if(set.next()) {
+				result = set.getString("login");
+			}
+			set.close();
+			con.close();
+		}catch(Exception e) {
+			System.out.println("Erreur de connection à la BDD en raison de \t" + e.getMessage());
+			e.printStackTrace();
+		}
+		return result ;
+	}
 	
 	public static int findId(String login) {
 		int id = 0 ;
@@ -124,6 +150,28 @@ public class Database {
 		return id ;
 	} 
 	
+	public static LocalUser findUser(String login) {
+		LocalUser localHost = null ;
+		try {
+			Connection con = startNewConnection();
+			Statement stmt = con.createStatement();
+			ResultSet set = stmt.executeQuery("SELECT * FROM User WHERE login = \'" +login+"\'");
+			if(set.next()) {
+				localHost = new LocalUser();
+				localHost.setId(set.getInt("id"));
+				localHost.setLogin(set.getString("login"));
+				localHost.setIpAddress(InetAddress.getByName(set.getString("ipAddress")));
+			}
+			set.close();
+			con.close();
+		}catch(Exception e) {
+			System.out.println("Erreur de connection à la BDD en raison de \t" + e.getMessage());
+			e.printStackTrace();
+		}
+		
+		return localHost ;
+	}
+	
 	public static boolean addUser(User user) {
 		boolean added = false ;
 		try {
@@ -133,7 +181,7 @@ public class Database {
 			    PreparedStatement preparedStmt = con.prepareStatement(query);
 			    preparedStmt.setInt(1, user.getId());
 			    preparedStmt.setString(2, user.getLogin());
-			    preparedStmt.setString(3, user.getIpAddress().toString());
+			    preparedStmt.setString(3, user.getIpAddress().getHostAddress());
 			    preparedStmt.execute();
 			    added = true;
 			    con.close();

@@ -17,10 +17,7 @@ public class LocalUser extends User {
     
     private List<ChatSession> ongoing ;
          
-    public LocalUser() {
-    	super();
-    }
-  
+        
     public LocalUser(String log) {
     	super(log);      
        
@@ -38,6 +35,7 @@ public class LocalUser extends User {
                 }
             }
         }
+        Database.addUser(this);       
         }catch(Exception e) {
         	System.out.println("Erreur creation de nouveau LocalUser en raison de : \t " + e.getMessage());
         }
@@ -45,10 +43,7 @@ public class LocalUser extends User {
     
     public static LocalUser createAccount(String log){
     	LocalUser newAccount = null;
-		if(Database.isUnic(log)) {
-			newAccount = new LocalUser(log);
-	        Database.addUser(newAccount); 
-		}
+		if(Database.isUnic(log)) newAccount = new LocalUser(log);
     	return newAccount ;
     }
 
@@ -63,27 +58,22 @@ public class LocalUser extends User {
 	     }
     }
     
-    public LocalUser authentify (String log) {
-    	LocalUser retrieved = null ;
+    public void authentify (String log) {
     	if(!Database.isUnic(log)) {
-    		retrieved = Database.findUser(log);
 	    	onliners = new ArrayList<RemoteUser>();
 	        ongoing = new ArrayList<ChatSession>();  
-	        retrieved.setOnliners(onliners);
-	        retrieved.setOngoing(ongoing);
-	    	broadcastServer = new BroadcastServer(retrieved);
-	        messageServer = new MessageListener(retrieved);
+	    	broadcastServer = new BroadcastServer(this);
+	        messageServer = new MessageListener(this);
 	        broadcastServer.setRunning(true);
 	    	messageServer.setRunning(true);
 	        broadcastServer.start();
 	        messageServer.start();
-	        broadcastClient = new Notifier(retrieved);
+	        broadcastClient = new Notifier(this);
 	    	broadcastClient.notifyAuthentification();
 	    	setStatus(true);
     	}else {
     		System.out.println("Identifiant inconnu --- créez un compte");
     	}
-    	return retrieved;
     }
     
     public void sendMessage(String dest,String msg){
@@ -178,14 +168,6 @@ public class LocalUser extends User {
 
 	public List<ChatSession> getOngoing() {
 		return ongoing;
-	}
-
-	public void setOnliners(List<RemoteUser> onliners) {
-		this.onliners = onliners;
-	}
-
-	public void setOngoing(List<ChatSession> ongoing) {
-		this.ongoing = ongoing;
 	}
 
 	   
