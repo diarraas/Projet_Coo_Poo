@@ -40,10 +40,9 @@ public class Notifier {
     			}
     		}
 			
-			
 		} catch(Exception e) {
 			 
-    		System.out.println("Erreur de cr�ation du NotificationSender en raison de : \t " + e.getMessage());
+    		System.out.println("Erreur de creation du NotificationSender en raison de : \t " + e.getMessage());
     	
     	}
 		
@@ -51,7 +50,7 @@ public class Notifier {
 	
 	public void notifyLoginChange(){
 		try {
-			String infos = localHost.getLogin() + " change " + localHost.getIpAddress().getHostAddress() + " " + localHost.getServerPort() ; 
+			String infos = localHost.getLogin() + " change " + localHost.getIpAddress().getHostAddress() + " " + localHost.getServerPort() ;  
 			buf = infos.getBytes();
 			DatagramPacket packet = new DatagramPacket(buf,buf.length,broadcastAddr,BroadcastServer.BROADCAST_PORT);
 			senderSocket.send(packet);
@@ -87,17 +86,13 @@ public class Notifier {
 			    	}
 			    }
 			    
-			    senderSocket.setSoTimeout(5000);
+			    senderSocket.setSoTimeout(3000);
 			    senderSocket.receive(RespondingPacket);
 			    received = new String(RespondingPacket.getData(), 0, packet.getLength());
 		    }
 			
-			System.out.println("Outta RECEIVE");
 			
-		}catch(IOException e) {
-    		System.out.println("FIn mise a jour onliners");
-
-    	}
+		}catch(IOException e) {	}
 	}
 
 	

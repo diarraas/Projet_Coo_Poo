@@ -1,6 +1,9 @@
 package Data;
-import java.time.LocalDateTime;
+
 import java.io.Serializable;
+import java.sql.Date;
+import java.text.DateFormat;
+
 public class Message implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -12,7 +15,7 @@ public class Message implements Serializable {
 	public Message(String sender, String receiver, String text) {
 		exp = sender ;
 		dest = receiver ;
-		date = LocalDateTime.now().toString();	
+		date = (DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT)).format(new Date(System.currentTimeMillis()));	
 		body = text ;
 	}
 	

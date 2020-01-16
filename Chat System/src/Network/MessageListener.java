@@ -1,6 +1,7 @@
 package Network;
 import java.io.*;
 import java.net.*;
+
 import Data.*;
 
 public class MessageListener extends Thread{
@@ -34,30 +35,37 @@ public class MessageListener extends Thread{
 	
 	public void run(){
 		while(isRunning()){
-			
 			try{
-				
 				Socket remote = serverSocket.accept();
-				
-				byte [] byteData = new byte [65535];					
-		        InputStream is = remote.getInputStream();				
-		        int bytesRead = is.read(byteData,0,byteData.length);	
-		        int current = bytesRead;
+				Runnable messageHandler = new Runnable() {
+		            public void run() {
+		            	try {
+							byte [] byteData = new byte [65535];					
+					        InputStream is = remote.getInputStream();				
+					        int bytesRead = is.read(byteData,0,byteData.length);	
+					        int current = bytesRead;
+			
+					        while(bytesRead > -1) {
+					           bytesRead = is.read(byteData, current, (byteData.length-current));
+					           if(bytesRead >= 0) current += bytesRead;
+					        } 
+			
+					        Object data = deserialize(byteData);
+				        	Message msg = (Message) data;
+			                String exp = msg.getExp();
+							localHost.startSession(exp);
+				        	System.out.println(msg.toString());
+					        localHost.findSessionWith(exp).addMessage(msg);
+					        Database.addMessage(msg);
+		            	} catch ( Exception e) {
+	                  		System.out.println("Erreur d'extraction du message en raison de :\t" + e.getMessage() );
+	                  }
 
-		        while(bytesRead > -1) {
-		           bytesRead = is.read(byteData, current, (byteData.length-current));
-		           if(bytesRead >= 0) current += bytesRead;
-		        } 
-
-		        Object data = deserialize(byteData);
-	        	Message msg = (Message) data;
-                String exp = msg.getExp();
-				localHost.startSession(exp);
-			    System.out.println(exp + "  is trynna talk to ya");
-	        	
-	        	System.out.println(msg.toString());
-		        localHost.findSessionWith(exp).addMessage(msg);
-		        
+	            }
+	        };
+	        
+	        new Thread(messageHandler).start();
+	        
 			}catch(Exception e){
 		    	System.out.println("Erreur de lancement du serveur TCP en raison de : \t " + e.getMessage());
 			}

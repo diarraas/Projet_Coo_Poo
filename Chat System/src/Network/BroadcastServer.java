@@ -22,7 +22,7 @@ public class BroadcastServer extends Thread {
 			
 		}catch(Exception e){
 			
-    		System.out.println("Erreur de cr�ation du serveur UDP en raison de : \t " + e.getMessage());
+    		System.out.println("Erreur de creation du serveur UDP en raison de : \t " + e.getMessage());
 			
 		}
 	}
@@ -34,7 +34,6 @@ public class BroadcastServer extends Thread {
 	        	broadcastSocket.receive(packet);
 	            String received = new String(packet.getData(), 0, packet.getLength());
 	            String[] infos = received.split(" ");
-	            System.out.println("GOT NEW BC length \t" + packet.getLength());
 	         	if(infos[1].contentEquals("login")) {
 	         		InetAddress address = packet.getAddress();
 		            int port = packet.getPort();
@@ -57,18 +56,24 @@ public class BroadcastServer extends Thread {
 
 		        }else if(infos[1].contentEquals("change")) {
 		           	System.out.println("Changement de login retenu, new login is \t"+ infos[0]);
+		           	System.out.println("New onliners list \t" + localHost.getOnliners().toString());
+		           	System.out.println("Address is supposed to be \t" + infos[2]);
+		           	System.out.println("INET ADDRESS IS "+InetAddress.getByName(infos[2]));
 		           	localHost.findUserByAddress(InetAddress.getByName(infos[2])).setLogin(infos[0]);
 		            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
 
 		        }   	
 		        
 			}catch(Exception e){
-	    		System.out.println("Erreur de lancement du serveur UDP en raison de : \t " + e.getMessage());
-	    		e.printStackTrace();
+				if(!isRunning()) {
+					System.out.println("Serveur arrêté");
+				}else {
+					System.out.println("Erreur de lancement du serveur UDP en raison de : \t " + e.getMessage());
+					e.printStackTrace();
+				}
 			}
 		}
 		broadcastSocket.close();
-
      }
 		
 

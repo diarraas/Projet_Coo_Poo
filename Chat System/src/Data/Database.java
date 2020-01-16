@@ -1,6 +1,7 @@
 package Data;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 
@@ -28,7 +29,7 @@ public class Database {
 		try {
 			Connection con = startNewConnection();
 			Statement stmt = con.createStatement();
-			ResultSet set = stmt.executeQuery("SELECT Count(*) AS count FROM USER WHERE login LIKE " +newLogin);
+			ResultSet set = stmt.executeQuery("SELECT COUNT(*) AS count FROM User WHERE login = \'" +newLogin+"\'" );
 			set.next();
 			if(set.getInt("count") !=0) {
 				isUnic = false ;
@@ -73,7 +74,8 @@ public class Database {
 			PreparedStatement preparedStmt = con.prepareStatement(query);
 			preparedStmt.setInt(1, idSender);
 			preparedStmt.setInt(2, idRecipient);
-			preparedStmt.setString(3, message.getDate());
+			java.sql.Date date = new Date(new SimpleDateFormat("dd/mm/yyyy hh:mm").parse(message.getDate()).getTime() );
+			preparedStmt.setDate(3, date);
 			preparedStmt.setString(4, message.getBody());
 			preparedStmt.execute();
 			con.close();
@@ -103,18 +105,13 @@ public class Database {
 		return retrieved ;
 	}
 	
-	public static String findLogin() {
-		String login = "" ;
-		
-		return login ;
-	} 
 	
 	public static int findId(String login) {
 		int id = 0 ;
 		try {
 			Connection con = startNewConnection();
 			Statement stmt = con.createStatement();
-			ResultSet set = stmt.executeQuery("SELECT id FROM User WHERE login LIKE "+login);
+			ResultSet set = stmt.executeQuery("SELECT id FROM User WHERE login = \'" +login+"\'");
 			if(set.next()) {
 				id = set.getInt("id");
 			}
@@ -147,5 +144,6 @@ public class Database {
 		}
 		return added ;
 	}
+	
 	
 }

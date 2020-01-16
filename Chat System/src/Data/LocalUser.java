@@ -20,85 +20,60 @@ public class LocalUser extends User {
          
         
     public LocalUser(String log) {
-    	super(log);
-    	try {
-	    	//Basic id data
-	        onliners = new ArrayList<RemoteUser>();
-	        ongoing = new ArrayList<ChatSession>();
-	        setStatus(true);
-	        
-	        //Find non local ip address
-	        
-	        Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
-            
-            for (; n.hasMoreElements();) {
-                NetworkInterface e = n.nextElement();
-                Enumeration<InetAddress> a = e.getInetAddresses();
-                for (; a.hasMoreElements();) {
-                    InetAddress addr = a.nextElement();
-                    if ((addr instanceof Inet4Address) && !addr.isLoopbackAddress()) {
-                        setIpAddress(addr);
-                    }
+    	super(log);      
+        //Find non local ip address
+        try {
+        Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
+        
+        for (; n.hasMoreElements();) {
+            NetworkInterface e = n.nextElement();
+            Enumeration<InetAddress> a = e.getInetAddresses();
+            for (; a.hasMoreElements();) {
+                InetAddress addr = a.nextElement();
+                if ((addr instanceof Inet4Address) && !addr.isLoopbackAddress()) {
+                    setIpAddress(addr);
                 }
             }
-	        
-	        broadcastServer = new BroadcastServer(this);
-	        messageServer = new MessageListener(this);
-	        broadcastServer.setRunning(true);
-	    	messageServer.setRunning(true);
-	        broadcastServer.start();
-	        messageServer.start();
-	        broadcastClient = new Notifier(this);
-	       
-	        	        
+        }
+        Database.addUser(this);       
         }catch(Exception e) {
         	System.out.println("Erreur creation de nouveau LocalUser en raison de : \t " + e.getMessage());
         }
     }
     
-    public static LocalUser createAccount(){
-    	String log = "" ;
+    public static LocalUser createAccount(String log){
     	LocalUser newAccount = null;
-    	System.out.println("Choisissez un login");
-    	try {
-    		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-			log = reader.readLine();
-		/*	while(findUserByLogin(log) != null) {		//Verify unicity eventually
-	        	reader =
-		                   new BufferedReader(new InputStreamReader(System.in));
-	        	log = reader.readLine();
-	        }*/
-			newAccount = new LocalUser(log);
-		} catch (Exception e) {
-	    	System.out.println("Erreur de création de compte en raison de : \t " + e.getMessage());
-		} 
+		if(Database.isUnic(log)) newAccount = new LocalUser(log);
     	return newAccount ;
     }
 
     // use maven
     //
     
-    public void changeLogin() {
-    	try {
-	        System.out.println("Entrez un nouveau login");
-	        BufferedReader reader =
-	                   new BufferedReader(new InputStreamReader(System.in));
-	        String newLog = reader.readLine(); 
-	        while(findUserByLogin(newLog) != null) {
-	        	reader =
-		                   new BufferedReader(new InputStreamReader(System.in));
-	        	newLog = reader.readLine();
-	        }
+    public void changeLogin(String newLog) {
+    	if(Database.isUnic(newLog)) {
 	        this.setLogin(newLog);
-	        broadcastClient.notifyLoginChange();
-	    }catch( Exception e) {
-			System.out.println("Erreur changement de login en raison de : \t" + e.getMessage());
-	    }
+	       	Database.updateLogin(this, newLog);
+		    broadcastClient.notifyLoginChange();
+	     }
     }
     
-    public void authentify () {
-    	broadcastClient.notifyAuthentification();
-    	setStatus(true);
+    public void authentify (String log) {
+    	if(!Database.isUnic(log)) {
+	    	onliners = new ArrayList<RemoteUser>();
+	        ongoing = new ArrayList<ChatSession>();  
+	    	broadcastServer = new BroadcastServer(this);
+	        messageServer = new MessageListener(this);
+	        broadcastServer.setRunning(true);
+	    	messageServer.setRunning(true);
+	        broadcastServer.start();
+	        messageServer.start();
+	        broadcastClient = new Notifier(this);
+	    	broadcastClient.notifyAuthentification();
+	    	setStatus(true);
+    	}else {
+    		System.out.println("Identifiant inconnu --- créez un compte");
+    	}
     }
     
     public void sendMessage(String dest){
@@ -114,7 +89,7 @@ public class LocalUser extends User {
 	    	BufferedReader reader =
 	                new BufferedReader(new InputStreamReader(System.in));
 	    	String msg = reader.readLine(); 
-	    	while(msg != "0") {
+	    	while(!msg.contentEquals("0")) {
 	    		messageClient.sendMessage(msg);
 	    		reader =
 		              new BufferedReader(new InputStreamReader(System.in));
@@ -132,6 +107,7 @@ public class LocalUser extends User {
     	broadcastClient.notifyDisconnection();
     	broadcastServer.setRunning(false);
     	messageServer.setRunning(false);
+    	messageServer.close();
     	setStatus(false);
 
     }
@@ -155,13 +131,14 @@ public class LocalUser extends User {
     }
     
 	public RemoteUser findUserByAddress(InetAddress address) {
+		System.out.println("Searching address");
 		RemoteUser temp = null ;
 	   	boolean found = false ;
 	    ListIterator<RemoteUser> iterator = onliners.listIterator() ;
 	       
 	    while(iterator.hasNext() && !found){
 	     	temp = iterator.next() ;
-	        found = temp.getIpAddress() == address ;
+	        found = (temp.getIpAddress().equals(address)) ;
 	    }
 	        
 	    if(!found)	return null ;
