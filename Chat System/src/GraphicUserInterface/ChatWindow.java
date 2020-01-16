@@ -4,14 +4,18 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.event.*;
 
-public class ChatWindow implements ActionListener {
+public class ChatWindow implements ListSelectionListener{
 	
 	public static JPanel aff_border = new JPanel();
 	public static JPanel aff_inner = new JPanel();
 	public static JLabel aff_txt = new JLabel();
 	public static JLabel aff_nom = new JLabel(); 
 	public static JFrame frame;
+	
+	public static JList list;
+	public static DefaultListModel listModel;
 
     public ChatWindow(String[] ponline) {
     	
@@ -31,29 +35,30 @@ public class ChatWindow implements ActionListener {
 		
 		//affichage label "People Online"
 		JLabel onliners = new JLabel("People Online :");
+		c.gridx = 0;
 		c.gridy = 0;
 		c.insets = new Insets(10,0,15,10);
 		c.anchor = GridBagConstraints.LINE_START;
 		pane.add(onliners,c);
 		
-		//Création et ajout des boutons correspondant aux people connectés (pas dans cette classe, tableau dynamique)
+		//Création et ajout des people connectés (pas dans cette classe, tableau dynamique)
+		listModel = new DefaultListModel();
 		for(index = 1; index<(noms.length);index++) {
-			
-			button = new JButton(noms[index-1]);	
-			c.anchor = GridBagConstraints.LINE_START;
-			c.gridy = index;
-			c.gridwidth = 1;
-			c.insets = new Insets(0,0,10,10);
-			button.setPreferredSize(new Dimension (100,20));
-			button.addActionListener(this);
-			
-			pane.add(button, c);
+			listModel.addElement(noms[index-1]);			
 		}
 		
-		button = new JButton(noms[index-1]);
-		button.setPreferredSize(new Dimension (100,20));
-		c.gridy = index;	
-		pane.add(button,c);
+		list = new JList(listModel);
+        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        list.setSelectedIndex(0);
+        list.addListSelectionListener(this);
+        list.setVisibleRowCount(15);
+        
+        JScrollPane listScrollPane = new JScrollPane(list); 
+        listScrollPane.setPreferredSize(new Dimension(150, 490));
+        c.anchor = GridBagConstraints.LINE_START;
+        c.gridx = 0;
+		c.gridy = 1;        
+        pane.add(listScrollPane,c);
 		
 		//Création label qui affichera le nom de la personne avec qui la session de clavardage est ouverte	
 		c.gridx = 1;
@@ -93,19 +98,37 @@ public class ChatWindow implements ActionListener {
 	
     } 
     
+    public void valueChanged(ListSelectionEvent e) {
+        if (e.getValueIsAdjusting() == false) {
+ 
+            if (list.getSelectedIndex() == -1) {            
+            		//Nothing
+            } else {
+            	aff_nom.setText("Conversation avec " + listModel.getElementAt(list.getSelectedIndex()));
+        		
+        		//aff_inner.remove(aff_txt);
+        		
+        		aff_txt.setText((String) listModel.getElementAt(list.getSelectedIndex()));
+        		
+        		//aff_border.setSize(aff_border.getWidth()-13, aff_border.getHeight()-27);
+            	
+        		//aff_inner.add(aff_txt);  */
+            }
+        }
+    }
     
-	public void actionPerformed(ActionEvent e) {
-		// Affichage de la personne avec qui on ouvre une session
-		aff_nom.setText("Conversation avec " + e.getActionCommand());
-		
-		aff_inner.remove(aff_txt);
-		
-		aff_txt.setText(e.getActionCommand());
-		
-		aff_border.setSize(aff_border.getWidth()-13, aff_border.getHeight()-27);
-    	
-		aff_inner.add(aff_txt);    	
-    	
+    public void newConnected(String newC) {
+    	int index = -1;
+    	listModel.insertElementAt(newC,index);
+    }
+    
+    public void newDisconnected (String newDc) {
+    	for(int index = 0; index < listModel.getSize(); index ++) {
+    		if (listModel.getElementAt(index)== newDc) {
+    			listModel.removeElementAt(index);
+    			return;
+    		}
+    	}
     }
 
     public static void main(String[] args) {
