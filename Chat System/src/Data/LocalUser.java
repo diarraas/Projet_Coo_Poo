@@ -80,7 +80,6 @@ public class LocalUser extends User {
     	RemoteUser remote = findUserByLogin(dest);
     	InetAddress remoteAddr = remote.getIpAddress();
     	int remotePort = remote.getServerPort();
-        System.out.println("Dest User " +remote.toString());
     	messageClient = new MessageSender(this,remoteAddr,remotePort);
 	    messageClient.sendMessage(msg);
 		messageClient.close();
@@ -116,7 +115,6 @@ public class LocalUser extends User {
     }
     
 	public RemoteUser findUserByAddress(InetAddress address) {
-		System.out.println("Searching address");
 		RemoteUser temp = null ;
 	   	boolean found = false ;
 	    ListIterator<RemoteUser> iterator = onliners.listIterator() ;

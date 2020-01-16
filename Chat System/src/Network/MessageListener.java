@@ -54,7 +54,6 @@ public class MessageListener extends Thread{
 				        	Message msg = (Message) data;
 			                String exp = msg.getExp();
 							localHost.startSession(exp);
-				        	System.out.println(msg.toString());
 					        localHost.findSessionWith(exp).addMessage(msg);
 					        Database.addMessage(msg);
 		            	} catch ( Exception e) {

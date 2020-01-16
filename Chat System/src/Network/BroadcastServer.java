@@ -56,9 +56,6 @@ public class BroadcastServer extends Thread {
 
 		        }else if(infos[1].contentEquals("change")) {
 		           	System.out.println("Changement de login retenu, new login is \t"+ infos[0]);
-		           	System.out.println("New onliners list \t" + localHost.getOnliners().toString());
-		           	System.out.println("Address is supposed to be \t" + infos[2]);
-		           	System.out.println("INET ADDRESS IS "+InetAddress.getByName(infos[2]));
 		           	localHost.findUserByAddress(InetAddress.getByName(infos[2])).setLogin(infos[0]);
 		            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
 
