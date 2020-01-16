@@ -10,6 +10,10 @@ public class ChatSystem {
 		/*
 			LocalUser user = LocalUser.createAccount();
 			user.authentify(user.getLogin());
+			LocalUser user = new LocalUser("") ;
+			user = user.createAccount();
+			user.authentify();
+			System.out.println("Entrer nom user");
 			BufferedReader reader =
 	                new BufferedReader(new InputStreamReader(System.in));
 			String me = reader.readLine();
@@ -17,7 +21,7 @@ public class ChatSystem {
 			user.sendMessage(me);
 			user.changeLogin();
 			*/
-			
+
 	}
 
 }

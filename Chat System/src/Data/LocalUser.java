@@ -1,6 +1,5 @@
 package Data;
 import Network.* ;
-import java.io.*;
 import java.net.*;
 import java.util.*;
 
@@ -21,7 +20,8 @@ public class LocalUser extends User {
         
     public LocalUser(String log) {
     	super(log);      
-        //Find non local ip address
+       
+    	//Find non local ip address
         try {
         Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
         
@@ -76,30 +76,15 @@ public class LocalUser extends User {
     	}
     }
     
-    public void sendMessage(String dest){
+    public void sendMessage(String dest,String msg){
     	RemoteUser remote = findUserByLogin(dest);
     	InetAddress remoteAddr = remote.getIpAddress();
     	int remotePort = remote.getServerPort();
         System.out.println("Dest User " +remote.toString());
     	messageClient = new MessageSender(this,remoteAddr,remotePort);
-    	
-    	System.out.println("Entrer un message --- 0 pour arreter");
-    	
-    	try {
-	    	BufferedReader reader =
-	                new BufferedReader(new InputStreamReader(System.in));
-	    	String msg = reader.readLine(); 
-	    	while(!msg.contentEquals("0")) {
-	    		messageClient.sendMessage(msg);
-	    		reader =
-		              new BufferedReader(new InputStreamReader(System.in));
-		    	msg = reader.readLine(); 
-		    	messageClient.close();
-		    	messageClient = new MessageSender(this,remoteAddr,remotePort);
-	    	}
-    	}catch(Exception e) {
-    		System.out.println("Erreur d'écriture du message en raison de : \t" + e.getMessage());
-    	}
+	    messageClient.sendMessage(msg);
+		messageClient.close();
+	    
     }    
     
     public void disconnect() { //Dont disconnect just yet ---- synchronize

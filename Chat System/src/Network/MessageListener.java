@@ -60,7 +60,6 @@ public class MessageListener extends Thread{
 		            	} catch ( Exception e) {
 	                  		System.out.println("Erreur d'extraction du message en raison de :\t" + e.getMessage() );
 	                  }
-
 	            }
 	        };
 	        
