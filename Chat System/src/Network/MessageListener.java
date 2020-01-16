@@ -36,9 +36,8 @@ public class MessageListener extends Thread{
 		while(isRunning()){
 			
 			try{
-				
 				Socket remote = serverSocket.accept();
-				
+
 				byte [] byteData = new byte [65535];					
 		        InputStream is = remote.getInputStream();				
 		        int bytesRead = is.read(byteData,0,byteData.length);	

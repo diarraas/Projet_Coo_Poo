@@ -25,7 +25,6 @@ public class LocalUser extends User {
 	    	//Basic id data
 	        onliners = new ArrayList<RemoteUser>();
 	        ongoing = new ArrayList<ChatSession>();
-	        setStatus(true);
 	        
 	        //Find non local ip address
 	        
@@ -41,22 +40,13 @@ public class LocalUser extends User {
                     }
                 }
             }
-	        
-	        broadcastServer = new BroadcastServer(this);
-	        messageServer = new MessageListener(this);
-	        broadcastServer.setRunning(true);
-	    	messageServer.setRunning(true);
-	        broadcastServer.start();
-	        messageServer.start();
-	        broadcastClient = new Notifier(this);
-	       
 	        	        
         }catch(Exception e) {
         	System.out.println("Erreur creation de nouveau LocalUser en raison de : \t " + e.getMessage());
         }
     }
     
-    public static LocalUser createAccount(){
+    public LocalUser createAccount(){
     	String log = "" ;
     	LocalUser newAccount = null;
     	System.out.println("Choisissez un login");
@@ -69,6 +59,7 @@ public class LocalUser extends User {
 	        	log = reader.readLine();
 	        }*/
 			newAccount = new LocalUser(log);
+			
 		} catch (Exception e) {
 	    	System.out.println("Erreur de création de compte en raison de : \t " + e.getMessage());
 		} 
@@ -97,6 +88,13 @@ public class LocalUser extends User {
     }
     
     public void authentify () {
+    	broadcastServer = new BroadcastServer(this);
+        messageServer = new MessageListener(this);
+        broadcastServer.setRunning(true);
+    	messageServer.setRunning(true);
+        broadcastServer.start();
+        messageServer.start();
+        broadcastClient = new Notifier(this);
     	broadcastClient.notifyAuthentification();
     	setStatus(true);
     }
@@ -114,7 +112,7 @@ public class LocalUser extends User {
 	    	BufferedReader reader =
 	                new BufferedReader(new InputStreamReader(System.in));
 	    	String msg = reader.readLine(); 
-	    	while(msg != "0") {
+	    	while(!msg.equals("0")) {
 	    		messageClient.sendMessage(msg);
 	    		reader =
 		              new BufferedReader(new InputStreamReader(System.in));
@@ -131,7 +129,8 @@ public class LocalUser extends User {
     	
     	broadcastClient.notifyDisconnection();
     	broadcastServer.setRunning(false);
-    	messageServer.setRunning(false);
+    	messageServer.setRunning(false);  
+    	messageServer.close();
     	setStatus(false);
 
     }

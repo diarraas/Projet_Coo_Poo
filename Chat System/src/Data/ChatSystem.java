@@ -7,15 +7,24 @@ public class ChatSystem {
 	public static void main(String[] args) throws InterruptedException, IOException {
 			
 			//tests
-			LocalUser user = LocalUser.createAccount();
+			LocalUser user = new LocalUser("") ;
+			user = user.createAccount();
 			user.authentify();
-			Thread.sleep(2000); 
+			System.out.println("Entrer nom user");
 			BufferedReader reader =
 	                new BufferedReader(new InputStreamReader(System.in));
 			String me = reader.readLine();
 			user.startSession(me);
-			Thread.sleep(2000);
 			user.sendMessage(me);
+			
+			user.disconnect();
+			System.out.println("Entrer nom user");
+			reader =
+	                new BufferedReader(new InputStreamReader(System.in));
+			me = reader.readLine();
+			user.startSession(me);
+			user.sendMessage(me);
+			user.authentify();
 			
 		
 			//Profile user =  Profile.create_account();

@@ -34,7 +34,6 @@ public class BroadcastServer extends Thread {
 	        	broadcastSocket.receive(packet);
 	            String received = new String(packet.getData(), 0, packet.getLength());
 	            String[] infos = received.split(" ");
-	            System.out.println("GOT NEW BC length \t" + packet.getLength());
 	         	if(infos[1].contentEquals("login")) {
 	         		InetAddress address = packet.getAddress();
 		            int port = packet.getPort();
