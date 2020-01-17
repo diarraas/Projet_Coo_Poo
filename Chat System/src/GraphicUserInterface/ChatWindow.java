@@ -37,6 +37,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 	
 	
 	private static JButton quitSession;
+	private static JButton changeLogin;
 	
     public ChatWindow(LocalUser user) {
     	
@@ -99,7 +100,13 @@ public class ChatWindow implements ActionListener,KeyListener {
 		quitSession.setEnabled(false);
 		quitSession.addActionListener(this);
 		pane.add(quitSession,c);
-			
+		
+		changeLogin = new JButton("Change Login");
+		c.gridx = 3;
+		c.gridy = 0;
+		changeLogin.addActionListener(this);
+		pane.add(changeLogin,c);
+					
 		
 		//Création zone d'affichage de la conversation		
 		Border border = BorderFactory.createLineBorder(Color.BLACK, 1);	
@@ -114,7 +121,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 		c.gridy = 1;
 		c.ipadx = 500; // Ne pas mettre de ipadxy ce sont des marges intérieures !
 		c.ipady = 470;
-		c.gridwidth = 2;
+		c.gridwidth = 3;
 		c.insets = new Insets(0,0,10,10);
 		aff_inner.add(aff_txt);
 		aff_border.add(aff_inner);
@@ -127,7 +134,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 		c.gridy = 2;
 		c.ipadx = 520;
 		c.ipady = 5;
-		c.gridwidth = 2;
+		c.gridwidth = 3;
 		c.insets = new Insets(0,0,10,10);
 		text.addKeyListener(this);
 		pane.add(text,c);	
@@ -147,6 +154,9 @@ public class ChatWindow implements ActionListener,KeyListener {
     		//Clear l'affichage
     		//Fermer la session
     		//quitButton.setEnable(false);
+    	}
+    	else if (e.getActionCommand() == "changeLogin") {
+    		//ouvrir nouvelle fenetre
     	}
     }
     

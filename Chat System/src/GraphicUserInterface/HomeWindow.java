@@ -12,6 +12,8 @@ import javax.swing.*;
  * Quand on reçoit un message (et qu'on a pas de session active) -> ouvrir une session avec dest = celui qui nous envoie un message
  * Mettre startSession en static (?)
  * 
+ * changelogin <- nouvelle fenetre
+ * 
  */
 
 

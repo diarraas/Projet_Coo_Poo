@@ -4,6 +4,7 @@ import java.net.*;
 
 import Data.LocalUser;
 import Data.RemoteUser;
+import GraphicUserInterface.ChatWindow;
 
 public class BroadcastServer extends Thread {
 	
@@ -60,6 +61,7 @@ public class BroadcastServer extends Thread {
 		           	System.out.println("Changement de login retenu, new login is \t"+ infos[0]);
 		           	localHost.findUserByAddress(InetAddress.getByName(infos[2])).setLogin(infos[0]);
 		            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
+		            ChatWindow.updateUsers(localHost.getOnliners());
 
 		        }   	
 		        
