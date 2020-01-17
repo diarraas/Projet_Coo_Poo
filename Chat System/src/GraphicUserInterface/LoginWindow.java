@@ -89,9 +89,10 @@ public class LoginWindow implements ActionListener, KeyListener {
 	public void login(String lgc) {
 		
 		localHost = localHost.authentify(lgc);
-		System.out.println("Authentified");
-		localHost.startSession(localHost.getLogin());
-		localHost.sendMessage(localHost.getLogin(),"CINNAMOOOOOON "); // pourquoi tu envoies un message dans le login ?
+		new ChatWindow(localHost);
+		//System.out.println("Authentified");
+		//localHost.startSession(localHost.getLogin());
+		//localHost.sendMessage(localHost.getLogin(),"CINNAMOOOOOON "); // pourquoi tu envoies un message dans le login ?
 		//ArrayList<Message> me = Database.getHistory(localHost.getLogin(), localHost.getLogin());
 		
 		//System.out.println(me.toString());

@@ -82,6 +82,8 @@ public class CreateAccountWindow implements ActionListener, KeyListener{
 	public void login(String lgn) {		
 		localHost = LocalUser.createAccount(lgn);
 		localHost = localHost.authentify(lgn);
+		if(localHost != null)	new ChatWindow(localHost);
+		if(localHost == null)	System.out.println("CEST LA MERDE ");
 	}
 	
 	public void actionPerformed(ActionEvent e) {		

@@ -5,12 +5,11 @@ import Data.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.*;
-
-import Data.RemoteUser;
 
 public class ChatWindow implements ActionListener {
 	/**
@@ -29,13 +28,15 @@ public class ChatWindow implements ActionListener {
 	public static JFrame frame;
 	
 	public static JList list;
-	public static DefaultListModel listModel;
-	private static LocalUser localHost ;
+	public static DefaultListModel listModel = new DefaultListModel();
+	private LocalUser localHost ;
 	
 	private JButton quitSession;
 	
-    public ChatWindow(/*List<RemoteUser>*/ String[] noms) {
+    public ChatWindow(LocalUser user) {
     	
+    	this.localHost = user;
+    	    	
     	//Create and set up the window.
         frame = new JFrame("ChatWindow");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -62,10 +63,14 @@ public class ChatWindow implements ActionListener {
 		c.anchor = GridBagConstraints.LINE_START;
 		pane.add(onliners,c);
 		
-		listModel = new DefaultListModel();
-		for(int index = 0; index<(noms.length);index++) { //Foutre un itérateur
-			listModel.addElement(noms[index]);			
-		}
+				
+		ListIterator<RemoteUser> iterator = localHost.getOnliners().listIterator() ;
+		RemoteUser current = null; 
+	    while(iterator.hasNext()){
+	     	current = iterator.next() ;
+	     	if(current == null)	System.out.println("Problem");
+			listModel.addElement(current.getLogin());
+	    }
 		
 		list = new JList(listModel);
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -119,8 +124,8 @@ public class ChatWindow implements ActionListener {
 		aff_inner.setBorder(border);
 		
 		//aff_border.setBounds(500,0,500, (noms.length * 410)/15 );
-		aff_border.setMaximumSize(new Dimension(500,(noms.length*410)/15));
-		aff_border.setMinimumSize(new Dimension(500,(noms.length*410)/15));
+		//aff_border.setMaximumSize(new Dimension(500,(noms.length*410)/15));
+		//aff_border.setMinimumSize(new Dimension(500,(noms.length*410)/15));
 		
 		c.gridx = 1;
 		c.gridy = 1;
@@ -150,6 +155,7 @@ public class ChatWindow implements ActionListener {
     
     public void actionPerformed(ActionEvent e) {
     	if (e.getActionCommand() == "LogOut") {
+    		this.localHost.disconnect();
     		frame.dispose();
     		new HomeWindow();
     	}
@@ -160,7 +166,7 @@ public class ChatWindow implements ActionListener {
     	}
     }
     
-    public static void newConnected(String newC) {
+    /*public static void newConnected(String newC) {
     	int index = -1;
     	listModel.insertElementAt(newC,index);
     }
@@ -172,13 +178,11 @@ public class ChatWindow implements ActionListener {
     			return;
     		}
     	}
-    }
+    }*/
 
     public static void main(String[] args) {
     	
-    	//List<RemoteUser> noms = localHost.getOnliners();
-    	String[] noms = {"a","b","c","d","e","f","g","h","i"};
-        new ChatWindow(noms);
+        //new ChatWindow(LocalUser user);
     }
 }
 
