@@ -67,7 +67,7 @@ public class BroadcastServer extends Thread {
 		        	System.out.println("Demande d'information pour \t"+ infos[0]);
 		        	InetAddress address = packet.getAddress();
 		            int port = packet.getPort();
-		            String myinfo = "free" ;		            
+		            String myinfo = "free";		            
 		        	if(localHost.findUserByLogin(infos[0]) != null) {
 		        		myinfo = "used";
 		        	}

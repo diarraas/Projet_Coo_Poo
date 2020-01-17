@@ -16,6 +16,7 @@ public class MessageListener extends Thread{
 		try{
 			localHost = user ;
 			serverSocket = new ServerSocket(localHost.getServerPort(),MAX_LOG,localHost.getIpAddress());
+			System.out.println("Serveur message OKKKK");
 		}catch(Exception e){
 	    	System.out.println("Erreur de création du serveur TCP en raison de : \t " + e.getMessage());
 		}

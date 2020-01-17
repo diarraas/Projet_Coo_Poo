@@ -26,27 +26,8 @@ public class LocalUser extends User {
     }
   
     public LocalUser(String log) {
-    	
     	super(log);      
-       
-    	//Find non local ip address
-        try {
-        Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
-        
-        for (; n.hasMoreElements();) {
-            NetworkInterface e = n.nextElement();
-            Enumeration<InetAddress> a = e.getInetAddresses();
-            for (; a.hasMoreElements();) {
-                InetAddress addr = a.nextElement();
-                if ((addr instanceof Inet4Address) && !addr.isLoopbackAddress()) {
-                    setIpAddress(addr);
-                }
-            }
-        }
-        
-        }catch(Exception e) {
-        	System.out.println("Erreur creation de nouveau LocalUser en raison de : \t " + e.getMessage());
-        }
+    	
     }
     
     public static LocalUser createAccount(String log){
@@ -94,6 +75,7 @@ public class LocalUser extends User {
     	LocalUser retrieved = null ;
     	if(!Database.isUnic(log)) {
     		retrieved = Database.findUser(log);
+    		retrieved.setIpAddress(findIpAddress());
 	    	onliners = new ArrayList<RemoteUser>();
 	        ongoing = new ArrayList<ChatSession>();  
 	        retrieved.setOnliners(onliners);
@@ -108,7 +90,7 @@ public class LocalUser extends User {
 	        broadcastServer.setRunning(true);
 	    	messageServer.setRunning(true);
 	        broadcastServer.start();
-	        messageServer.start();
+	        retrieved.getMessageServer().start();
 	    	broadcastClient.notifyAuthentification();
 	    	setStatus(true);
     	}else {
@@ -211,6 +193,27 @@ public class LocalUser extends User {
 		return onliners;
 	}
 
+	public InetAddress findIpAddress() {
+		InetAddress retrieved = null ;
+		try {
+	        Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
+	        
+	        for (; n.hasMoreElements();) {
+	            NetworkInterface e = n.nextElement();
+	            Enumeration<InetAddress> a = e.getInetAddresses();
+	            for (; a.hasMoreElements();) {
+	                InetAddress addr = a.nextElement();
+	                if ((addr instanceof Inet4Address) && !addr.isLoopbackAddress()) {
+	                    retrieved = addr;
+	                }
+	            }
+	        }
+	        
+	        }catch(Exception e) {
+	        	System.out.println("Erreur recouvrement adresse Ip locale en raison de : \t " + e.getMessage());
+	        }
+		return retrieved ;
+	}
 
 	public List<ChatSession> getOngoing() {
 		return ongoing;
