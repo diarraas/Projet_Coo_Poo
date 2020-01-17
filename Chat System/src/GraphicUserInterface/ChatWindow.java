@@ -29,13 +29,14 @@ public class ChatWindow implements ActionListener {
 	
 	public static JList list;
 	public static DefaultListModel listModel = new DefaultListModel();
-	private LocalUser localHost ;
+	private static LocalUser localHost ;
 	
-	private JButton quitSession;
+	private static JButton quitSession;
 	
     public ChatWindow(LocalUser user) {
     	
     	this.localHost = user;
+    	System.out.println("BroadcastCLIENT = " + this.localHost.getBroadcastClient()+ "\n");
     	    	
     	//Create and set up the window.
         frame = new JFrame("ChatWindow");
@@ -43,7 +44,9 @@ public class ChatWindow implements ActionListener {
         frame.addWindowListener(new WindowAdapter()
         {
         	public void windowClosing(WindowEvent e) {
-        		//ICI envoyer "déconnexion en BC ----- use attribute localHost pour tout ce qui est réseaux
+        		localHost.disconnect();
+        		frame.dispose();
+        		new HomeWindow();
         	}       	
         });
         
@@ -62,32 +65,7 @@ public class ChatWindow implements ActionListener {
 		c.insets = new Insets(10,0,15,10);
 		c.anchor = GridBagConstraints.LINE_START;
 		pane.add(onliners,c);
-		
-				
-		ListIterator<RemoteUser> iterator = localHost.getOnliners().listIterator() ;
-		RemoteUser current = null; 
-	    while(iterator.hasNext()){
-	     	current = iterator.next() ;
-	     	if(current == null)	System.out.println("Problem");
-			listModel.addElement(current.getLogin());
-	    }
-		
-		list = new JList(listModel);
-        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        list.setSelectedIndex(0);
-        list.addMouseListener(new MouseAdapter() { 
-        	public void mouseClicked(MouseEvent e) {
-        
-        		if (e.getClickCount() == 2) {
-		            int index = list.locationToIndex(e.getPoint());
-		            String log = (String) listModel.getElementAt(index);
-		            aff_nom.setText("Conversation avec " + listModel.getElementAt(index));
-		            quitSession.setEnabled(true);
-        		}
-        	}
-        });       
-        
-        list.setVisibleRowCount(15);
+	        
         
         JScrollPane listScrollPane = new JScrollPane(list); 
         listScrollPane.setPreferredSize(new Dimension(150, 490));
@@ -164,6 +142,35 @@ public class ChatWindow implements ActionListener {
     		//Fermer la session
     		//quitButton.setEnable(false);
     	}
+    }
+    
+    public static void updateUsers(List<RemoteUser> newList) {
+    	
+    	listModel.removeAllElements();
+    	
+    	ListIterator<RemoteUser> iterator = newList.listIterator() ;
+		RemoteUser current = null; 
+	    while(iterator.hasNext()){
+	     	current = iterator.next() ;
+	     	if(current == null)	System.out.println("Problem");
+			listModel.addElement(current.getLogin());
+			
+			list = new JList(listModel);
+	        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	        list.setSelectedIndex(0);
+	        list.addMouseListener(new MouseAdapter() { 
+	        	public void mouseClicked(MouseEvent e) {
+	        
+	        		if (e.getClickCount() == 2) {
+			            int index = list.locationToIndex(e.getPoint());
+			            String log = (String) listModel.getElementAt(index);
+			            aff_nom.setText("Conversation avec " + listModel.getElementAt(index));
+			            quitSession.setEnabled(true);
+	        		}
+	        	}
+	        });
+	        list.setVisibleRowCount(15);
+	    }
     }
     
     /*public static void newConnected(String newC) {
