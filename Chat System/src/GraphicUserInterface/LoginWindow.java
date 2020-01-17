@@ -12,10 +12,11 @@ public class LoginWindow implements ActionListener, KeyListener {
 	
 	private JLabel errConnectLogin;
 	private static LocalUser localHost ;
+	private JFrame frame;
 	
 	public LoginWindow() {	
 		//Create and set up the window.
-	    JFrame frame = new JFrame("LoginWindow");
+	    frame = new JFrame("LoginWindow");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setResizable(false);
 	    
@@ -99,6 +100,7 @@ public class LoginWindow implements ActionListener, KeyListener {
 	public void actionPerformed(ActionEvent e) {
 		
 			login(getLogin(connectLogin));
+			frame.dispose();
 			
 		}
 	
@@ -112,6 +114,7 @@ public class LoginWindow implements ActionListener, KeyListener {
 	    char typed = keyEvent.getKeyChar();
 	    if(typed == '\n') {    	    
 	    	login(getLogin(connectLogin));
+	    	frame.dispose();
 	  		}
 	 }
 	  

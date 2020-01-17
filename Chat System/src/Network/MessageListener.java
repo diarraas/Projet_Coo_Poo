@@ -55,7 +55,8 @@ public class MessageListener extends Thread{
 			                String exp = msg.getExp();
 							localHost.startSession(exp);
 					        localHost.findSessionWith(exp).addMessage(msg);
-					        Database.addMessage(msg);
+					        //Database.addMessage(msg);
+					        
 		            	} catch ( Exception e) {
 	                  		System.out.println("Erreur d'extraction du message en raison de :\t" + e.getMessage() );
 	                  }

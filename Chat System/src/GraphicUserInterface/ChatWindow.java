@@ -11,7 +11,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.*;
 
-public class ChatWindow implements ActionListener {
+public class ChatWindow implements ActionListener,KeyListener {
 	/**
 	 * /!\ NEW GUIDELINES /!\
 	 * 
@@ -27,9 +27,14 @@ public class ChatWindow implements ActionListener {
 	public static JLabel aff_nom = new JLabel(); 
 	public static JFrame frame;
 	
+	private static String dest;
+	
+	private JTextField text;
+	
 	public static JList list;
 	public static DefaultListModel listModel = new DefaultListModel();
 	private static LocalUser localHost ;
+	
 	
 	private static JButton quitSession;
 	
@@ -117,13 +122,14 @@ public class ChatWindow implements ActionListener {
 		pane.add(aff_border,c);
 		
 		//Création zone de saisie de texte
-		JTextField text = new JTextField("");
+		text = new JTextField("");
 		c.gridx = 1;
 		c.gridy = 2;
 		c.ipadx = 520;
 		c.ipady = 5;
 		c.gridwidth = 2;
 		c.insets = new Insets(0,0,10,10);
+		text.addKeyListener(this);
 		pane.add(text,c);	
 		
 		frame.pack();
@@ -164,7 +170,10 @@ public class ChatWindow implements ActionListener {
 	        		if (e.getClickCount() == 2) {
 			            int index = list.locationToIndex(e.getPoint());
 			            String log = (String) listModel.getElementAt(index);
+			            localHost.startSession(log);
 			            aff_nom.setText("Conversation avec " + listModel.getElementAt(index));
+			            dest = (String)listModel.getElementAt(index);
+			            
 			            quitSession.setEnabled(true);
 	        		}
 	        	}
@@ -173,19 +182,20 @@ public class ChatWindow implements ActionListener {
 	    }
     }
     
-    /*public static void newConnected(String newC) {
-    	int index = -1;
-    	listModel.insertElementAt(newC,index);
-    }
+    public void keyTyped(KeyEvent keyEvent) {
+	    char typed = keyEvent.getKeyChar();
+	    if(typed == '\n') {    
+			//Send message
+	    	localHost.sendMessage(dest,text.getText());
+	    	aff_txt.setText(text.getText());
+	}
+	}
+	  
+	public void keyPressed(KeyEvent keyEvent) {/*Nothing*/}
+
+	public void keyReleased(KeyEvent keyEvent) {/*Nothing*/}
     
-    public static void newDisconnected (String newDc) {
-    	for(int index = 0; index < listModel.getSize(); index ++) {
-    		if (listModel.getElementAt(index)== newDc) {
-    			listModel.removeElementAt(index);
-    			return;
-    		}
-    	}
-    }*/
+   
 
     public static void main(String[] args) {
     	

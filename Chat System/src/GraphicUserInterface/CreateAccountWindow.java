@@ -22,10 +22,11 @@ public class CreateAccountWindow implements ActionListener, KeyListener{
 	private JLabel errNouveauLogin;
 	private JTextField nouveauLogin;
 	private LocalUser localHost;
+	private JFrame frame;
 
 	public CreateAccountWindow() {
 		//Create and set up the window.
-	    JFrame frame = new JFrame("CreateAccountWindow");
+	    frame = new JFrame("CreateAccountWindow");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setResizable(false);
 	    
@@ -81,19 +82,27 @@ public class CreateAccountWindow implements ActionListener, KeyListener{
 	
 	public void login(String lgn) {		
 		localHost = LocalUser.createAccount(lgn);
-		localHost = localHost.authentify(lgn);
-		if(localHost != null)	new ChatWindow(localHost);
-		if(localHost == null)	System.out.println("CEST LA MERDE ");
+		if(localHost == null)	{
+			errNouveauLogin.setText("Pseudo déjà utilisé");
+		}
+		else {
+			localHost = localHost.authentify(lgn);
+			errNouveauLogin.setText("");
+			if(localHost != null)	new ChatWindow(localHost);
+			//if(localHost == null)	errNouveauLogin.setText("Pseudo déjà utilisé");
+		}
 	}
 	
 	public void actionPerformed(ActionEvent e) {		
-		login(getLogin(nouveauLogin));	
+		login(getLogin(nouveauLogin));
+		frame.dispose();
 	}
 	
 	public void keyTyped(KeyEvent keyEvent) {
 	    char typed = keyEvent.getKeyChar();
 	    if(typed == '\n') {    
-			login(getLogin(nouveauLogin));	   	
+			login(getLogin(nouveauLogin));	  
+			frame.dispose();
 	}
 	}
 	  
