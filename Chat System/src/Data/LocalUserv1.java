@@ -3,7 +3,7 @@ import Network.* ;
 import java.net.*;
 import java.util.*;
 
-public class LocalUser extends User {
+public class LocalUserv1 extends User {
 	   
 	private BroadcastServer broadcastServer ;
     
@@ -18,7 +18,7 @@ public class LocalUser extends User {
     private List<ChatSession> ongoing ;
          
         
-    public LocalUser(String log) {
+    public LocalUserv1(String log) {
     	super(log);      
        
     	//Find non local ip address
@@ -37,13 +37,13 @@ public class LocalUser extends User {
         }
         Database.addUser(this);       
         }catch(Exception e) {
-        	System.out.println("Erreur creation de nouveau LocalUser en raison de : \t " + e.getMessage());
+        	System.out.println("Erreur creation de nouveau LocalUserv1 en raison de : \t " + e.getMessage());
         }
     }
     
-    public static LocalUser createAccount(String log){
-    	LocalUser newAccount = null;
-		if(Database.isUnic(log)) newAccount = new LocalUser(log);
+    public static LocalUserv1 createAccount(String log){
+    	LocalUserv1 newAccount = null;
+		if(Database.isUnic(log)) newAccount = new LocalUserv1(log);
     	return newAccount ;
     }
 
@@ -60,7 +60,7 @@ public class LocalUser extends User {
     
     public void authentify (String log) {
     	if(!Database.isUnic(log)) {
-	    	onliners = new ArrayList<RemoteUser>();
+	    /*	onliners = new ArrayList<RemoteUser>();
 	        ongoing = new ArrayList<ChatSession>();  
 	    	broadcastServer = new BroadcastServer(this);
 	        messageServer = new MessageListener(this);
@@ -70,7 +70,7 @@ public class LocalUser extends User {
 	        messageServer.start();
 	        broadcastClient = new Notifier(this);
 	    	broadcastClient.notifyAuthentification();
-	    	setStatus(true);
+	    	setStatus(true); */
     	}else {
     		System.out.println("Identifiant inconnu --- créez un compte");
     	}
@@ -80,7 +80,7 @@ public class LocalUser extends User {
     	RemoteUser remote = findUserByLogin(dest);
     	InetAddress remoteAddr = remote.getIpAddress();
     	int remotePort = remote.getServerPort();
-    	messageClient = new MessageSender(this,remoteAddr,remotePort);
+    	//messageClient = new MessageSender(this,remoteAddr,remotePort);
 	    messageClient.sendMessage(msg);
 		messageClient.close();
 	    

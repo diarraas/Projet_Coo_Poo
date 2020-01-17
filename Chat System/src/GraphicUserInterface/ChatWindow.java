@@ -13,7 +13,15 @@ import javax.swing.event.*;
 import Data.RemoteUser;
 
 public class ChatWindow implements ActionListener {
-	
+	/**
+	 * /!\ NEW GUIDELINES /!\
+	 * 
+	 * Add une methode updateUsers ----- qui update graphiquement --- j'ajoute la même coté udp qui actualise les données des connecté
+	 * En gros cette méthode prend une liste d'utilisateur et change le tableau d'affichage des connectés
+	 * Il faut initialiser localHost dans ton constructeur ---- I'm changing some things tu m'expliqueras plus tard
+	 * 
+	 * 
+	 * */
 	public static JPanel aff_border = new JPanel();
 	public static JPanel aff_inner = new JPanel();
 	public static JLabel aff_txt = new JLabel();
@@ -34,7 +42,7 @@ public class ChatWindow implements ActionListener {
         frame.addWindowListener(new WindowAdapter()
         {
         	public void windowClosing(WindowEvent e) {
-        		//ICI envoyer "déconnexion en BC
+        		//ICI envoyer "déconnexion en BC ----- use attribute localHost pour tout ce qui est réseaux
         	}       	
         });
         

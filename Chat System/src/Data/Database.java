@@ -66,16 +66,17 @@ public class Database {
 	public static void addMessage(Message message) {
 		int idSender = findId(message.getExp());
 		int idRecipient = findId(message.getDest());
+		int newId = findLastMessageId();
 		try {
-			
 			Connection con = startNewConnection();
-			String query = "INSERT INTO Message (exp,dest,date,body)" + " VALUES (?,?,?,?)";
+			String query = "INSERT INTO Message (exp,dest,date,body,id)" + " VALUES (?,?,?,?,?)";
 			PreparedStatement preparedStmt = con.prepareStatement(query);
 			preparedStmt.setInt(1, idSender);
 			preparedStmt.setInt(2, idRecipient);
 			java.sql.Date date = new Date(new SimpleDateFormat("dd/mm/yyyy hh:mm").parse(message.getDate()).getTime() );
 			preparedStmt.setDate(3, date);
 			preparedStmt.setString(4, message.getBody());
+			preparedStmt.setInt(5, newId);
 			preparedStmt.execute();
 			con.close();
 			
@@ -138,6 +139,25 @@ public class Database {
 			Connection con = startNewConnection();
 			Statement stmt = con.createStatement();
 			ResultSet set = stmt.executeQuery("SELECT id FROM User WHERE login = \'" +login+"\'");
+			if(set.next()) {
+				id = set.getInt("id");
+			}
+			set.close();
+			con.close();
+		}catch(Exception e) {
+			System.out.println("Erreur de connection à la BDD en raison de \t" + e.getMessage());
+			e.printStackTrace();
+		}
+		return id ;
+	} 
+	
+	
+	public static int findLastMessageId() {
+		int id = 0 ;
+		try {
+			Connection con = startNewConnection();
+			Statement stmt = con.createStatement();
+			ResultSet set = stmt.executeQuery("SELECT MAX(id) FROM Message");
 			if(set.next()) {
 				id = set.getInt("id");
 			}

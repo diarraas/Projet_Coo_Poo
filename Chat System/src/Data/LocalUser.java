@@ -1,5 +1,6 @@
 package Data;
 import Network.* ;
+import GraphicUserInterface.* ;
 import java.net.*;
 import java.util.*;
 
@@ -10,6 +11,8 @@ public class LocalUser extends User {
     private MessageListener messageServer ;
     
     private MessageSender messageClient ;
+    
+    private ChatWindow chatWindow ;
     
     private Notifier broadcastClient ;
     
@@ -55,12 +58,14 @@ public class LocalUser extends User {
     // use maven
     //
     
-    public void changeLogin(String newLog) {
+    public boolean changeLogin(String newLog) {
+    	boolean changed = false ; 
     	if(Database.isUnic(newLog)) {
 	        this.setLogin(newLog);
-	       	Database.updateLogin(this, newLog);
+	       	changed = Database.updateLogin(this, newLog);
 		    broadcastClient.notifyLoginChange();
 	     }
+    	return changed ;
     }
     
     public LocalUser authentify (String log) {
@@ -71,13 +76,14 @@ public class LocalUser extends User {
 	        ongoing = new ArrayList<ChatSession>();  
 	        retrieved.setOnliners(onliners);
 	        retrieved.setOngoing(ongoing);
+	        //chatWindow = new ChatWindow(retrieved);
 	    	broadcastServer = new BroadcastServer(retrieved);
+	        broadcastClient = new Notifier(retrieved);
 	        messageServer = new MessageListener(retrieved);
 	        broadcastServer.setRunning(true);
 	    	messageServer.setRunning(true);
 	        broadcastServer.start();
 	        messageServer.start();
-	        broadcastClient = new Notifier(retrieved);
 	    	broadcastClient.notifyAuthentification();
 	    	setStatus(true);
     	}else {
