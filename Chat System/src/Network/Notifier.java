@@ -109,7 +109,7 @@ public class Notifier {
 	}
 	
 	public boolean requestData(String log) {
-		boolean unic = false ;
+		boolean unic = true ;
 		try {
 			System.out.println("Demande d'info");
 			String infos = log + " request "  + "  this is a padding  ";  
@@ -119,17 +119,16 @@ public class Notifier {
 			byte[] response = new byte [65535];
 			DatagramPacket RespondingPacket = new DatagramPacket(response,response.length);								
 			senderSocket.receive(RespondingPacket);
+		    senderSocket.setSoTimeout(3000);
 			String received = new String(RespondingPacket.getData(), 0, packet.getLength());
 			String value[] = received.split(" ");
 		    if(value[0].equals("free")) {
 		    	unic = true ;
-		    	System.out.println("GOT FREEEEEEEE");
 		    }else {
 		    	unic = false ;
-		    	System.out.println("GOT FAAAAAALSE");
-
 		    }
-		    System.out.println("Reponse du broadcast :    "+value[0]+"   Value is " + unic );
+		    //System.out.println(" length of response :    "+value[0].length() );
+		    //System.out.println(" Reponse du broadcast :    "+value[0]+"   Value is " + unic );
 			
 		}catch(IOException e) {	
 			System.out.println("Erreur de demande d'information en raison de \t" + e.getMessage());

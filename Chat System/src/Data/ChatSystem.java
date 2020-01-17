@@ -6,7 +6,7 @@ public class ChatSystem {
 
 	public static void main(String[] args) throws InterruptedException, IOException {
 			
-			//tests
+		//tests
 		System.out.println("Entrer pseudo pour créer compte");
 		
 		BufferedReader reader =

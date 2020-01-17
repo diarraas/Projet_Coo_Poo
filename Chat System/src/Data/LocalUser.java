@@ -36,6 +36,7 @@ public class LocalUser extends User {
 			broadcastDataRequest = new Notifier(newAccount);
 			if(broadcastDataRequest.requestData(log)) {
 				newAccount = new LocalUser(log);
+				newAccount.setIpAddress(findIpAddress());
 		        Database.addUser(newAccount); 
 			}else {
 				System.out.println("Pseudo utilisé");
@@ -110,7 +111,7 @@ public class LocalUser extends User {
 	    
     }    
     
-    public void disconnect() { //Dont disconnect just yet ---- synchronize
+    public void disconnect() { 
     	broadcastClient.notifyDisconnection();
     	broadcastServer.setRunning(false);
     	messageServer.setRunning(false);
@@ -193,7 +194,7 @@ public class LocalUser extends User {
 		return onliners;
 	}
 
-	public InetAddress findIpAddress() {
+	public static InetAddress findIpAddress() {
 		InetAddress retrieved = null ;
 		try {
 	        Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();

@@ -1,5 +1,8 @@
 package Network;
 import java.net.*;
+import java.sql.Date;
+import java.text.DateFormat;
+
 import Data.*;
 import java.io.*;
 
@@ -39,7 +42,8 @@ public class MessageSender {
 	public void sendMessage(String msg){
 		try {
 			User remoteUser = localHost.findUserByAddress(serverAddr);
-			Message sentMessage = new Message(localHost.getLogin(),remoteUser.getLogin(),msg);
+			String 	date = (DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT)).format(new Date(System.currentTimeMillis()));	
+			Message sentMessage = new Message(localHost.getLogin(),remoteUser.getLogin(),date,msg);
 			byte[] serialized = serialize(sentMessage);			    	
 	    	OutputStream os = clientSocket.getOutputStream();		
 	        os.write(serialized,0,serialized.length);
@@ -49,7 +53,6 @@ public class MessageSender {
 		}catch(Exception e){
 	    	System.out.println("Erreur d'envoi de message en raison de : \t " + e.getMessage());
 	    	e.printStackTrace();
-
 		}
 		
 	}

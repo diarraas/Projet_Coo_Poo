@@ -3,36 +3,32 @@ package GraphicUserInterface;
 import java.awt.*;
 import Data.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.event.*;
 
 public class ChatWindow implements ActionListener,KeyListener {
 	/**
 	 * /!\ NEW GUIDELINES /!\
 	 * 
-	 * Add une methode updateUsers ----- qui update graphiquement --- j'ajoute la même coté udp qui actualise les données des connecté
-	 * En gros cette méthode prend une liste d'utilisateur et change le tableau d'affichage des connectés
-	 * Il faut initialiser localHost dans ton constructeur ---- I'm changing some things tu m'expliqueras plus tard
+	 * Il faut réinitialiser la barre de text quand le message est envoyé !!!
 	 * 
 	 * 
 	 * */
-	public static JPanel aff_border = new JPanel();
-	public static JPanel aff_inner = new JPanel();
-	public static JLabel aff_txt = new JLabel();
-	public static JLabel aff_nom = new JLabel(); 
-	public static JFrame frame;
+	private static JPanel affBorder = new JPanel();
+	private static JPanel affInner = new JPanel();
+	private static JLabel affTxt = new JLabel();
+	private static JLabel affNom = new JLabel(); 
+	private static JFrame frame;
 	
 	private static String dest;
 	
 	private JTextField text;
 	
-	public static JList list;
-	public static DefaultListModel listModel = new DefaultListModel();
+	private static JList<String> list;
+	private static DefaultListModel<String> listModel = new DefaultListModel<String>();
 	private static LocalUser localHost ;
 	
 	
@@ -41,8 +37,8 @@ public class ChatWindow implements ActionListener,KeyListener {
 	
     public ChatWindow(LocalUser user) {
     	
-    	this.localHost = user;
-    	System.out.println("BroadcastCLIENT = " + this.localHost.getBroadcastClient()+ "\n");
+    	ChatWindow.localHost = user;
+    	System.out.println("BroadcastCLIENT = " + ChatWindow.localHost.getBroadcastClient()+ "\n");
     	    	
     	//Create and set up the window.
         frame = new JFrame("ChatWindow");
@@ -91,8 +87,8 @@ public class ChatWindow implements ActionListener,KeyListener {
 		//Création label qui affichera le nom de la personne avec qui la session de clavardage est ouverte	
 		c.gridx = 1;
 		c.gridy = 0;
-		aff_nom.setText("");
-		pane.add(aff_nom,c);
+		affNom.setText("");
+		pane.add(affNom,c);
 		
 		quitSession = new JButton("QuitSession");
 		c.gridx = 2;
@@ -110,12 +106,12 @@ public class ChatWindow implements ActionListener,KeyListener {
 		
 		//Création zone d'affichage de la conversation		
 		Border border = BorderFactory.createLineBorder(Color.BLACK, 1);	
-		aff_border.setBorder(border);
-		aff_inner.setBorder(border);
+		affBorder.setBorder(border);
+		affInner.setBorder(border);
 		
-		//aff_border.setBounds(500,0,500, (noms.length * 410)/15 );
-		//aff_border.setMaximumSize(new Dimension(500,(noms.length*410)/15));
-		//aff_border.setMinimumSize(new Dimension(500,(noms.length*410)/15));
+		//affBorder.setBounds(500,0,500, (noms.length * 410)/15 );
+		//affBorder.setMaximumSize(new Dimension(500,(noms.length*410)/15));
+		//affBorder.setMinimumSize(new Dimension(500,(noms.length*410)/15));
 		
 		c.gridx = 1;
 		c.gridy = 1;
@@ -123,10 +119,10 @@ public class ChatWindow implements ActionListener,KeyListener {
 		c.ipady = 470;
 		c.gridwidth = 3;
 		c.insets = new Insets(0,0,10,10);
-		aff_inner.add(aff_txt);
-		aff_border.add(aff_inner);
+		affInner.add(affTxt);
+		affBorder.add(affInner);
 		
-		pane.add(aff_border,c);
+		pane.add(affBorder,c);
 		
 		//Création zone de saisie de texte
 		text = new JTextField("");
@@ -146,7 +142,7 @@ public class ChatWindow implements ActionListener,KeyListener {
     
     public void actionPerformed(ActionEvent e) {
     	if (e.getActionCommand() == "LogOut") {
-    		this.localHost.disconnect();
+    		ChatWindow.localHost.disconnect();
     		frame.dispose();
     		new HomeWindow();
     	}
@@ -171,7 +167,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 	     	if(current == null)	System.out.println("Problem");
 			listModel.addElement(current.getLogin());
 			
-			list = new JList(listModel);
+			list = new JList<String>(listModel);
 	        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	        list.setSelectedIndex(0);
 	        list.addMouseListener(new MouseAdapter() { 
@@ -181,7 +177,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 			            int index = list.locationToIndex(e.getPoint());
 			            String log = (String) listModel.getElementAt(index);
 			            localHost.startSession(log);
-			            aff_nom.setText("Conversation avec " + listModel.getElementAt(index));
+			            affNom.setText("Conversation avec " + listModel.getElementAt(index));
 			            dest = (String)listModel.getElementAt(index);
 			            
 			            quitSession.setEnabled(true);
@@ -197,7 +193,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 	    if(typed == '\n') {    
 			//Send message
 	    	localHost.sendMessage(dest,text.getText());
-	    	aff_txt.setText(text.getText());
+	    	affTxt.setText(text.getText());
 	}
 	}
 	  

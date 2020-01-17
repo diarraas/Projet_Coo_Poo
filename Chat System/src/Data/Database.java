@@ -2,7 +2,6 @@ package Data;
 
 import java.net.InetAddress;
 import java.sql.*;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class Database {
@@ -73,10 +72,9 @@ public class Database {
 			PreparedStatement preparedStmt = con.prepareStatement(query);
 			preparedStmt.setInt(1, idSender);
 			preparedStmt.setInt(2, idRecipient);
-			java.sql.Date date = new Date(new SimpleDateFormat("dd/mm/yyyy hh:mm").parse(message.getDate()).getTime() );
-			preparedStmt.setDate(3, date);
+			preparedStmt.setString(3, message.getDate());
 			preparedStmt.setString(4, message.getBody());
-			preparedStmt.setInt(5, newId);
+			preparedStmt.setInt(5, newId+1);
 			preparedStmt.execute();
 			con.close();
 			
@@ -91,22 +89,16 @@ public class Database {
 		ArrayList<Message> retrieved = new ArrayList<Message>();
 		try {
 			Connection con = startNewConnection();
-			Statement stmt = con.createStatement();
+			Statement stmt1 = con.createStatement();
 			int idSender = findId(sender);
 			int idRecipient = findId(recipient);
 			if(idSender == 0 || idRecipient == 0 ) return null ;
-			ResultSet set1 = stmt.executeQuery("SELECT * FROM Message WHERE exp ="+idSender+" AND dest ="+idRecipient);
-			ResultSet set2 = stmt.executeQuery("SELECT * FROM Message WHERE exp ="+idRecipient+" AND dest ="+idSender);
+			ResultSet set1 = stmt1.executeQuery("SELECT * FROM Message WHERE ( exp ="+idSender+" AND dest ="+idRecipient+") OR ( exp ="+idRecipient+" AND dest ="+idSender+")" );
 			System.out.println("");
 			while (set1.next()) {
-				retrieved.add(new Message(findLogin(set1.getInt("exp")),findLogin(set1.getInt("dest")),set1.getString("body")));
-			}
-			
-			while (set2.next()) {
-				retrieved.add(new Message(findLogin(set2.getInt("exp")),findLogin(set2.getInt("dest")),set2.getString("body")));
+				retrieved.add(new Message(findLogin(set1.getInt("exp")),findLogin(set1.getInt("dest")),set1.getString("date"),set1.getString("body")));
 			}
 			set1.close();
-			set2.close();
 			con.close();
 		}catch(Exception e) {
 			System.out.println("Erreur de connection à la BDD en raison de \t" + e.getMessage());
@@ -157,9 +149,9 @@ public class Database {
 		try {
 			Connection con = startNewConnection();
 			Statement stmt = con.createStatement();
-			ResultSet set = stmt.executeQuery("SELECT MAX(id) FROM Message");
+			ResultSet set = stmt.executeQuery("SELECT MAX(id) AS theId FROM Message ");
 			if(set.next()) {
-				id = set.getInt("id");
+				id = set.getInt("theID");
 			}
 			set.close();
 			con.close();
@@ -211,6 +203,11 @@ public class Database {
 			e.printStackTrace();
 		}
 		return added ;
+	}
+	
+	public static void main (String args[]) {
+		System.out.println(getHistory("Kentin", "Kentin"));
+		
 	}
 	
 	

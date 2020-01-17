@@ -39,15 +39,12 @@ public class BroadcastServer extends Thread {
 	         		InetAddress address = packet.getAddress();
 		            int port = packet.getPort();
 		            String myinfos = localHost.getLogin() + " login " + localHost.getIpAddress().getHostAddress() + " " + localHost.getServerPort() ;
-		            System.out.println("GOT NEWS :" +myinfos);
 			        buf = myinfos.getBytes();
 	         		packet = new DatagramPacket(buf, buf.length, address, port);
 		            broadcastSocket.send(packet);
 		            address = InetAddress.getByName(infos[2]);		            
 		            System.out.println("Nouvelle connexion, maj de la liste des onliners\t" );
 		            RemoteUser newUser = new RemoteUser(infos[0],address);
-		            System.out.println("Newbie is \t" + newUser.toString() );
-
 		            synchronized(this){
 		               localHost.addUser(newUser);
 		            }
