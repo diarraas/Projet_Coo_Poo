@@ -96,6 +96,7 @@ public class LocalUser extends User {
     
     public void sendMessage(String dest,String msg){
     	RemoteUser remote = findUserByLogin(dest);
+    	System.out.println("Sending to" + remote.toString());
     	InetAddress remoteAddr = remote.getIpAddress();
     	int remotePort = remote.getServerPort();
     	messageClient = new MessageSender(this,remoteAddr,remotePort);
@@ -105,7 +106,6 @@ public class LocalUser extends User {
     }    
     
     public void disconnect() { //Dont disconnect just yet ---- synchronize
-    	System.out.println(getLogin() + "   wants to leave");
     	broadcastClient.notifyDisconnection();
     	broadcastServer.setRunning(false);
     	messageServer.setRunning(false);

@@ -6,6 +6,18 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
+
+
+/** TODO
+ * Quand on reçoit un message (et qu'on a pas de session active) -> ouvrir une session avec dest = celui qui nous envoie un message
+ * Mettre startSession en static (?)
+ * 
+ */
+
+
+
+
+
 public class HomeWindow implements ActionListener{
 	
 	private JFrame frame; 
