@@ -14,6 +14,9 @@ public class LocalUser extends User {
         
     private Notifier broadcastClient ;
     
+    private static Notifier broadcastDataRequest ;
+
+    
     private List<RemoteUser> onliners ;
     
     private List<ChatSession> ongoing ;
@@ -23,6 +26,7 @@ public class LocalUser extends User {
     }
   
     public LocalUser(String log) {
+    	
     	super(log);      
        
     	//Find non local ip address
@@ -47,10 +51,23 @@ public class LocalUser extends User {
     
     public static LocalUser createAccount(String log){
     	LocalUser newAccount = null;
-		if(Database.isUnic(log)) {
+		try {
+			broadcastDataRequest = new Notifier(newAccount);
+			if(broadcastDataRequest.requestData(log)) {
+				newAccount = new LocalUser(log);
+		        Database.addUser(newAccount); 
+			}else {
+				System.out.println("Pseudo utilisé");
+			}
+			broadcastDataRequest.close();
+		}catch(Exception e) {
+			
+		}
+    	
+    	/* if(Database.isUnic(log)) {
 			newAccount = new LocalUser(log);
 	        Database.addUser(newAccount); 
-		}
+		}*/
     	return newAccount ;
     }
 
@@ -59,11 +76,17 @@ public class LocalUser extends User {
     
     public boolean changeLogin(String newLog) {
     	boolean changed = false ; 
-    	if(Database.isUnic(newLog)) {
+    	if(findUserByLogin(newLog) != null) {
 	        this.setLogin(newLog);
 	       	changed = Database.updateLogin(this, newLog);
 		    broadcastClient.notifyLoginChange();
 	     }
+    	
+    	/*if(Database.isUnic(newLog)) {
+	        this.setLogin(newLog);
+	       	changed = Database.updateLogin(this, newLog);
+		    broadcastClient.notifyLoginChange();
+	     }*/
     	return changed ;
     }
     

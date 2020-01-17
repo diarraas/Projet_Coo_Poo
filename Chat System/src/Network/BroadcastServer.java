@@ -63,7 +63,19 @@ public class BroadcastServer extends Thread {
 		            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
 		            ChatWindow.updateUsers(localHost.getOnliners());
 
-		        }   	
+		        }else if(infos[1].contentEquals("request")) {
+		        	System.out.println("Demande d'information pour \t"+ infos[0]);
+		        	InetAddress address = packet.getAddress();
+		            int port = packet.getPort();
+		            String myinfo = "free" ;		            
+		        	if(localHost.findUserByLogin(infos[0]) != null) {
+		        		myinfo = "used";
+		        	}
+		            buf = myinfo.getBytes();
+	         		packet = new DatagramPacket(buf, buf.length, address, port);
+		            broadcastSocket.send(packet);
+		            
+		        }
 		        
 			}catch(Exception e){
 				if(!isRunning()) {

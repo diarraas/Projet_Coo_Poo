@@ -21,7 +21,7 @@ public class Notifier {
 		localHost = user ;
 		try{
 			
-			senderSocket = new DatagramSocket(port,localHost.getIpAddress());
+			senderSocket = new DatagramSocket(port);
 			senderSocket.setBroadcast(true);
 			InetAddress broadcast = null ;	    	
 	    	Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
@@ -108,7 +108,32 @@ public class Notifier {
     	}
 	}
 	
+	public boolean requestData(String log) {
+		boolean unic = false ;
+		try {
+			System.out.println("Demande d'info");
+			String infos = log + " request " ;  
+			buf = infos.getBytes();
+			DatagramPacket packet = new DatagramPacket(buf,buf.length,broadcastAddr,BroadcastServer.BROADCAST_PORT);
+			senderSocket.send(packet);
+			byte[] response = new byte [65535];
+			DatagramPacket RespondingPacket = new DatagramPacket(response,response.length);								
+			senderSocket.receive(RespondingPacket);
+			String received = new String(RespondingPacket.getData(), 0, packet.getLength());
 
+		    if(received.contentEquals("free")) {
+		    	unic = true ;
+		    }else {
+		    	unic = false ;
+		    }
+		    
+		    senderSocket.setSoTimeout(3000);
+		    senderSocket.receive(RespondingPacket);
+		    received = new String(RespondingPacket.getData(), 0, packet.getLength());
+			
+		}catch(IOException e) {	}
+		return unic ;
+	}
 	
 	public void close() {
 		senderSocket.close();
