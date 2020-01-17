@@ -11,9 +11,7 @@ public class LocalUser extends User {
     private MessageListener messageServer ;
     
     private MessageSender messageClient ;
-    
-    private ChatWindow chatWindow ;
-    
+        
     private Notifier broadcastClient ;
     
     private List<RemoteUser> onliners ;
@@ -41,6 +39,7 @@ public class LocalUser extends User {
                 }
             }
         }
+        
         }catch(Exception e) {
         	System.out.println("Erreur creation de nouveau LocalUser en raison de : \t " + e.getMessage());
         }
@@ -76,10 +75,13 @@ public class LocalUser extends User {
 	        ongoing = new ArrayList<ChatSession>();  
 	        retrieved.setOnliners(onliners);
 	        retrieved.setOngoing(ongoing);
-	        //chatWindow = new ChatWindow(retrieved);
 	    	broadcastServer = new BroadcastServer(retrieved);
 	        broadcastClient = new Notifier(retrieved);
 	        messageServer = new MessageListener(retrieved);
+	        retrieved.setBroadcastClient(broadcastClient);
+	        retrieved.setBroadcastServer(broadcastServer);
+	        retrieved.setMessageClient(messageClient);
+	        retrieved.setMessageServer(messageServer);
 	        broadcastServer.setRunning(true);
 	    	messageServer.setRunning(true);
 	        broadcastServer.start();
@@ -103,11 +105,10 @@ public class LocalUser extends User {
     }    
     
     public void disconnect() { //Dont disconnect just yet ---- synchronize
-    	
+    	System.out.println(getLogin() + "   wants to leave");
     	broadcastClient.notifyDisconnection();
     	broadcastServer.setRunning(false);
     	messageServer.setRunning(false);
-    	messageServer.close();
     	setStatus(false);
 
     }
@@ -122,12 +123,18 @@ public class LocalUser extends User {
     }
     
     public synchronized void addUser(RemoteUser user){
-    	if((onliners.size() != 0 && !onliners.contains(user)) || onliners.size() == 0)  onliners.add(user) ;
+    	if((onliners.size() != 0 && !onliners.contains(user)) || onliners.size() == 0) {
+    		onliners.add(user);
+    		ChatWindow.updateUsers(onliners);
+    	}
 
     }
     
     public void removeUser(RemoteUser user){
-    	if(onliners.size() != 0 && onliners.contains(user)) onliners.remove(user);
+    	if(onliners.size() != 0 && onliners.contains(user)) {
+    		onliners.remove(user);
+    		ChatWindow.updateUsers(onliners);
+    	}
     }
     
 	public RemoteUser findUserByAddress(InetAddress address) {
@@ -193,6 +200,39 @@ public class LocalUser extends User {
 	public void setOngoing(List<ChatSession> ongoing) {
 		this.ongoing = ongoing;
 	}
+
+	public Notifier getBroadcastClient() {
+		return broadcastClient;
+	}
+
+	public BroadcastServer getBroadcastServer() {
+		return broadcastServer;
+	}
+
+	public void setBroadcastServer(BroadcastServer broadcastServer) {
+		this.broadcastServer = broadcastServer;
+	}
+
+	public MessageListener getMessageServer() {
+		return messageServer;
+	}
+
+	public void setMessageServer(MessageListener messageServer) {
+		this.messageServer = messageServer;
+	}
+
+	public MessageSender getMessageClient() {
+		return messageClient;
+	}
+
+	public void setMessageClient(MessageSender messageClient) {
+		this.messageClient = messageClient;
+	}
+
+	public void setBroadcastClient(Notifier broadcastClient) {
+		this.broadcastClient = broadcastClient;
+	}
+
 
 	   
 }

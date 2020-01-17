@@ -21,7 +21,7 @@ public class Notifier {
 		localHost = user ;
 		try{
 			
-			senderSocket = new DatagramSocket(port);
+			senderSocket = new DatagramSocket(port,localHost.getIpAddress());
 			senderSocket.setBroadcast(true);
 			InetAddress broadcast = null ;	    	
 	    	Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
@@ -54,7 +54,6 @@ public class Notifier {
 			buf = infos.getBytes();
 			DatagramPacket packet = new DatagramPacket(buf,buf.length,broadcastAddr,BroadcastServer.BROADCAST_PORT);
 			senderSocket.send(packet);
-
 		} catch(Exception e) {
 			 
     		System.out.println("Erreur de notification changement de login raison de : \t " + e.getMessage());
@@ -91,7 +90,6 @@ public class Notifier {
 			    received = new String(RespondingPacket.getData(), 0, packet.getLength());
 		    }
 			
-			
 		}catch(IOException e) {	}
 	}
 
@@ -103,7 +101,6 @@ public class Notifier {
 			buf = infos.getBytes();
 			DatagramPacket packet = new DatagramPacket(buf,buf.length,broadcastAddr,BroadcastServer.BROADCAST_PORT);
 			senderSocket.send(packet);
-
 		} catch(Exception e) {
 			 
     		System.out.println("Erreur de notification de deconnexion en raison de : \t " + e.getMessage());
