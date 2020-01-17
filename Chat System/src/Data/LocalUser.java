@@ -11,9 +11,7 @@ public class LocalUser extends User {
     private MessageListener messageServer ;
     
     private MessageSender messageClient ;
-    
-    private ChatWindow chatWindow ;
-    
+        
     private Notifier broadcastClient ;
     
     private List<RemoteUser> onliners ;
