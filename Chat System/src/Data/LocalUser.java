@@ -123,7 +123,8 @@ public class LocalUser extends User {
     	RemoteUser user = findUserByLogin(dest);
     	if(user != null){
     		ongoing.add(new ChatSession(getLogin(),dest));
-    	}else {
+    		// Need to callout to Chat window to print a message to screen
+    	} else{
     		System.out.println("Utilisateur offline ou non existant");
     	}
     }
@@ -188,6 +189,8 @@ public class LocalUser extends User {
 		ChatSession session  = findSessionWith(dest) ;
 		session.setActive(false);
 		ongoing.remove(session);
+    	System.out.println("Fin de session avec : \t " + dest);
+    	//Nouveau callout at chatWindow to clear pannel
 	}
 	
 	public List<RemoteUser> getOnliners() {

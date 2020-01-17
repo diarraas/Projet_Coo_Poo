@@ -56,9 +56,7 @@ public class MessageListener extends Thread{
 			                String exp = msg.getExp();
 							localHost.startSession(exp);
 					        localHost.findSessionWith(exp).addMessage(msg);
-					        Database.addMessage(msg);
-					        System.out.println(msg.toString()); // Need to callout to Chat window to print a received message to screen
-
+					        //System.out.println(msg.toString()); 
 		            	} catch ( Exception e) {
 	                  		System.out.println("Erreur d'extraction du message en raison de :\t" + e.getMessage() );
 	                  }

@@ -16,6 +16,8 @@ public class ChatWindow implements ActionListener,KeyListener {
 	 * Il faut réinitialiser la barre de text quand le message est envoyé !!!
 	 * 
 	 * 
+	 * 
+	 * 
 	 * */
 	private static JPanel affBorder = new JPanel();
 	private static JPanel affInner = new JPanel();
@@ -38,7 +40,6 @@ public class ChatWindow implements ActionListener,KeyListener {
     public ChatWindow(LocalUser user) {
     	
     	ChatWindow.localHost = user;
-    	System.out.println("BroadcastCLIENT = " + ChatWindow.localHost.getBroadcastClient()+ "\n");
     	    	
     	//Create and set up the window.
         frame = new JFrame("ChatWindow");
@@ -147,9 +148,23 @@ public class ChatWindow implements ActionListener,KeyListener {
     		new HomeWindow();
     	}
     	else if (e.getActionCommand() == "QuitSession") {
-    		//Clear l'affichage
-    		//Fermer la session
-    		//quitButton.setEnable(false);
+    		/** Clear l'affichage 
+    		 * TODO
+    		 * */
+    		    		
+    		/** Fermer la session
+    		 * TODO 
+    		 * J'ai une fonction pour ca mais je dois récuperer le nom de l'interlocuteur
+    		 */
+    		
+    		ChatWindow.localHost.endSession(dest);
+    		
+    		
+    		
+    		/** quitButton.setEnable(false);
+    		 * TODO
+    		 * */
+    		
     	}
     	else if (e.getActionCommand() == "changeLogin") {
     		//ouvrir nouvelle fenetre
@@ -184,6 +199,24 @@ public class ChatWindow implements ActionListener,KeyListener {
 	        		}
 	        	}
 	        });
+	        list.setVisibleRowCount(15);
+	    }
+    }
+    
+    public static void updateMessageDisplay(List<Message> newList) {
+    	
+    	listModel.removeAllElements();
+    	
+    	ListIterator<Message> iterator = newList.listIterator() ;
+		Message current = null; 
+	    while(iterator.hasNext()){
+	     	current = iterator.next() ;
+	     	if(current == null)	System.out.println("Problem");
+			listModel.addElement(current.toString());
+			
+			list = new JList<String>(listModel);
+	        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	        list.setSelectedIndex(0);
 	        list.setVisibleRowCount(15);
 	    }
     }
