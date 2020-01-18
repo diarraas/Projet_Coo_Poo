@@ -42,6 +42,7 @@ public class HomeWindow implements ActionListener{
 	logIn.setPreferredSize(new Dimension (300,20));
 	pane.add(logIn,c);
 	
+	
 	JButton changeLogin = new JButton("Changer Login");
 	c.gridx = 0;
 	c.gridy = 1;
@@ -49,6 +50,8 @@ public class HomeWindow implements ActionListener{
 	changeLogin.addActionListener(this);
 	changeLogin.setPreferredSize(new Dimension (300,20));
 	pane.add(changeLogin,c);
+	
+	
 	
 	JButton createAccount = new JButton("Creer un compte");
 	c.gridx = 0;
@@ -80,10 +83,11 @@ public class HomeWindow implements ActionListener{
 			frame.dispose();
 			new CreateAccountWindow();
 		}
+	
 	}
 	
 	public static void main(String[] args) {
-		new HomeWindow();
+		//new HomeWindow();
 	}
 	
 }

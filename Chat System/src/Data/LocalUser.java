@@ -15,7 +15,6 @@ public class LocalUser extends User {
     private Notifier broadcastClient ;
     
     private static Notifier broadcastDataRequest ;
-
     
     private List<RemoteUser> onliners ;
     
@@ -37,7 +36,7 @@ public class LocalUser extends User {
 			if(broadcastDataRequest.requestData(log)) {
 				newAccount = new LocalUser(log);
 				newAccount.setIpAddress(findIpAddress());
-		        Database.addUser(newAccount); 
+		        //Database.addUser(newAccount); 
 			}else {
 				System.out.println("Pseudo utilisé");
 			}
@@ -74,7 +73,7 @@ public class LocalUser extends User {
     
     public LocalUser authentify (String log) {
     	LocalUser retrieved = null ;
-    	if(!Database.isUnic(log)) {
+    	/* if(!Database.isUnic(log)) {
     		retrieved = Database.findUser(log);
     		retrieved.setIpAddress(findIpAddress());
 	    	onliners = new ArrayList<RemoteUser>();
@@ -96,7 +95,39 @@ public class LocalUser extends User {
 	    	setStatus(true);
     	}else {
     		System.out.println("Identifiant inconnu --- créez un compte");
-    	}
+    	}*/
+    	try {
+			broadcastDataRequest = new Notifier(retrieved);
+			if(broadcastDataRequest.requestData(log)) {
+					broadcastDataRequest.close();
+		    		retrieved = new LocalUser(log);
+		        	retrieved.setIpAddress(findIpAddress());
+		        	onliners = new ArrayList<RemoteUser>();
+		            ongoing = new ArrayList<ChatSession>();  
+		            retrieved.setOnliners(onliners);
+		            retrieved.setOngoing(ongoing);
+		        	broadcastServer = new BroadcastServer(retrieved);
+		            broadcastClient = new Notifier(retrieved);
+		            messageServer = new MessageListener(retrieved);
+		            retrieved.setBroadcastClient(broadcastClient);
+		            retrieved.setBroadcastServer(broadcastServer);
+		            retrieved.setMessageClient(messageClient);
+		            retrieved.setMessageServer(messageServer);
+		            broadcastServer.setRunning(true);
+		        	messageServer.setRunning(true);
+		            broadcastServer.start();
+		            retrieved.getMessageServer().start();
+		        	broadcastClient.notifyAuthentification();
+		        	setStatus(true);
+		    	
+			}else {
+				System.out.println("Pseudo utilisé");
+			}
+			broadcastDataRequest.close();
+		}catch(Exception e) {
+			
+		}
+    	
     	return retrieved;
     }
     

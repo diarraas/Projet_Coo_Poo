@@ -117,9 +117,9 @@ public class Notifier {
 			DatagramPacket packet = new DatagramPacket(buf,buf.length,broadcastAddr,BroadcastServer.BROADCAST_PORT);
 			senderSocket.send(packet);
 			byte[] response = new byte [65535];
-			DatagramPacket RespondingPacket = new DatagramPacket(response,response.length);								
-			senderSocket.receive(RespondingPacket);
+			DatagramPacket RespondingPacket = new DatagramPacket(response,response.length);		
 		    senderSocket.setSoTimeout(3000);
+			senderSocket.receive(RespondingPacket);
 			String received = new String(RespondingPacket.getData(), 0, packet.getLength());
 			String value[] = received.split(" ");
 		    if(value[0].equals("free")) {
@@ -131,8 +131,9 @@ public class Notifier {
 		    //System.out.println(" Reponse du broadcast :    "+value[0]+"   Value is " + unic );
 			
 		}catch(IOException e) {	
-			System.out.println("Erreur de demande d'information en raison de \t" + e.getMessage());
-			e.printStackTrace();
+			unic = true ;
+			//System.out.println("Erreur de demande d'information en raison de \t" + e.getMessage());
+			//e.printStackTrace();
 		}
 		return unic ;
 	}

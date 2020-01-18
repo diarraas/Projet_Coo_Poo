@@ -14,28 +14,29 @@ public class ChatWindow implements ActionListener,KeyListener {
 	 * /!\ NEW GUIDELINES /!\
 	 * 
 	 * Il faut rÃ©initialiser la barre de text quand le message est envoyÃ© !!!
-	 * 
-	 * 
-	 * 
+	 * Faire une fonction statique "erreur" ---- comme ca local user can notify the GUI when
+	   there's an issue
+	 * -----Je me suis vraiment maitrisée pour pas tout privatiserrrrrr
+	 * May have to get rid of the create account option
 	 * 
 	 * */
-	private static JPanel affBorder = new JPanel();
-	private static JPanel affInner = new JPanel();
-	private static JLabel affTxt = new JLabel();
-	private static JLabel affNom = new JLabel(); 
-	private static JFrame frame;
+	public static JPanel affBorder = new JPanel();
+	public static JPanel affInner = new JPanel();
+	public static JLabel affTxt = new JLabel();
+	public static JLabel affNom = new JLabel(); 
+	public static JFrame frame;
 	
-	private static String dest;
+	public static String dest;
 	
-	private JTextField text;
+	public JTextField text;
 	
-	private static JList<String> list;
-	private static DefaultListModel<String> listModel = new DefaultListModel<String>();
-	private static LocalUser localHost ;
+	public static JList<String> list;
+	public static DefaultListModel<String> listModel = new DefaultListModel<String>();
+	public static LocalUser localHost ;
 	
 	
-	private static JButton quitSession;
-	private static JButton changeLogin;
+	public static JButton quitSession;
+	public static JButton changeLogin;
 	
     public ChatWindow(LocalUser user) {
     	
@@ -77,7 +78,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 		c.gridy = 1;        
         pane.add(listScrollPane,c);
         
-        JButton logOut = new JButton("LogOut");
+        JButton logOut = new JButton("Deconnexion");
         c.gridx = 0;
         c.gridy = 2;
         c.anchor = GridBagConstraints.LAST_LINE_START;
@@ -91,14 +92,14 @@ public class ChatWindow implements ActionListener,KeyListener {
 		affNom.setText("");
 		pane.add(affNom,c);
 		
-		quitSession = new JButton("QuitSession");
+		quitSession = new JButton("Fin de session");
 		c.gridx = 2;
 		c.gridy = 0;
 		quitSession.setEnabled(false);
 		quitSession.addActionListener(this);
 		pane.add(quitSession,c);
 		
-		changeLogin = new JButton("Change Login");
+		changeLogin = new JButton("Change de Login");
 		c.gridx = 3;
 		c.gridy = 0;
 		changeLogin.addActionListener(this);
@@ -142,12 +143,12 @@ public class ChatWindow implements ActionListener,KeyListener {
     } 
     
     public void actionPerformed(ActionEvent e) {
-    	if (e.getActionCommand() == "LogOut") {
+    	if (e.getActionCommand() == "Deconnexion") {
     		ChatWindow.localHost.disconnect();
     		frame.dispose();
     		new HomeWindow();
     	}
-    	else if (e.getActionCommand() == "QuitSession") {
+    	else if (e.getActionCommand() == "Fin de session") {
     		/** Clear l'affichage 
     		 * TODO
     		 * */
@@ -166,8 +167,15 @@ public class ChatWindow implements ActionListener,KeyListener {
     		 * */
     		
     	}
-    	else if (e.getActionCommand() == "changeLogin") {
-    		//ouvrir nouvelle fenetre
+    	else if (e.getActionCommand() == "Changer de Login") {
+    		/** ouvrir nouvelle fenetre
+    		 
+    		 Doit avoir une zone de text et appeler la fonction change login
+    		 Par contre si tu ouvres une nouvelle fenetre il faut quand meme pouvoir revenir sur la
+    		 chat window sans rien réinitialiser heinn c'est dans le cahier des charges
+    		 Aussi, ma fonction change login récupère un string.
+    		 
+    		 */
     	}
     }
     
@@ -205,15 +213,15 @@ public class ChatWindow implements ActionListener,KeyListener {
     
     public static void updateMessageDisplay(List<Message> newList) {
     	
+    	/** 	Réinitialiser chat display ?? ------ ou alors just keep adding last message to screen*/
+    	
     	listModel.removeAllElements();
     	
     	ListIterator<Message> iterator = newList.listIterator() ;
 		Message current = null; 
 	    while(iterator.hasNext()){
 	     	current = iterator.next() ;
-	     	if(current == null)	System.out.println("Problem");
 			listModel.addElement(current.toString());
-			
 			list = new JList<String>(listModel);
 	        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	        list.setSelectedIndex(0);
@@ -234,7 +242,6 @@ public class ChatWindow implements ActionListener,KeyListener {
 
 	public void keyReleased(KeyEvent keyEvent) {/*Nothing*/}
     
-   
 
     public static void main(String[] args) {
     	

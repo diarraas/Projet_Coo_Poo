@@ -25,7 +25,7 @@ public class ChatSession {
     public void addMessage(Message msg) {
     	if(this!= null)	{
     		sentMessages.add(msg);
-	        Database.addMessage(msg);
+	       // Database.addMessage(msg);
 	     // Need to callout to Chat window to print a received message to screen -- using getHistory maybe
     	}
     	System.out.println("Sent Messages :  \n" + sentMessages.toString());

@@ -64,23 +64,10 @@ public class LoginWindow implements ActionListener, KeyListener {
 	}
 	
 	/** 
-	 * 				/!\      GUIDE LINE POUR KENTIN       /!\
+	 * 				/!\      NEW GUIDE LINES POUR KENTIN       /!\
 	 * 
-	 * Si je met OK c'est que la partie graphique est faite, il reste toujours à lier LocalUser avec mes trucs pour que tout fonctionne
-	 * 
-	 *  
-	 * Need to implement logout button  OK
-	 * __________________change login button <- On lui demande d'abord de se connecter ou direct s'il veut changer son pseudo ?
-	 * When window closes ---- you're disconnected OK
-	 * Print on screen (not console) when a login already exists in BDD (authentify or createAccount will return null) OK
-	 * Same goes for an incorrect login ---- un pop up maybe ? OK
-	 * Informe le user quand son compte est bien créé et qu'il peut se connecter <- Autant juste ouvrir le ChatWindow, c'est assez explicite
-	 * PRIVATIZEEEEEEEEE <- ça on verra a la fin x) je privatizerai tout d'un coup
-	 * je suppose que click sur login de qqun -> startSession(qqun) buuuut there's a method send message ---- you need to figure out how to use both <- Avant de send un message faut choisir à qui on l'envoie non ?
-	 * Need a way to stop session ---- you cant just quit --- il faut permettre à l'utilisateur de mettre fin à une session unilatéralement OK
-	 * Maybe add a refresh button qui actualise la liste des connectés <- Si on arrive pas a faire comme Brice c'est ce qu'on fera je pense
-	 * 
-	 * Il ya des null pointer PAS DE PANIQUE c'est normal ------- mets la ligne 11 en commentaire
+	 *	Ya moyen qu'on garde que cette fenetre et chat session en fait pour faire un truc enti�rement decentralis� ---- no need to create
+	 	an account, just login with a unic username mais bon pour l'instant j'ai rien supprim� jai tout mis en commentaire
 	 * 
 	 * 
 	 * **/
@@ -89,33 +76,24 @@ public class LoginWindow implements ActionListener, KeyListener {
 		localHost = new LocalUser();
 		localHost = localHost.authentify(lgc);
 		new ChatWindow(localHost);
-		//System.out.println("Authentified");
-		//localHost.startSession(localHost.getLogin());
-		//localHost.sendMessage(localHost.getLogin(),"CINNAMOOOOOON "); // pourquoi tu envoies un message dans le login ?
-		//ArrayList<Message> me = Database.getHistory(localHost.getLogin(), localHost.getLogin());
-		
-		//System.out.println(me.toString());
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		
 			login(getLogin(connectLogin));
-			frame.dispose();
-			
-		}
+			frame.dispose();	
+	}
 	
 	private String getLogin(JTextField log) {
 		return(log.getText());
 	}
 	
 	
-
 	public void keyTyped(KeyEvent keyEvent) {
 	    char typed = keyEvent.getKeyChar();
 	    if(typed == '\n') {    	    
 	    	login(getLogin(connectLogin));
 	    	frame.dispose();
-	  		}
+	  	}
 	 }
 	  
 	public void keyPressed(KeyEvent keyEvent) {/*Nothing*/}
@@ -123,15 +101,8 @@ public class LoginWindow implements ActionListener, KeyListener {
 	public void keyReleased(KeyEvent keyEvent) {/*Nothing*/}
 	
 	public static void main(String[] args) {
-		//new LoginWindow();
+		new LoginWindow();
 	}
 
-	public static LocalUser getLocalHost() {
-		return localHost;
-	}
-
-	public static void setLocalHost(LocalUser localHost) {
-		LoginWindow.localHost = localHost;
-	}
 
 }
