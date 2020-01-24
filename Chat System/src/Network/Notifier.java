@@ -91,6 +91,7 @@ public class Notifier {
 		    }
 			
 		}catch(IOException e) {	}
+		
 	}
 
 	
@@ -106,6 +107,7 @@ public class Notifier {
     		System.out.println("Erreur de notification de deconnexion en raison de : \t " + e.getMessage());
     	
     	}
+		close();
 	}
 	
 	public boolean requestData(String log) {
@@ -135,6 +137,7 @@ public class Notifier {
 			//System.out.println("Erreur de demande d'information en raison de \t" + e.getMessage());
 			//e.printStackTrace();
 		}
+		close();
 		return unic ;
 	}
 	

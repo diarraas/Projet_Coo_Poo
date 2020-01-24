@@ -63,18 +63,18 @@ public class Database {
 	
 	
 	public static void addMessage(Message message) {
-		int idSender = findId(message.getExp());
-		int idRecipient = findId(message.getDest());
-		int newId = findLastMessageId();
+		String ipSender = findIpAddress(message.getExp());
+		String ipRecipient = findIpAddress(message.getDest());
+		int newId = findLastMessageId() + 1;
 		try {
 			Connection con = startNewConnection();
 			String query = "INSERT INTO Message (exp,dest,date,body,id)" + " VALUES (?,?,?,?,?)";
 			PreparedStatement preparedStmt = con.prepareStatement(query);
-			preparedStmt.setInt(1, idSender);
-			preparedStmt.setInt(2, idRecipient);
+			preparedStmt.setString(1, ipSender);
+			preparedStmt.setString(2, ipRecipient);
 			preparedStmt.setString(3, message.getDate());
 			preparedStmt.setString(4, message.getBody());
-			preparedStmt.setInt(5, newId+1);
+			preparedStmt.setInt(5, newId);
 			preparedStmt.execute();
 			con.close();
 			
@@ -90,13 +90,13 @@ public class Database {
 		try {
 			Connection con = startNewConnection();
 			Statement stmt1 = con.createStatement();
-			int idSender = findId(sender);
-			int idRecipient = findId(recipient);
-			if(idSender == 0 || idRecipient == 0 ) return null ;
-			ResultSet set1 = stmt1.executeQuery("SELECT * FROM Message WHERE ( exp ="+idSender+" AND dest ="+idRecipient+") OR ( exp ="+idRecipient+" AND dest ="+idSender+")" );
+			String ipSender = findIpAddress(sender);
+			String ipRecipient = findIpAddress(recipient);
+			if(ipSender== null || ipRecipient == null ) return null ;
+			ResultSet set1 = stmt1.executeQuery("SELECT * FROM Message WHERE ( exp ="+ipSender+" AND dest ="+ipRecipient+") OR ( exp ="+ipRecipient+" AND dest ="+ipSender+")" );
 			System.out.println("");
 			while (set1.next()) {
-				retrieved.add(new Message(findLogin(set1.getInt("exp")),findLogin(set1.getInt("dest")),set1.getString("date"),set1.getString("body")));
+				retrieved.add(new Message(findLogin(set1.getString("exp")),findLogin(set1.getString("dest")),set1.getString("date"),set1.getString("body")));
 			}
 			set1.close();
 			con.close();
@@ -107,12 +107,12 @@ public class Database {
 		return retrieved ;
 	}
 	
-	public static String findLogin(int id) {
-		String result = "";
+	public static String findLogin(String ip) {
+		String result = null;
 		try {
 			Connection con = startNewConnection();
 			Statement stmt = con.createStatement();
-			ResultSet set = stmt.executeQuery("SELECT login FROM User WHERE id = "+id);
+			ResultSet set = stmt.executeQuery("SELECT login FROM User WHERE ipAddress =\'" +ip+"\'");
 			if(set.next()) {
 				result = set.getString("login");
 			}
@@ -125,14 +125,14 @@ public class Database {
 		return result ;
 	}
 	
-	public static int findId(String login) {
-		int id = 0 ;
+	public static String findIpAddress(String login) {
+		String ip = null ;
 		try {
 			Connection con = startNewConnection();
 			Statement stmt = con.createStatement();
-			ResultSet set = stmt.executeQuery("SELECT id FROM User WHERE login = \'" +login+"\'");
+			ResultSet set = stmt.executeQuery("SELECT ipAddress FROM User WHERE login = \'" +login+"\'");
 			if(set.next()) {
-				id = set.getInt("id");
+				ip = set.getString("ipAddress");
 			}
 			set.close();
 			con.close();
@@ -140,7 +140,7 @@ public class Database {
 			System.out.println("Erreur de connection à la BDD en raison de \t" + e.getMessage());
 			e.printStackTrace();
 		}
-		return id ;
+		return ip ;
 	} 
 	
 	
@@ -170,7 +170,6 @@ public class Database {
 			ResultSet set = stmt.executeQuery("SELECT * FROM User WHERE login = \'" +login+"\'");
 			if(set.next()) {
 				localHost = new LocalUser();
-				localHost.setId(set.getInt("id"));
 				localHost.setLogin(set.getString("login"));
 				localHost.setIpAddress(InetAddress.getByName(set.getString("ipAddress")));
 			}
@@ -189,11 +188,10 @@ public class Database {
 		try {
 			Connection con = startNewConnection();
 			if(isUnic(user.getLogin())) {
-				String query = "INSERT INTO User (id,login,ipAddress)" + " VALUES (?,?,?)";
+				String query = "INSERT INTO User (login,ipAddress)" + " VALUES (?,?)";
 			    PreparedStatement preparedStmt = con.prepareStatement(query);
-			    preparedStmt.setInt(1, user.getId());
-			    preparedStmt.setString(2, user.getLogin());
-			    preparedStmt.setString(3, user.getIpAddress().getHostAddress());
+			    preparedStmt.setString(1, user.getLogin());
+			    preparedStmt.setString(2, user.getIpAddress().getHostAddress());
 			    preparedStmt.execute();
 			    added = true;
 			    con.close();
@@ -203,6 +201,10 @@ public class Database {
 			e.printStackTrace();
 		}
 		return added ;
+	}
+	
+	public static void updateLogin(){
+		
 	}
 	
 	public static void main (String args[]) {

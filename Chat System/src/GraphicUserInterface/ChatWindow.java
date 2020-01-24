@@ -20,23 +20,23 @@ public class ChatWindow implements ActionListener,KeyListener {
 	 * May have to get rid of the create account option
 	 * 
 	 * */
-	public static JPanel affBorder = new JPanel();
-	public static JPanel affInner = new JPanel();
-	public static JLabel affTxt = new JLabel();
-	public static JLabel affNom = new JLabel(); 
-	public static JFrame frame;
+	private static JPanel affBorder = new JPanel();
+	private static JPanel affInner = new JPanel();
+	private static JLabel affTxt = new JLabel();
+	private static JLabel affNom = new JLabel(); 
+	private static JFrame frame;
 	
-	public static String dest;
+	private static String dest;
 	
-	public JTextField text;
+	private JTextField text;
 	
-	public static JList<String> list;
-	public static DefaultListModel<String> listModel = new DefaultListModel<String>();
-	public static LocalUser localHost ;
+	private static JList<String> list;
+	private static DefaultListModel<String> listModel = new DefaultListModel<String>();
+	private static LocalUser localHost ;
 	
 	
-	public static JButton quitSession;
-	public static JButton changeLogin;
+	private static JButton quitSession;
+	private static JButton changeLogin;
 	
     public ChatWindow(LocalUser user) {
     	
@@ -137,6 +137,9 @@ public class ChatWindow implements ActionListener,KeyListener {
 		text.addKeyListener(this);
 		pane.add(text,c);	
 		
+		//creation zone de texte pour changement de login
+		
+		
 		frame.pack();
         frame.setVisible(true);
 	
@@ -168,14 +171,15 @@ public class ChatWindow implements ActionListener,KeyListener {
     		
     	}
     	else if (e.getActionCommand() == "Changer de Login") {
-    		/** ouvrir nouvelle fenetre
-    		 
-    		 Doit avoir une zone de text et appeler la fonction change login
-    		 Par contre si tu ouvres une nouvelle fenetre il faut quand meme pouvoir revenir sur la
-    		 chat window sans rien réinitialiser heinn c'est dans le cahier des charges
+    		/** 
+    		 TODO
+    		 Doit avoir une zone de text à coté du bouton et appeler la fonction change login. I tried and messed up.
     		 Aussi, ma fonction change login récupère un string.
     		 
     		 */
+    		localHost.changeLogin(text.getText());
+    		
+    		
     	}
     }
     
@@ -234,8 +238,8 @@ public class ChatWindow implements ActionListener,KeyListener {
 	    if(typed == '\n') {    
 			//Send message
 	    	localHost.sendMessage(dest,text.getText());
-	    	affTxt.setText(text.getText());
-	}
+	    	//affTxt.setText(text.getText());
+	    }
 	}
 	  
 	public void keyPressed(KeyEvent keyEvent) {/*Nothing*/}

@@ -28,6 +28,7 @@ public class LocalUser extends User {
     	super(log);      
     	
     }
+   
     
     public static LocalUser createAccount(String log){
     	LocalUser newAccount = null;
@@ -36,11 +37,10 @@ public class LocalUser extends User {
 			if(broadcastDataRequest.requestData(log)) {
 				newAccount = new LocalUser(log);
 				newAccount.setIpAddress(findIpAddress());
-		        //Database.addUser(newAccount); 
+
 			}else {
 				System.out.println("Pseudo utilisé");
 			}
-			broadcastDataRequest.close();
 		}catch(Exception e) {
 			
 		}
@@ -61,13 +61,8 @@ public class LocalUser extends User {
 	        this.setLogin(newLog);
 	       	changed = Database.updateLogin(this, newLog);
 		    broadcastClient.notifyLoginChange();
+    		ChatWindow.updateUsers(onliners);
 	     }
-    	
-    	/*if(Database.isUnic(newLog)) {
-	        this.setLogin(newLog);
-	       	changed = Database.updateLogin(this, newLog);
-		    broadcastClient.notifyLoginChange();
-	     }*/
     	return changed ;
     }
     
@@ -99,7 +94,6 @@ public class LocalUser extends User {
     	try {
 			broadcastDataRequest = new Notifier(retrieved);
 			if(broadcastDataRequest.requestData(log)) {
-					broadcastDataRequest.close();
 		    		retrieved = new LocalUser(log);
 		        	retrieved.setIpAddress(findIpAddress());
 		        	onliners = new ArrayList<RemoteUser>();
@@ -123,7 +117,6 @@ public class LocalUser extends User {
 			}else {
 				System.out.println("Pseudo utilisé");
 			}
-			broadcastDataRequest.close();
 		}catch(Exception e) {
 			
 		}

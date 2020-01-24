@@ -4,7 +4,6 @@ import java.net.InetAddress;
 
 public class User {
 	
-	private int id ;
     
     private String login ;
     
@@ -21,17 +20,9 @@ public class User {
     public User(String log) {
     	//Basic id data
     	login = log ;
-        id = ((int) (Math.random()*999)) ;
         status = true ;
     }
 
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
 
 	public String getLogin() {
 		return login;
