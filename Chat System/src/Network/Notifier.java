@@ -43,6 +43,7 @@ public class Notifier {
 		} catch(Exception e) {
 			 
     		System.out.println("Erreur de creation du NotificationSender en raison de : \t " + e.getMessage());
+			e.printStackTrace();
     	
     	}
 		
@@ -57,6 +58,7 @@ public class Notifier {
 		} catch(Exception e) {
 			 
     		System.out.println("Erreur de notification changement de login raison de : \t " + e.getMessage());
+			e.printStackTrace();
     	
     	}
 	}

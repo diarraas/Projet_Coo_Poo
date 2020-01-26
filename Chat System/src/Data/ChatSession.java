@@ -21,7 +21,10 @@ public class ChatSession {
     	return Database.getHistory(exp,dest);
     }
    
-
+    public void updateMessages(){
+    	sentMessages = Database.getHistory(exp,dest);
+    }
+    
     public void addMessage(Message msg) {
     	if(this!= null)	{
     		sentMessages.add(msg);

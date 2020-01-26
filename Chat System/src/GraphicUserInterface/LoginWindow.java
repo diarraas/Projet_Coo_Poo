@@ -99,10 +99,6 @@ public class LoginWindow implements ActionListener, KeyListener {
 	public void keyPressed(KeyEvent keyEvent) {/*Nothing*/}
 
 	public void keyReleased(KeyEvent keyEvent) {/*Nothing*/}
-	
-	public static void main(String[] args) {
-		new LoginWindow();
-	}
 
 
 }

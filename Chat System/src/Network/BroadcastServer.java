@@ -4,7 +4,6 @@ import java.net.*;
 
 import Data.LocalUser;
 import Data.RemoteUser;
-import GraphicUserInterface.ChatWindow;
 
 public class BroadcastServer extends Thread {
 	
@@ -55,10 +54,12 @@ public class BroadcastServer extends Thread {
 		            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
 
 		        }else if(infos[1].contentEquals("change")) {
-		           	System.out.println("Changement de login retenu, new login is \t"+ infos[0]);
-		           	localHost.findUserByAddress(InetAddress.getByName(infos[2])).setLogin(infos[0]);
+		           	System.out.println("Received packet : \t"+ received);
+		        	System.out.println("Changement de login retenu, new login is \t"+ infos[0]);
+		        	localHost.findUserByAddress(InetAddress.getByName("10.192.126.84")).setLogin(infos[0]);
+		           //	localHost.findUserByAddress(InetAddress.getByName(infos[2])).setLogin(infos[0]);
 		            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
-		            ChatWindow.updateUsers(localHost.getOnliners());
+		           // ChatWindow.updateUsers(localHost.getOnliners());
 
 		        }else if(infos[1].contentEquals("request")) {
 		        	System.out.println("Demande d'information pour \t"+ infos[0]);
@@ -76,7 +77,7 @@ public class BroadcastServer extends Thread {
 		        
 			}catch(Exception e){
 				if(!isRunning()) {
-					System.out.println("Serveur arrÃªtÃ©");
+					System.out.println("Serveur arrêté");
 				}else {
 					System.out.println("Erreur de lancement du serveur UDP en raison de : \t " + e.getMessage());
 					e.printStackTrace();

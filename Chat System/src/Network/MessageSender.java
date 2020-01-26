@@ -35,6 +35,7 @@ public class MessageSender {
 		    data = out.toByteArray();
 	    }catch(Exception e){
 	    	System.out.println("Erreur de serialisation en raison de : \t " + e.getMessage());
+			e.printStackTrace();
 	    }
 	    return data;
 	}
@@ -49,7 +50,7 @@ public class MessageSender {
 	        os.write(serialized,0,serialized.length);
 	        os.flush();												
 	        os.close();	 
-	        localHost.findSessionWith(remoteUser.getLogin()).addMessage(sentMessage);;
+	        localHost.getOngoing().addMessage(sentMessage);;
 		}catch(Exception e){
 	    	System.out.println("Erreur d'envoi de message en raison de : \t " + e.getMessage());
 	    	e.printStackTrace();
@@ -57,11 +58,33 @@ public class MessageSender {
 		
 	}
 	
+	public void sendFile(String path) {
+        try{
+			File myFile = new File (path);							
+	        String name = myFile.getName();							
+	        byte [] fileBuffer  = new byte [(int)myFile.length()];	
+	        FileInputStream fis = new FileInputStream(myFile);		
+	        BufferedInputStream bis = new BufferedInputStream(fis);	
+	        bis.read(fileBuffer,0,fileBuffer.length);					
+	        bis.close();											
+	        byte[] serialized = serialize(myFile);				
+	        OutputStream os = clientSocket.getOutputStream();		
+	        os.write(serialized,0,serialized.length);
+			sendMessage("Envoi du fichier "+ name);
+	        os.flush();												
+	        os.close();	       
+        }catch(Exception e){
+	    	System.out.println("Erreur d'envoi de fichier en raison de : \t " + e.getMessage());
+	    	e.printStackTrace();
+		}
+    }
+	
 	public void close() {
 		try{
 			clientSocket.close();
 		}catch(Exception e) {
 			System.out.println("Erreur de fermeture de socket");
+			e.printStackTrace();
 		}
 	}
 }

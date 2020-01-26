@@ -17,16 +17,17 @@ import javax.swing.JTextField;
 
 import Data.LocalUser;
 
-public class CreateAccountWindow implements ActionListener, KeyListener{
+public class ChangeWindow  implements ActionListener, KeyListener{
 	
-	private JLabel errNouveauLogin;
-	private JTextField nouveauLogin;
+	private JLabel errArea;
+	private JTextField newLogin;
 	private LocalUser localHost;
 	private JFrame frame;
-
-	public CreateAccountWindow() {
+	
+	public ChangeWindow(LocalUser user) {
+		localHost = user ;
 		//Create and set up the window.
-	    frame = new JFrame("CreateAccountWindow");
+	    frame = new JFrame("ChangeWindow");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setResizable(false);
 	    
@@ -35,26 +36,26 @@ public class CreateAccountWindow implements ActionListener, KeyListener{
 		GridBagConstraints c = new GridBagConstraints();
 		
 		//Création de la premiere zone : creer un compte
-		JLabel creerCompte = new JLabel("Créez un compte");
+		JLabel changeLogin = new JLabel("Entrer un nouveau login");
 		c.gridx = 0;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.CENTER;
 		c.insets = new Insets(20,20,20,20);
-		pane.add(creerCompte,c);
+		pane.add(changeLogin,c);
 		
 		//Creation zone de saisie
-		nouveauLogin = new JTextField("");
+		newLogin = new JTextField("");
 		c.gridx = 0;
 		c.gridy = 1;		
 		c.ipadx = 200;
 		c.anchor = GridBagConstraints.CENTER;
 		c.insets = new Insets(20,20,20,20);
-		nouveauLogin.addKeyListener(this);
-		pane.add(nouveauLogin,c);
+		newLogin.addKeyListener(this);
+		pane.add(newLogin,c);
 		
 		
 		//Creation bouton verification
-		JButton buttonVerif = new JButton("Verifier");
+		JButton buttonVerif = new JButton("Soumettre");
 		buttonVerif.setSize(new Dimension (100,20));
 		buttonVerif.addActionListener(this);
 		c.gridx = 0;
@@ -64,51 +65,55 @@ public class CreateAccountWindow implements ActionListener, KeyListener{
 		pane.add(buttonVerif,c);
 		
 		//Zone d'affichage d'erreur
-		errNouveauLogin = new JLabel("");
+		errArea = new JLabel("");
 		c.gridx = 0;
 		c.gridy = 3;
 		c.anchor = GridBagConstraints.CENTER;
 		c.insets = new Insets(0,0,10,0);
-		pane.add(errNouveauLogin,c);
+		pane.add(errArea,c);
 		
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
 	
+
 	private String getLogin(JTextField log) {
 		return(log.getText());
 	}
 	
 	public void login(String lgn) {		
-		localHost = LocalUser.createAccount(lgn);
-		if(localHost == null)	{
-			errNouveauLogin.setText("Pseudo déjà utilisé");
+		if(!localHost.changeLogin(lgn))	{
+			errArea.setText("Pseudo d�j� utilis�");
 		}
-		else {
-			localHost = localHost.authentify(lgn);
-			errNouveauLogin.setText("");
-			if(localHost != null)	new ChatWindow(localHost);
-			//if(localHost == null)	errNouveauLogin.setText("Pseudo déjà utilisé");
+		else{
+			ChatWindow.updateUsers(localHost.getOnliners());
+			frame.dispose();
 		}
 	}
 	
 	public void actionPerformed(ActionEvent e) {		
-		login(getLogin(nouveauLogin));
-		frame.dispose();
+		login(getLogin(newLogin));
 	}
 	
 	public void keyTyped(KeyEvent keyEvent) {
 	    char typed = keyEvent.getKeyChar();
 	    if(typed == '\n') {    
-			login(getLogin(nouveauLogin));	  
-			frame.dispose();
+			login(getLogin(newLogin));	  
 	}
 	}
-	  
-	public void keyPressed(KeyEvent keyEvent) {/*Nothing*/}
 
-	public void keyReleased(KeyEvent keyEvent) {/*Nothing*/}
-	
 
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -8,17 +8,25 @@ import java.util.ListIterator;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.filechooser.FileSystemView;
 
 public class ChatWindow implements ActionListener,KeyListener {
 	/**
 	 * /!\ NEW GUIDELINES /!\
-	 * 
-	 * Il faut rÃ©initialiser la barre de text quand le message est envoyÃ© !!!
-	 * Faire une fonction statique "erreur" ---- comme ca local user can notify the GUI when
-	   there's an issue
-	 * -----Je me suis vraiment maitrisée pour pas tout privatiserrrrrr
-	 * May have to get rid of the create account option
-	 * 
+	 * Commence par les TODO ?? (icone notepad sur le coté) --- là c'est que du front-end du coup
+	 * Il faut réinitialiser la barre de text quand le message est envoyÃ© !!!
+	 * Faire une fonction statique générique "erreur" ---- comme ca local user can notify the GUI when
+	   there's an issue. L'afficher quelque part sur la fenêtre or pop up --- whatever's easier for ya
+	 * Only keep login, change log and chat window
+	 * Il faut empecher l'envoi d'un message quand il n'y a pas de session en cours ( test dest != null)
+	   si non ya null pointer
+	 * J'ai rajouté updateChat ou chaipukoi la qui est censée rafraichir l'affichage de l'historique à chaque envoi
+	   Elle doit appeler la méthode getHistory de ChatSession ---- you'll need me for this one
+	 * Prévoir le cas ou un user veut commencer une session avec qqun d'autre alors qu'il a une session en cours ---- tu peux faire un
+	 	pop up pour notifier ou mettre une condition (test if dest != null par exemple) and end session before starting anew (i'd rather you do that tbh :) ).
+	 * Is there a way to let the user know -- graphiquement --- that a remote user started a session with him ? like a thread or sum ?
+	 * Can we find a way to resize the window ? chui suure que c'est faisable
+	 * Pourquoi quand on commence une session la liste des connectés disparait ?
 	 * */
 	private static JPanel affBorder = new JPanel();
 	private static JPanel affInner = new JPanel();
@@ -26,7 +34,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 	private static JLabel affNom = new JLabel(); 
 	private static JFrame frame;
 	
-	private static String dest;
+	//private static String dest;
 	
 	private JTextField text;
 	
@@ -37,6 +45,8 @@ public class ChatWindow implements ActionListener,KeyListener {
 	
 	private static JButton quitSession;
 	private static JButton changeLogin;
+	private static JButton sendFile;
+	private static JButton logOut ;
 	
     public ChatWindow(LocalUser user) {
     	
@@ -63,7 +73,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 		
 		
 		//affichage label "People Online"
-		JLabel onliners = new JLabel("People Online :");
+		JLabel onliners = new JLabel("Utilisateurs en ligne :");
 		c.gridx = 0;
 		c.gridy = 0;
 		c.insets = new Insets(10,0,15,10);
@@ -78,13 +88,38 @@ public class ChatWindow implements ActionListener,KeyListener {
 		c.gridy = 1;        
         pane.add(listScrollPane,c);
         
-        JButton logOut = new JButton("Deconnexion");
+        
+        /*		Chat Options 	*/
+        logOut = new JButton("Deconnexion");
         c.gridx = 0;
         c.gridy = 2;
         c.anchor = GridBagConstraints.LAST_LINE_START;
         c.insets = new Insets(10,10,10,10);
         logOut.addActionListener(this);
         pane.add(logOut,c);
+        
+        
+        quitSession = new JButton("Fin de session");
+		c.gridx = 2;
+		c.gridy = 0;
+		quitSession.setEnabled(false);
+		quitSession.addActionListener(this);
+		pane.add(quitSession,c);
+		
+		changeLogin = new JButton("Changer de Login");
+		c.gridx = 0;
+		c.gridy = 3;
+		changeLogin.addActionListener(this);
+		pane.add(changeLogin,c);
+        
+        //Test de l'envoi de fichier
+        sendFile = new JButton("Envoyer un fichier");
+        c.gridx = 3;
+        c.gridy = 0;
+		sendFile.setEnabled(false);
+        sendFile.addActionListener(this);
+        pane.add(sendFile,c);
+        
 		
 		//CrÃ©ation label qui affichera le nom de la personne avec qui la session de clavardage est ouverte	
 		c.gridx = 1;
@@ -92,18 +127,6 @@ public class ChatWindow implements ActionListener,KeyListener {
 		affNom.setText("");
 		pane.add(affNom,c);
 		
-		quitSession = new JButton("Fin de session");
-		c.gridx = 2;
-		c.gridy = 0;
-		quitSession.setEnabled(false);
-		quitSession.addActionListener(this);
-		pane.add(quitSession,c);
-		
-		changeLogin = new JButton("Change de Login");
-		c.gridx = 3;
-		c.gridy = 0;
-		changeLogin.addActionListener(this);
-		pane.add(changeLogin,c);
 					
 		
 		//CrÃ©ation zone d'affichage de la conversation		
@@ -146,40 +169,46 @@ public class ChatWindow implements ActionListener,KeyListener {
     } 
     
     public void actionPerformed(ActionEvent e) {
-    	if (e.getActionCommand() == "Deconnexion") {
+    	if (e.getActionCommand().equals("Deconnexion")) {
     		ChatWindow.localHost.disconnect();
     		frame.dispose();
-    		new HomeWindow();
+    		new LoginWindow();
     	}
-    	else if (e.getActionCommand() == "Fin de session") {
+    	else if (e.getActionCommand().equals("Fin de session")) {
     		/** Clear l'affichage 
     		 * TODO
     		 * */
     		    		
     		/** Fermer la session
-    		 * TODO 
-    		 * J'ai une fonction pour ca mais je dois rÃ©cuperer le nom de l'interlocuteur
     		 */
-    		
-    		ChatWindow.localHost.endSession(dest);
-    		
-    		
-    		
-    		/** quitButton.setEnable(false);
-    		 * TODO
-    		 * */
+
+    		ChatWindow.localHost.endSession(localHost.getOngoing().getDest());
+    		quitSession.setEnabled(false);
+    		   	
     		
     	}
-    	else if (e.getActionCommand() == "Changer de Login") {
-    		/** 
-    		 TODO
-    		 Doit avoir une zone de text à coté du bouton et appeler la fonction change login. I tried and messed up.
-    		 Aussi, ma fonction change login récupère un string.
-    		 
-    		 */
-    		localHost.changeLogin(text.getText());
+    	else if (e.getActionCommand().equals("Changer de Login")) {
+  
+    		new ChangeWindow(localHost);
     		
+    	}
+    	else if (e.getActionCommand().equals("Envoyer un fichier")) {
     		
+            JFileChooser chooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory()); 
+            int r = chooser.showSaveDialog(null); 
+            
+            if (r == JFileChooser.APPROVE_OPTION) { 
+            	
+            	localHost.sendFile(chooser.getSelectedFile().getAbsolutePath());
+            }    
+    	}else if (e.getActionCommand().equals("save")){
+    		JFileChooser chooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory()); 
+            int r = chooser.showSaveDialog(null); 
+            
+            if (r == JFileChooser.APPROVE_OPTION) { 
+            	
+            	localHost.sendFile(chooser.getSelectedFile().getAbsolutePath());
+            }    
     	}
     }
     
@@ -191,7 +220,6 @@ public class ChatWindow implements ActionListener,KeyListener {
 		RemoteUser current = null; 
 	    while(iterator.hasNext()){
 	     	current = iterator.next() ;
-	     	if(current == null)	System.out.println("Problem");
 			listModel.addElement(current.getLogin());
 			
 			list = new JList<String>(listModel);
@@ -204,10 +232,9 @@ public class ChatWindow implements ActionListener,KeyListener {
 			            int index = list.locationToIndex(e.getPoint());
 			            String log = (String) listModel.getElementAt(index);
 			            localHost.startSession(log);
-			            affNom.setText("Conversation avec " + listModel.getElementAt(index));
-			            dest = (String)listModel.getElementAt(index);
-			            
+			            affNom.setText("Conversation avec " + listModel.getElementAt(index));			            
 			            quitSession.setEnabled(true);
+			            sendFile.setEnabled(true);
 	        		}
 	        	}
 	        });
@@ -215,29 +242,29 @@ public class ChatWindow implements ActionListener,KeyListener {
 	    }
     }
     
+    /**
+     * TODO : Ce serait bien une liste de message qui s'affichent là ou t'affiche le message envoyé.
+     * Pour le back-end  ----- localHost.getOngoing.getHistory() ---- check it out
+      * */
+    
     public static void updateMessageDisplay(List<Message> newList) {
     	
-    	/** 	Réinitialiser chat display ?? ------ ou alors just keep adding last message to screen*/
     	
-    	listModel.removeAllElements();
+    	//Do your magic here :)
     	
     	ListIterator<Message> iterator = newList.listIterator() ;
 		Message current = null; 
 	    while(iterator.hasNext()){
 	     	current = iterator.next() ;
-			listModel.addElement(current.toString());
-			list = new JList<String>(listModel);
-	        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-	        list.setSelectedIndex(0);
-	        list.setVisibleRowCount(15);
+			//Another magic trick ^^ 
 	    }
     }
     
     public void keyTyped(KeyEvent keyEvent) {
 	    char typed = keyEvent.getKeyChar();
-	    if(typed == '\n') {    
+	    if(localHost.getOngoing() != null && typed == '\n') {    
 			//Send message
-	    	localHost.sendMessage(dest,text.getText());
+	    	localHost.sendMessage(text.getText());
 	    	//affTxt.setText(text.getText());
 	    }
 	}
@@ -246,11 +273,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 
 	public void keyReleased(KeyEvent keyEvent) {/*Nothing*/}
     
-
-    public static void main(String[] args) {
-    	
-        //new ChatWindow(LocalUser user);
-    }
+    
 }
 
 
