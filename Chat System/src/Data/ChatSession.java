@@ -12,7 +12,8 @@ public class ChatSession {
     public ChatSession(String send, String rec) {
     	exp = send ;
     	dest = rec ;
-    	sentMessages  = new ArrayList<Message>() ;
+    	this.updateMessages();
+    	if(this.sentMessages == null)	this.sentMessages = new ArrayList<Message>();
     	active = true ;
     }
     
@@ -22,19 +23,16 @@ public class ChatSession {
     }
    
     public void updateMessages(){
-    	sentMessages = Database.getHistory(exp,dest);
+    	this.sentMessages = Database.getHistory(exp,dest);
     }
     
     public void addMessage(Message msg) {
-    	System.out.println(exp +"  talking to  " + dest);
     	if(this!= null)	{
-    		sentMessages.add(msg);
-	        Database.addMessage(msg);
-	     // Need to callout to Chat window to print a received message to screen -- using getHistory maybe
+    		this.sentMessages.add(msg);
     	}
-    	System.out.println(exp +"  talking to  " + dest);
+    	System.out.println(sentMessages.toString());
 
-    	System.out.println("Sent Messages :  \n" + getHistory().toString());
+    	//System.out.println("Sent Messages :  \n" + getHistory().toString());
     }
 
 	public String getExp() {

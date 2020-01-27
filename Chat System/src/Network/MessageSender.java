@@ -50,7 +50,7 @@ public class MessageSender {
 	        os.write(serialized,0,serialized.length);
 	        os.flush();												
 	        os.close();	 
-	        localHost.getOngoing().addMessage(sentMessage);;
+	        localHost.findSessionWith(remoteUser.getLogin()).addMessage(sentMessage);
 		}catch(Exception e){
 	    	System.out.println("Erreur d'envoi de message en raison de : \t " + e.getMessage());
 	    	e.printStackTrace();

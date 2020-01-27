@@ -39,13 +39,11 @@ public class MessageListener extends Thread{
 			try{
 				Socket remote = serverSocket.accept();
 				Runnable messageHandler = new Runnable() {
-		            //private BufferedOutputStream bos;
-
 					public void run() {
 		            	try {
 							byte [] byteData = new byte [65535];					
 					        InputStream is = remote.getInputStream();
-					        //InputStream wrappedStream = new PushbackInputStream(is, 65535);
+					        InputStream wrappedStream = new PushbackInputStream(is, 65535);
 					        int bytesRead = is.read(byteData,0,byteData.length);	
 					        int current = bytesRead;
 			
@@ -62,12 +60,14 @@ public class MessageListener extends Thread{
 					        		Message msg = (Message) data;
 					        		String exp = msg.getExp();
 				                	localHost.startSession(exp);
-				                	localHost.getOngoing().addMessage(msg);
-				                	//ChatWindow.updateMessageDisplay(localHost.getOngoing().getSentMessages());
+				                	localHost.findSessionWith(exp).addMessage(msg);
+				        	        Database.addMessage(msg);
+				                	ChatWindow.dest = exp ;
 					        	}else if(object.getCanonicalName().equals(File.class.getCanonicalName())){
+					        		System.out.println("Got a file");
 					        		File file = (File) data ;
-					        		/*FileOutputStream fos = new FileOutputStream("Chat System/Files/"+file.getName());
-					                bos = new BufferedOutputStream(fos);
+						        	FileOutputStream fos = new FileOutputStream("Chat System/Files/"+file.getName());
+						            BufferedOutputStream bos = new BufferedOutputStream(fos);
 					                byteData = new byte[65535];
 							        bytesRead = 0;	
 							        //N'entre pas de le while
@@ -77,13 +77,13 @@ public class MessageListener extends Thread{
 									    System.out.println("Bytes read :" + bytesRead);
    
 							        } 
-					                bos.flush();*/ 
+					                bos.flush();
 					        	}
 					        }
 			                	
 			                
 		            	} catch ( Exception e) {
-	                  		System.out.println("Erreur d'extraction du message en raison de :\t" + e.getMessage() );
+	                  		//System.out.println("Erreur d'extraction du message en raison de :\t" + e.getMessage() );
 	            			e.printStackTrace();
 	                  }
 	            }

@@ -11,7 +11,6 @@ import Data.* ;
 public class Notifier {
 	
 	private DatagramSocket senderSocket ;
-	private byte[] buf = new byte[65535];
 	private int port = 12245 ;
 	private LocalUser localHost ;
 	public static InetAddress broadcastAddr;
@@ -51,6 +50,7 @@ public class Notifier {
 	
 	public void notifyLoginChange(String newLog){
 		try {
+			byte[] buf = new byte[65535];
 			String infos = localHost.getLogin() + " change " + localHost.getIpAddress().getHostAddress() + " " + newLog + " " + localHost.getServerPort() ;  
 			buf = infos.getBytes();
 			DatagramPacket packet = new DatagramPacket(buf,buf.length,broadcastAddr,BroadcastServer.BROADCAST_PORT);
@@ -66,7 +66,7 @@ public class Notifier {
 
 	public void notifyAuthentification() {
 		try {
-			
+			byte[] buf = new byte[65535];
 			String infos = localHost.getLogin() + " login " + localHost.getIpAddress().getHostAddress() + " " + localHost.getServerPort() ;  
 			buf = infos.getBytes();
 			DatagramPacket packet = new DatagramPacket(buf,buf.length,broadcastAddr,BroadcastServer.BROADCAST_PORT);
@@ -99,7 +99,7 @@ public class Notifier {
 	
 	public void notifyDisconnection(){
 		try {
-			
+			byte[] buf = new byte[65535];
 			String infos = localHost.getLogin() + " logoff " + localHost.getIpAddress().getHostAddress() + " " + localHost.getServerPort() ;  
 			buf = infos.getBytes();
 			DatagramPacket packet = new DatagramPacket(buf,buf.length,broadcastAddr,BroadcastServer.BROADCAST_PORT);
@@ -115,6 +115,7 @@ public class Notifier {
 	public boolean requestData(String log) {
 		boolean unic = true ;
 		try {
+			byte[] buf = new byte[65535];
 			System.out.println("Demande d'info");
 			String infos = log + " request "  + "  this is a padding  ";  
 			buf = infos.getBytes();
@@ -125,9 +126,11 @@ public class Notifier {
 		    senderSocket.setSoTimeout(3000);
 			senderSocket.receive(RespondingPacket);
 			//String received = new String(RespondingPacket.getData(), 0, RespondingPacket.getLength());
-		    if(RespondingPacket != null) {
+		    
+			if(RespondingPacket!=null) {
 		    	unic = false ;
 		    }
+			
 		    //System.out.println(" length of response :    "+value[0].length() );
 		    //System.out.println(" Reponse du broadcast :    "+value[0]+"   Value is " + unic );
 			

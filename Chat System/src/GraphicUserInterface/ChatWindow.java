@@ -14,12 +14,9 @@ public class ChatWindow implements ActionListener,KeyListener {
 	/**
 	 * /!\ NEW GUIDELINES /!\
 	 * Commence par les TODO ?? (icone notepad sur le cot�) --- l� c'est que du front-end du coup
-	 * Il faut r�initialiser la barre de text quand le message est envoyé !!!
 	 * Faire une fonction statique g�n�rique "erreur" ---- comme ca local user can notify the GUI when
 	   there's an issue. L'afficher quelque part sur la fen�tre or pop up --- whatever's easier for ya
 	 * Only keep login, change log and chat window
-	 * Il faut empecher l'envoi d'un message quand il n'y a pas de session en cours ( test dest != null)
-	   si non ya null pointer
 	 * J'ai rajout� updateChat ou chaipukoi la qui est cens�e rafraichir l'affichage de l'historique � chaque envoi
 	   Elle doit appeler la m�thode getHistory de ChatSession ---- you'll need me for this one
 	 * Pr�voir le cas ou un user veut commencer une session avec qqun d'autre alors qu'il a une session en cours ---- tu peux faire un
@@ -32,7 +29,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 	private static JPanel affInner = new JPanel();
 	private static JLabel affTxt = new JLabel();
 	private static JLabel affNom = new JLabel(); 
-	private static JScrollPane scroll = new JScrollPane(affInner);
+	private static JScrollPane scroll = new JScrollPane(affTxt);
 	private static JFrame frame;
 	
 	private static JTextField text;
@@ -47,6 +44,8 @@ public class ChatWindow implements ActionListener,KeyListener {
 	private static JButton changeLogin;
 	private static JButton sendFile;
 	private static JButton logOut ;
+	
+	public static String dest ;
 	
     public ChatWindow(LocalUser user) {
     	
@@ -166,7 +165,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 		c.gridy = 4;
 		c.insets = new Insets(0,0,10,0);
 		pane.add(affNotif,c);
-		frame.add(scroll);
+		affTxt.add(scroll);
 		frame.pack();
         frame.setVisible(true);
 	
@@ -186,7 +185,7 @@ public class ChatWindow implements ActionListener,KeyListener {
     		/** Fermer la session
     		 */
 
-    		ChatWindow.localHost.endSession(localHost.getOngoing().getDest());
+    		localHost.endSessionWith(dest);
     		quitSession.setEnabled(false);
     		   	
     		
@@ -234,8 +233,8 @@ public class ChatWindow implements ActionListener,KeyListener {
 	        
 	        		if (e.getClickCount() == 2) {
 			            int index = list.locationToIndex(e.getPoint());
-			            String log = (String) listModel.getElementAt(index);
-			            localHost.startSession(log);
+			            dest = (String) listModel.getElementAt(index);
+			            localHost.startSession(dest);
 			            affNom.setText("Conversation avec " + listModel.getElementAt(index));			            
 			            quitSession.setEnabled(true);
 			            sendFile.setEnabled(true);
@@ -256,7 +255,7 @@ public class ChatWindow implements ActionListener,KeyListener {
      * 
      * JscrollPad
      * TODO : Ce serait bien une liste de message qui s'affichent l� ou t'affiche le message envoy�.
-     * Pour le back-end  ----- localHost.getOngoing.getHistory() ---- check it out
+     * Pour le back-end  ----- localHost.findSessionWith(Dest).getSentMessage() ---- check it out
       * */
     
     public static void updateMessageDisplay(List<Message> newList) {
@@ -268,6 +267,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 		Message current = null; 
 	    while(iterator.hasNext()){
 	     	current = iterator.next() ;
+	     	affInner.add(new JLabel(current.toString()));
 	     	affTxt.add(new JLabel(current.toString()));
 			//Another magic trick ^^ 
 	    }
@@ -275,11 +275,19 @@ public class ChatWindow implements ActionListener,KeyListener {
     
     public void keyTyped(KeyEvent keyEvent) {
 	    char typed = keyEvent.getKeyChar();
-	    if(localHost.getOngoing() != null && typed == '\n') {    
-			//Send message
-	    	localHost.sendMessage(text.getText());
-			updateMessageDisplay(localHost.getOngoing().getHistory());
-	    	text.setText("");;
+	    if(typed == '\n') {
+	    	if(localHost.findSessionWith(dest) != null) {
+				//Send message
+		    	localHost.sendMessage(text.getText());
+				updateMessageDisplay(localHost.findSessionWith(dest).getHistory());
+		    	text.setText("");;
+	    	}else {
+	    		/**
+	    		 * TODO
+	    		 * Créer une classe NotifWindow qui prend un message dans son constructeur et fait juste un pop up du message
+	    		 * ***/
+	    		//new NotificationWindow("Commencer une session");
+	    	}
 			
 	    }
 	}

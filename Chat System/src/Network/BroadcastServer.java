@@ -2,6 +2,7 @@ package Network;
 
 import java.net.*;
 
+import Data.ChatSession;
 import Data.LocalUser;
 import Data.RemoteUser;
 import GraphicUserInterface.ChatWindow;
@@ -9,8 +10,7 @@ import GraphicUserInterface.ChatWindow;
 public class BroadcastServer extends Thread {
 	
     public static int BROADCAST_PORT = 4445 ;
-    private DatagramSocket broadcastSocket;
-	private byte[] buf = new byte[65535];
+    private DatagramSocket broadcastSocket; 
 	private LocalUser localHost ;
 	private boolean running ;
 
@@ -31,6 +31,7 @@ public class BroadcastServer extends Thread {
 	public void run() {
 		while(isRunning()){
 			try{
+				byte[] buf = new byte[65535];
 	        	DatagramPacket packet = new DatagramPacket(buf, buf.length);
 	        	broadcastSocket.receive(packet);
 	            String received = new String(packet.getData(), 0, packet.getLength());
@@ -39,7 +40,7 @@ public class BroadcastServer extends Thread {
 	         		InetAddress address = packet.getAddress();
 		            int port = packet.getPort();
 		            String myinfos = localHost.getLogin() + " login " + localHost.getIpAddress().getHostAddress() + " " + localHost.getServerPort() ;
-			        buf = myinfos.getBytes();
+		            buf = myinfos.getBytes();
 	         		packet = new DatagramPacket(buf, buf.length, address, port);
 		            broadcastSocket.send(packet);
 		            address = InetAddress.getByName(infos[2]);	
@@ -52,16 +53,19 @@ public class BroadcastServer extends Thread {
 		            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
 	         	}else if(infos[1].contentEquals("logoff")) {
 	         		ChatWindow.notificationMessage(infos[0] + " est deconnecté");   	
-		            localHost.removeUser(localHost.findUserByLogin(infos[0]));
-		            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
+		            synchronized(this){
+	         			localHost.removeUser(localHost.findUserByLogin(infos[0]));
+		            }
+	         		System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
 
 		        }else if(infos[1].contentEquals("change")) {
 		        	ChatWindow.notificationMessage(infos[0] + " est maintenant "+ infos[3]);
-		           	localHost.findUserByAddress(InetAddress.getByName(infos[2])).setLogin(infos[3]);
-		           	if(localHost.getOngoing() != null && localHost.getOngoing().getDest().equals(infos[0]))
-		           		localHost.getOngoing().setDest(infos[3]);
+		           	localHost.updateOnliners(infos[0],infos[3]);
+		           	ChatSession session = (localHost.findSessionWith(infos[0]));
+		           	if(session != null)
+		           		session.setDest(infos[3]);
 		            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
-
+		            
 		        }else if(infos[1].contentEquals("request")) {
 		        	System.out.println("Demande d'information pour \t"+ infos[0]);
 		        	if(localHost.findUserByLogin(infos[0]) != null) {

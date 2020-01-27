@@ -18,7 +18,7 @@ public class LocalUser extends User {
     
     private List<RemoteUser> onliners ;
     
-    private ChatSession ongoing ;
+    private List<ChatSession> ongoing ;
     
     public LocalUser() {
     	//LocalUser vide pour initialisation
@@ -28,7 +28,7 @@ public class LocalUser extends User {
 		super(log);
 		this.setIpAddress(findIpAddress());
 		onliners = new ArrayList<RemoteUser>();
-        ongoing = null; 
+        ongoing = new ArrayList<ChatSession>(); 
         broadcastServer = new BroadcastServer(this);
         broadcastClient = new Notifier(this);
         messageServer = new MessageListener(this);
@@ -46,15 +46,15 @@ public class LocalUser extends User {
 	       	changed = true ;
 		    broadcastClient.notifyLoginChange(newLog);
 	        this.setLogin(newLog);
-	        if(this.ongoing != null)	this.ongoing.setExp(newLog);
+	        updateChatSession(newLog);
 	        Database.updateLogin(getIpAddress().getHostAddress(), newLog);
     		ChatWindow.updateUsers(onliners);
 	     }
     	return changed ;
     }
     
-    
-    public LocalUser authentify (String log) {
+
+	public LocalUser authentify (String log) {
 		LocalUser authentified = null ;
 		broadcastDataRequest = new Notifier(this);
 		if(broadcastDataRequest.requestData(log)) {
@@ -87,7 +87,7 @@ public class LocalUser extends User {
     public void startSession(String dest){
 	    	RemoteUser remote = findUserByLogin(dest);
 	    	if(remote != null){
-	    		ongoing = new ChatSession(getLogin(),dest);
+	    		ongoing.add(new ChatSession(getLogin(),dest));
 	    		InetAddress remoteAddr = remote.getIpAddress();
 	        	int remotePort = remote.getServerPort();
 	        	messageClient = new MessageSender(this,remoteAddr,remotePort); 
@@ -139,19 +139,49 @@ public class LocalUser extends User {
     	return temp ;
 	}
 
-	public void endSession(String dest){
-		if(ongoing.getDest() == dest){
+	public void endSessionWith(String dest){
+		
+		if(ongoing.remove(findSessionWith(dest))){
 			messageClient.close();
-			ongoing = null ;
 			ChatWindow.notificationMessage("Fin de session avec:  " + dest);
 		}else {
 			ChatWindow.notificationMessage("Pas de session en cours avec " + dest);
 		}
 	}
 	
-
-
-	public static InetAddress findIpAddress() {
+	
+	public ChatSession findSessionWith(String dest) {
+		ChatSession retrieved = null ;
+		RemoteUser user = findUserByLogin(dest);
+		if(user != null) {
+			boolean found = false ;
+		    ListIterator<ChatSession> iterator = ongoing.listIterator() ;
+	        while(iterator.hasNext() && !found){
+	        	retrieved = iterator.next() ;
+	            found = retrieved.getDest().equalsIgnoreCase(dest);
+	        }
+	        
+	        if(!found)	return null ;
+		}
+		return retrieved ;
+	}
+	
+	private void updateChatSession(String newLog) {
+    	ListIterator<ChatSession> iterator = ongoing.listIterator() ;
+    	ChatSession current ;
+    	while(iterator.hasNext()){
+        	 current = iterator.next() ;
+            current.setExp(newLog);
+        }
+		
+	}
+	public void updateOnliners(String old, String newLog) {
+		findUserByLogin(old).setLogin(newLog);
+		ChatWindow.updateUsers(onliners);
+	}
+	
+	
+	private static InetAddress findIpAddress() {
 		InetAddress retrieved = null ;
 		try {
 	        Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
@@ -172,8 +202,9 @@ public class LocalUser extends User {
 	        }
 		return retrieved ;
 	}
+	
 
-	public ChatSession getOngoing() {
+	public List<ChatSession> getOngoing() {
 		return ongoing;
 	}
 	
@@ -181,9 +212,6 @@ public class LocalUser extends User {
 		return onliners;
 	}
 
-	public void setOngoing(ChatSession ongoing) {
-		this.ongoing = ongoing;
-	}
 
 	public Notifier getBroadcastClient() {
 		return broadcastClient;

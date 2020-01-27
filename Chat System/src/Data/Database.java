@@ -20,40 +20,19 @@ public class Database {
 		}
 		return con ; 
 	}
-	
-	// Might get rid of that
-	public static boolean isUnic (String newLogin) {
-		boolean isUnic = true;
-		try {
-			Connection con = startNewConnection();
-			Statement stmt = con.createStatement();
-			ResultSet set = stmt.executeQuery("SELECT COUNT(*) AS count FROM User WHERE login = \'" +newLogin+"\'" );
-			set.next();
-			if(set.getInt("count") !=0) {
-				isUnic = false ;
-			}
-			set.close();
-			con.close();
-		}catch(Exception e) {
-			System.out.println("Erreur de connection à la BDD en raison de \t" + e.getMessage());
-			e.printStackTrace();
-		}
-		return isUnic ;
-	}
+
 	
 	public static boolean updateLogin(String userAddress,String newLogin) {
 		boolean changed = false ;
 		try {
-			if(isUnic(newLogin)) {
-				Connection con = startNewConnection();
-				String query = "UPDATE User SET login = ? WHERE ipAddress LIKE ?";
-			    PreparedStatement preparedStmt = con.prepareStatement(query);
-			    preparedStmt.setString(1, newLogin);
-			    preparedStmt.setString(2, userAddress);
-			    preparedStmt.executeUpdate();
-				changed = true ;
-				con.close();
-			}
+			Connection con = startNewConnection();
+			String query = "UPDATE User SET login = ? WHERE ipAddress LIKE ?";
+			PreparedStatement preparedStmt = con.prepareStatement(query);
+			preparedStmt.setString(1, newLogin);
+			preparedStmt.setString(2, userAddress);
+			preparedStmt.executeUpdate();
+			changed = true ;
+			con.close();
 		}catch(Exception e) {
 			System.out.println("Erreur de connection à la BDD en raison de \t" + e.getMessage());
 			e.printStackTrace();
@@ -91,7 +70,7 @@ public class Database {
 			String ipSender = findIpAddress(sender);
 			String ipRecipient = findIpAddress(recipient);
 			if(ipSender== null || ipRecipient == null ) return null ;
-			ResultSet set1 = stmt1.executeQuery("SELECT * FROM Message WHERE ( exp =\'"+ipSender+"\' AND dest =\'"+ipRecipient+"\') OR ( exp =\'"+ipRecipient+"\' AND dest =\'"+ipSender+"\')" );
+			ResultSet set1 = stmt1.executeQuery("SELECT DISTINCT * FROM Message WHERE ( exp =\'"+ipSender+"\' AND dest =\'"+ipRecipient+"\') OR ( exp =\'"+ipRecipient+"\' AND dest =\'"+ipSender+"\')" );
 			System.out.println("");
 			while (set1.next()) {
 				retrieved.add(new Message(findLogin(set1.getString("exp")),findLogin(set1.getString("dest")),set1.getString("date"),set1.getString("body")));
@@ -144,7 +123,7 @@ public class Database {
 	
 	public static void addUser(User user) {
 		try {
-			if(findIpAddress(user.getLogin()) == null){
+			if(isSaved(user.getIpAddress().getHostAddress())){
 				Connection con = startNewConnection();
 				String query = "INSERT INTO User (login,ipAddress)" + " VALUES (?,?)";
 				PreparedStatement preparedStmt = con.prepareStatement(query);
@@ -174,6 +153,26 @@ public class Database {
 			System.out.println("Erreur de connection à la BDD en raison de \t" + e.getMessage());
 			e.printStackTrace();
 		}
+	}
+	
+	public static boolean isSaved(String ipAddress) {
+		boolean result = true ;
+		try {
+			Connection con = startNewConnection();
+			Statement stmt = con.createStatement();
+			ResultSet set = stmt.executeQuery("SELECT COUNT(*) AS count FROM User WHERE ipAddress = \'" +ipAddress+"\'" );
+			set.next();
+			if(set.getInt("count") !=0) {
+				result = false ;
+			}
+			set.close();
+			con.close();
+		}catch(Exception e) {
+			System.out.println("Erreur de connection à la BDD en raison de \t" + e.getMessage());
+			e.printStackTrace();
+		}
+		
+		return result ;
 	}
 	
 	
