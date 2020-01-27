@@ -81,15 +81,18 @@ public class CreateAccountWindow implements ActionListener, KeyListener{
 	}
 	
 	public void login(String lgn) {		
-		localHost = LocalUser.createAccount(lgn);
-		if(localHost == null)	{
-			errNouveauLogin.setText("Pseudo déjà utilisé");
-		}
-		else {
+		if(lgn.contains(" ")) {
+			errNouveauLogin.setText("Pseudo invalide ");
+		}else {
 			localHost = localHost.authentify(lgn);
-			errNouveauLogin.setText("");
-			if(localHost != null)	new ChatWindow(localHost);
-			//if(localHost == null)	errNouveauLogin.setText("Pseudo déjà utilisé");
+			if(localHost == null)	{
+				errNouveauLogin.setText("Pseudo déjà utilisé");
+			}
+			else {
+				
+				errNouveauLogin.setText("");
+				if(localHost != null)	new ChatWindow(localHost);
+			}
 		}
 	}
 	

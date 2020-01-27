@@ -49,9 +49,9 @@ public class Notifier {
 		
 	}
 	
-	public void notifyLoginChange(){
+	public void notifyLoginChange(String newLog){
 		try {
-			String infos = localHost.getLogin() + " change " + localHost.getIpAddress().getHostAddress() + " " + localHost.getServerPort() ;  
+			String infos = localHost.getLogin() + " change " + localHost.getIpAddress().getHostAddress() + " " + newLog + " " + localHost.getServerPort() ;  
 			buf = infos.getBytes();
 			DatagramPacket packet = new DatagramPacket(buf,buf.length,broadcastAddr,BroadcastServer.BROADCAST_PORT);
 			senderSocket.send(packet);
@@ -124,11 +124,8 @@ public class Notifier {
 			DatagramPacket RespondingPacket = new DatagramPacket(response,response.length);		
 		    senderSocket.setSoTimeout(3000);
 			senderSocket.receive(RespondingPacket);
-			String received = new String(RespondingPacket.getData(), 0, packet.getLength());
-			String value[] = received.split(" ");
-		    if(value[0].equals("free")) {
-		    	unic = true ;
-		    }else {
+			//String received = new String(RespondingPacket.getData(), 0, RespondingPacket.getLength());
+		    if(RespondingPacket != null) {
 		    	unic = false ;
 		    }
 		    //System.out.println(" length of response :    "+value[0].length() );

@@ -13,31 +13,31 @@ import javax.swing.filechooser.FileSystemView;
 public class ChatWindow implements ActionListener,KeyListener {
 	/**
 	 * /!\ NEW GUIDELINES /!\
-	 * Commence par les TODO ?? (icone notepad sur le coté) --- là c'est que du front-end du coup
-	 * Il faut réinitialiser la barre de text quand le message est envoyÃ© !!!
-	 * Faire une fonction statique générique "erreur" ---- comme ca local user can notify the GUI when
-	   there's an issue. L'afficher quelque part sur la fenêtre or pop up --- whatever's easier for ya
+	 * Commence par les TODO ?? (icone notepad sur le cotï¿½) --- lï¿½ c'est que du front-end du coup
+	 * Il faut rï¿½initialiser la barre de text quand le message est envoyÃ© !!!
+	 * Faire une fonction statique gï¿½nï¿½rique "erreur" ---- comme ca local user can notify the GUI when
+	   there's an issue. L'afficher quelque part sur la fenï¿½tre or pop up --- whatever's easier for ya
 	 * Only keep login, change log and chat window
 	 * Il faut empecher l'envoi d'un message quand il n'y a pas de session en cours ( test dest != null)
 	   si non ya null pointer
-	 * J'ai rajouté updateChat ou chaipukoi la qui est censée rafraichir l'affichage de l'historique à chaque envoi
-	   Elle doit appeler la méthode getHistory de ChatSession ---- you'll need me for this one
-	 * Prévoir le cas ou un user veut commencer une session avec qqun d'autre alors qu'il a une session en cours ---- tu peux faire un
+	 * J'ai rajoutï¿½ updateChat ou chaipukoi la qui est censï¿½e rafraichir l'affichage de l'historique ï¿½ chaque envoi
+	   Elle doit appeler la mï¿½thode getHistory de ChatSession ---- you'll need me for this one
+	 * Prï¿½voir le cas ou un user veut commencer une session avec qqun d'autre alors qu'il a une session en cours ---- tu peux faire un
 	 	pop up pour notifier ou mettre une condition (test if dest != null par exemple) and end session before starting anew (i'd rather you do that tbh :) ).
 	 * Is there a way to let the user know -- graphiquement --- that a remote user started a session with him ? like a thread or sum ?
 	 * Can we find a way to resize the window ? chui suure que c'est faisable
-	 * Pourquoi quand on commence une session la liste des connectés disparait ?
+	 * Pourquoi quand on commence une session la liste des connectï¿½s disparait ?
 	 * */
 	private static JPanel affBorder = new JPanel();
 	private static JPanel affInner = new JPanel();
 	private static JLabel affTxt = new JLabel();
 	private static JLabel affNom = new JLabel(); 
+	private static JScrollPane scroll = new JScrollPane(affInner);
 	private static JFrame frame;
 	
-	//private static String dest;
-	
-	private JTextField text;
-	
+	private static JTextField text;
+	private static JLabel affNotif;
+
 	private static JList<String> list;
 	private static DefaultListModel<String> listModel = new DefaultListModel<String>();
 	private static LocalUser localHost ;
@@ -160,9 +160,13 @@ public class ChatWindow implements ActionListener,KeyListener {
 		text.addKeyListener(this);
 		pane.add(text,c);	
 		
-		//creation zone de texte pour changement de login
-		
-		
+		//Zone d'affichage d'erreur
+		affNotif = new JLabel("");
+		c.gridx = 0;
+		c.gridy = 4;
+		c.insets = new Insets(0,0,10,0);
+		pane.add(affNotif,c);
+		frame.add(scroll);
 		frame.pack();
         frame.setVisible(true);
 	
@@ -242,20 +246,29 @@ public class ChatWindow implements ActionListener,KeyListener {
 	    }
     }
     
+    public static void notificationMessage(String message) {
+    	 affNotif.setText(message);
+    	 affNotif.setForeground (Color.red);
+    }
+    
+    
     /**
-     * TODO : Ce serait bien une liste de message qui s'affichent là ou t'affiche le message envoyé.
+     * 
+     * JscrollPad
+     * TODO : Ce serait bien une liste de message qui s'affichent lï¿½ ou t'affiche le message envoyï¿½.
      * Pour le back-end  ----- localHost.getOngoing.getHistory() ---- check it out
       * */
     
     public static void updateMessageDisplay(List<Message> newList) {
     	
     	
-    	//Do your magic here :)
+    	affTxt = new JLabel();
     	
     	ListIterator<Message> iterator = newList.listIterator() ;
 		Message current = null; 
 	    while(iterator.hasNext()){
 	     	current = iterator.next() ;
+	     	affTxt.add(new JLabel(current.toString()));
 			//Another magic trick ^^ 
 	    }
     }
@@ -265,7 +278,9 @@ public class ChatWindow implements ActionListener,KeyListener {
 	    if(localHost.getOngoing() != null && typed == '\n') {    
 			//Send message
 	    	localHost.sendMessage(text.getText());
-	    	//affTxt.setText(text.getText());
+			updateMessageDisplay(localHost.getOngoing().getHistory());
+	    	text.setText("");;
+			
 	    }
 	}
 	  

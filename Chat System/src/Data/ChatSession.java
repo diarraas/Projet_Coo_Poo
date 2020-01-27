@@ -26,12 +26,15 @@ public class ChatSession {
     }
     
     public void addMessage(Message msg) {
+    	System.out.println(exp +"  talking to  " + dest);
     	if(this!= null)	{
     		sentMessages.add(msg);
-	       // Database.addMessage(msg);
+	        Database.addMessage(msg);
 	     // Need to callout to Chat window to print a received message to screen -- using getHistory maybe
     	}
-    	System.out.println("Sent Messages :  \n" + sentMessages.toString());
+    	System.out.println(exp +"  talking to  " + dest);
+
+    	System.out.println("Sent Messages :  \n" + getHistory().toString());
     }
 
 	public String getExp() {
@@ -41,6 +44,16 @@ public class ChatSession {
 
 	public String getDest() {
 		return dest;
+	}
+	
+	public void setDest(String dest) {
+		this.dest = dest ;
+		
+	}
+	
+	public void setExp(String exp) {
+		this.exp = exp ;
+		
 	}
 
 
@@ -55,6 +68,7 @@ public class ChatSession {
 	public void setActive(boolean active) {
 		this.active = active;
 	}
+
 
 
 }

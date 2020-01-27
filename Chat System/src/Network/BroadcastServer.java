@@ -4,6 +4,7 @@ import java.net.*;
 
 import Data.LocalUser;
 import Data.RemoteUser;
+import GraphicUserInterface.ChatWindow;
 
 public class BroadcastServer extends Thread {
 	
@@ -41,37 +42,35 @@ public class BroadcastServer extends Thread {
 			        buf = myinfos.getBytes();
 	         		packet = new DatagramPacket(buf, buf.length, address, port);
 		            broadcastSocket.send(packet);
-		            address = InetAddress.getByName(infos[2]);		            
+		            address = InetAddress.getByName(infos[2]);	
+	         		//ChatWindow.notificationMessage(infos[0] + " est connecté");   	
 		            System.out.println("Nouvelle connexion, maj de la liste des onliners\t" );
 		            RemoteUser newUser = new RemoteUser(infos[0],address);
 		            synchronized(this){
 		               localHost.addUser(newUser);
-		            }
+		            } 
 		            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
 	         	}else if(infos[1].contentEquals("logoff")) {
-		           	System.out.println("Nouvelle deconnexion, maj de la liste des onliners\t");   	
+	         		ChatWindow.notificationMessage(infos[0] + " est deconnecté");   	
 		            localHost.removeUser(localHost.findUserByLogin(infos[0]));
 		            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
 
 		        }else if(infos[1].contentEquals("change")) {
-		           	System.out.println("Received packet : \t"+ received);
-		        	System.out.println("Changement de login retenu, new login is \t"+ infos[0]);
-		        	//localHost.findUserByAddress(InetAddress.getByName("10.192.126.84")).setLogin(infos[0]);
-		           	localHost.findUserByAddress(InetAddress.getByName(infos[2])).setLogin(infos[0]);
+		        	ChatWindow.notificationMessage(infos[0] + " est maintenant "+ infos[3]);
+		           	localHost.findUserByAddress(InetAddress.getByName(infos[2])).setLogin(infos[3]);
+		           	if(localHost.getOngoing() != null && localHost.getOngoing().getDest().equals(infos[0]))
+		           		localHost.getOngoing().setDest(infos[3]);
 		            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
-		           // ChatWindow.updateUsers(localHost.getOnliners());
 
 		        }else if(infos[1].contentEquals("request")) {
 		        	System.out.println("Demande d'information pour \t"+ infos[0]);
-		        	InetAddress address = packet.getAddress();
-		            int port = packet.getPort();
-		            String myinfo = "free";		            
 		        	if(localHost.findUserByLogin(infos[0]) != null) {
-		        		myinfo = "used";
+		        		InetAddress address = packet.getAddress();
+			            int port = packet.getPort();
+			            buf = "used".getBytes();
+		         		packet = new DatagramPacket(buf, buf.length, address, port);
+			            broadcastSocket.send(packet);
 		        	}
-		            buf = myinfo.getBytes();
-	         		packet = new DatagramPacket(buf, buf.length, address, port);
-		            broadcastSocket.send(packet);
 		            
 		        }
 		        

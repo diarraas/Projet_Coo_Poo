@@ -1,6 +1,5 @@
 package Data;
 
-import java.net.InetAddress;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -92,7 +91,7 @@ public class Database {
 			String ipSender = findIpAddress(sender);
 			String ipRecipient = findIpAddress(recipient);
 			if(ipSender== null || ipRecipient == null ) return null ;
-			ResultSet set1 = stmt1.executeQuery("SELECT * FROM Message WHERE ( exp ="+ipSender+" AND dest ="+ipRecipient+") OR ( exp ="+ipRecipient+" AND dest ="+ipSender+")" );
+			ResultSet set1 = stmt1.executeQuery("SELECT * FROM Message WHERE ( exp =\'"+ipSender+"\' AND dest =\'"+ipRecipient+"\') OR ( exp =\'"+ipRecipient+"\' AND dest =\'"+ipSender+"\')" );
 			System.out.println("");
 			while (set1.next()) {
 				retrieved.add(new Message(findLogin(set1.getString("exp")),findLogin(set1.getString("dest")),set1.getString("date"),set1.getString("body")));
@@ -143,37 +142,19 @@ public class Database {
 	} 
 	
 	
-	
-	public static LocalUser findUser(String login) {
-		LocalUser localHost = null ;
-		try {
-			Connection con = startNewConnection();
-			Statement stmt = con.createStatement();
-			ResultSet set = stmt.executeQuery("SELECT * FROM User WHERE login = \'" +login+"\'");
-			if(set.next()) {
-				localHost = new LocalUser();
-				localHost.setLogin(set.getString("login"));
-				localHost.setIpAddress(InetAddress.getByName(set.getString("ipAddress")));
-			}
-			set.close();
-			con.close();
-		}catch(Exception e) {
-			System.out.println("Erreur de connection à la BDD en raison de \t" + e.getMessage());
-			e.printStackTrace();
-		}
-		
-		return localHost ;
-	}
-	
 	public static void addUser(User user) {
 		try {
-			Connection con = startNewConnection();
-			String query = "INSERT INTO User (login,ipAddress)" + " VALUES (?,?)";
-			PreparedStatement preparedStmt = con.prepareStatement(query);
-			preparedStmt.setString(1, user.getLogin());
-		    preparedStmt.setString(2, user.getIpAddress().getHostAddress());
-		    preparedStmt.execute();
-		    con.close();
+			if(findIpAddress(user.getLogin()) == null){
+				Connection con = startNewConnection();
+				String query = "INSERT INTO User (login,ipAddress)" + " VALUES (?,?)";
+				PreparedStatement preparedStmt = con.prepareStatement(query);
+				preparedStmt.setString(1, user.getLogin());
+			    preparedStmt.setString(2, user.getIpAddress().getHostAddress());
+			    preparedStmt.execute();
+			    con.close();
+			}else {
+				updateLogin(user.getIpAddress().getHostAddress(),user.getLogin());
+			}
 		}catch(Exception e) {
 			System.out.println("Erreur de connection à la BDD en raison de \t" + e.getMessage());
 			e.printStackTrace();
@@ -183,8 +164,11 @@ public class Database {
 	public static void removeUser(User user) {
 		try {
 			Connection con = startNewConnection();
-			Statement stmt = con.createStatement();
-			stmt.executeQuery("SELECT login FROM User WHERE ipAddress =\'" +user.getIpAddress().getHostAddress()+"\'");
+			String query = "DELETE FROM User WHERE login = ? AND ipAddress = ? ";
+		      PreparedStatement preparedStmt = con.prepareStatement(query);
+		      preparedStmt.setString(1, user.getLogin());
+		      preparedStmt.setString(2, user.getIpAddress().getHostAddress());
+		      preparedStmt.execute();
 		    con.close();
 		}catch(Exception e) {
 			System.out.println("Erreur de connection à la BDD en raison de \t" + e.getMessage());
@@ -193,10 +177,8 @@ public class Database {
 	}
 	
 	
-	
-	
 	public static void main (String args[]) {
-		//System.out.println(getHistory("Kentin", "Kentin"));
+		
 		
 	}
 	

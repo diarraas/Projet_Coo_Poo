@@ -63,19 +63,14 @@ public class LoginWindow implements ActionListener, KeyListener {
 	
 	}
 	
-	/** 
-	 * 				/!\      NEW GUIDE LINES POUR KENTIN       /!\
-	 * 
-	 *	Ya moyen qu'on garde que cette fenetre et chat session en fait pour faire un truc entièrement decentralisé ---- no need to create
-	 	an account, just login with a unic username mais bon pour l'instant j'ai rien supprimé jai tout mis en commentaire
-	 * 
-	 * 
-	 * **/
-	
 	public void login(String lgc) {
 		localHost = new LocalUser();
 		localHost = localHost.authentify(lgc);
-		new ChatWindow(localHost);
+		if(localHost != null) {
+			new ChatWindow(localHost);
+		}else {
+			errConnectLogin.setText("Login dÃ©jÃ  utilisÃ©");
+		}
 	}
 	
 	public void actionPerformed(ActionEvent e) {
