@@ -56,8 +56,8 @@ public class BroadcastServer extends Thread {
 		        }else if(infos[1].contentEquals("change")) {
 		           	System.out.println("Received packet : \t"+ received);
 		        	System.out.println("Changement de login retenu, new login is \t"+ infos[0]);
-		        	localHost.findUserByAddress(InetAddress.getByName("10.192.126.84")).setLogin(infos[0]);
-		           //	localHost.findUserByAddress(InetAddress.getByName(infos[2])).setLogin(infos[0]);
+		        	//localHost.findUserByAddress(InetAddress.getByName("10.192.126.84")).setLogin(infos[0]);
+		           	localHost.findUserByAddress(InetAddress.getByName(infos[2])).setLogin(infos[0]);
 		            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
 		           // ChatWindow.updateUsers(localHost.getOnliners());
 
@@ -77,7 +77,7 @@ public class BroadcastServer extends Thread {
 		        
 			}catch(Exception e){
 				if(!isRunning()) {
-					System.out.println("Serveur arrêté");
+					System.out.println("Serveur arrï¿½tï¿½");
 				}else {
 					System.out.println("Erreur de lancement du serveur UDP en raison de : \t " + e.getMessage());
 					e.printStackTrace();

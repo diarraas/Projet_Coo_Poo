@@ -22,6 +22,7 @@ public class Database {
 		return con ; 
 	}
 	
+	// Might get rid of that
 	public static boolean isUnic (String newLogin) {
 		boolean isUnic = true;
 		try {
@@ -41,7 +42,7 @@ public class Database {
 		return isUnic ;
 	}
 	
-	public static boolean updateLogin(User user,String newLogin) {
+	public static boolean updateLogin(String userAddress,String newLogin) {
 		boolean changed = false ;
 		try {
 			if(isUnic(newLogin)) {
@@ -49,7 +50,7 @@ public class Database {
 				String query = "UPDATE User SET login = ? WHERE ipAddress LIKE ?";
 			    PreparedStatement preparedStmt = con.prepareStatement(query);
 			    preparedStmt.setString(1, newLogin);
-			    preparedStmt.setString(2, user.getIpAddress().toString());
+			    preparedStmt.setString(2, userAddress);
 			    preparedStmt.executeUpdate();
 				changed = true ;
 				con.close();
@@ -65,16 +66,14 @@ public class Database {
 	public static void addMessage(Message message) {
 		String ipSender = findIpAddress(message.getExp());
 		String ipRecipient = findIpAddress(message.getDest());
-		int newId = findLastMessageId() + 1;
 		try {
 			Connection con = startNewConnection();
-			String query = "INSERT INTO Message (exp,dest,date,body,id)" + " VALUES (?,?,?,?,?)";
+			String query = "INSERT INTO Message (exp,dest,date,body)" + " VALUES (?,?,?,?)";
 			PreparedStatement preparedStmt = con.prepareStatement(query);
 			preparedStmt.setString(1, ipSender);
 			preparedStmt.setString(2, ipRecipient);
 			preparedStmt.setString(3, message.getDate());
 			preparedStmt.setString(4, message.getBody());
-			preparedStmt.setInt(5, newId);
 			preparedStmt.execute();
 			con.close();
 			
@@ -144,23 +143,6 @@ public class Database {
 	} 
 	
 	
-	public static int findLastMessageId() {
-		int id = 0 ;
-		try {
-			Connection con = startNewConnection();
-			Statement stmt = con.createStatement();
-			ResultSet set = stmt.executeQuery("SELECT MAX(id) AS theId FROM Message ");
-			if(set.next()) {
-				id = set.getInt("theID");
-			}
-			set.close();
-			con.close();
-		}catch(Exception e) {
-			System.out.println("Erreur de connection à la BDD en raison de \t" + e.getMessage());
-			e.printStackTrace();
-		}
-		return id ;
-	} 
 	
 	public static LocalUser findUser(String login) {
 		LocalUser localHost = null ;
@@ -183,32 +165,38 @@ public class Database {
 		return localHost ;
 	}
 	
-	public static boolean addUser(User user) {
-		boolean added = false ;
+	public static void addUser(User user) {
 		try {
 			Connection con = startNewConnection();
-			if(isUnic(user.getLogin())) {
-				String query = "INSERT INTO User (login,ipAddress)" + " VALUES (?,?)";
-			    PreparedStatement preparedStmt = con.prepareStatement(query);
-			    preparedStmt.setString(1, user.getLogin());
-			    preparedStmt.setString(2, user.getIpAddress().getHostAddress());
-			    preparedStmt.execute();
-			    added = true;
-			    con.close();
-			}
+			String query = "INSERT INTO User (login,ipAddress)" + " VALUES (?,?)";
+			PreparedStatement preparedStmt = con.prepareStatement(query);
+			preparedStmt.setString(1, user.getLogin());
+		    preparedStmt.setString(2, user.getIpAddress().getHostAddress());
+		    preparedStmt.execute();
+		    con.close();
 		}catch(Exception e) {
 			System.out.println("Erreur de connection à la BDD en raison de \t" + e.getMessage());
 			e.printStackTrace();
 		}
-		return added ;
 	}
 	
-	public static void updateLogin(){
-		
+	public static void removeUser(User user) {
+		try {
+			Connection con = startNewConnection();
+			Statement stmt = con.createStatement();
+			stmt.executeQuery("SELECT login FROM User WHERE ipAddress =\'" +user.getIpAddress().getHostAddress()+"\'");
+		    con.close();
+		}catch(Exception e) {
+			System.out.println("Erreur de connection à la BDD en raison de \t" + e.getMessage());
+			e.printStackTrace();
+		}
 	}
+	
+	
+	
 	
 	public static void main (String args[]) {
-		System.out.println(getHistory("Kentin", "Kentin"));
+		//System.out.println(getHistory("Kentin", "Kentin"));
 		
 	}
 	
