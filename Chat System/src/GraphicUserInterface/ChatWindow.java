@@ -154,6 +154,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 		affNom.setText("");
 		pane.add(affNom,c);
 		
+
 		
 		
 		/*1
@@ -178,7 +179,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 		pane.add(affBorder,c);*/
 		
 		
-		
+
 		//Création zone de saisie de texte
 		text = new JTextField("");
 		c.gridx = 1;
@@ -284,27 +285,35 @@ public static void updateSession(String user) {
 }
     
 /*public static void updateMessagesGraphic(List<Message> messages) {
+=======
+	    }
+	    System.out.println("Tous les gens : " + listModel);
+    }
+    
+    public static void updateMessagesGraphic(List<Message> messages) {
+>>>>>>> 3a090573268808bd546d2597a5a7f6b68a56c2e8
     	
     	listModelMsg.removeAllElements();
+    	
     	
     	ListIterator<Message> iterator = messages.listIterator() ;
 		Message current = null; 
 	    while(iterator.hasNext()){
 	     	current = iterator.next() ;
 			listModelMsg.addElement(current.getBody());
-			
-			listMsg = new JList<String>(listModelMsg);			
+			listMsg = new JList<String>(listModelMsg);	
+		    listMsg.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	        listMsg.setSelectedIndex(0);
 	        listMsg.setVisibleRowCount(15);
 	        
 	    }
-	    listModelMsg.addElement("Hello");
+	    
+	    System.out.println("Tous les messages : " + listModelMsg);
+	    
     }
+<<<<<<< HEAD
 */    
-    public static void notificationMessage(String message) {
-    	 affNotif.setText(message);
-    	 affNotif.setForeground (Color.red);
-    }
-    
+
     
      
     public static void updateMessageDisplay(List<Message> newList) {
