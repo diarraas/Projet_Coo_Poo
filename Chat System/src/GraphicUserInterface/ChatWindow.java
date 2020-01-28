@@ -254,17 +254,24 @@ public class ChatWindow implements ActionListener,KeyListener {
 	        
 	        		if (e.getClickCount() == 2) {
 			            int index = list.locationToIndex(e.getPoint());
-			            dest = (String) listModel.getElementAt(index);
-			            localHost.startSession(dest);
-			            affNom.setText("Conversation avec " + dest);			            
-			            quitSession.setEnabled(true);
-			            sendFile.setEnabled(true);
+			            updateSession((String) listModel.getElementAt(index));			            
 	        		}
 	        	}
 	        });
 	        list.setVisibleRowCount(15);
 	    }
     }
+    
+public static void updateSession(String user) {
+	
+	dest = user;
+	
+	localHost.startSession(dest);
+    affNom.setText("Conversation avec " + dest);			            
+    quitSession.setEnabled(true);
+    sendFile.setEnabled(true);
+	
+}
     
 public static void updateMessagesGraphic(List<Message> messages) {
     	

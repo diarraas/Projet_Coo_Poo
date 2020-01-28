@@ -62,7 +62,7 @@ public class MessageListener extends Thread{
 				                	localHost.startSession(exp);
 				                	localHost.findSessionWith(exp).addMessage(msg);
 				        	        Database.addMessage(msg);
-				                	ChatWindow.dest = exp ;
+				                	ChatWindow.updateSession(exp);
 					        	}else if(object.getCanonicalName().equals(File.class.getCanonicalName())){
 					        		System.out.println("Got a file");
 					        		File file = (File) data ;
