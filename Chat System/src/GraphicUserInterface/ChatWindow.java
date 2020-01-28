@@ -25,23 +25,23 @@ public class ChatWindow implements ActionListener,KeyListener {
 	   
 	 * Pr�voir le cas ou un user veut commencer une session avec qqun d'autre alors qu'il a une session en cours ---- tu peux faire un
 	 	pop up pour notifier ou mettre une condition (test if dest != null par exemple) and end session before starting anew (i'd rather you do that tbh :) ).
-	 	
-	 * Is there a way to let the user know -- graphiquement --- that a remote user started a session with him ? like a thread or sum ?
 	 * 
 	 * Can we find a way to resize the window ? chui suure que c'est faisable
 	 * 
 	 * Pourquoi quand on commence une session la liste des connect�s disparait ?
 	 * */
 	
-	private static JPanel affBorder = new JPanel();
-	private static JPanel affInner = new JPanel();
-	private static JLabel affTxt = new JLabel();
+	//private static JPanel affBorder = new JPanel();
+	//private static JPanel affInner = new JPanel();
+	//private static JTextArea affTxt = new JTextArea();
 	private static JLabel affNom = new JLabel(); 
-	private static JScrollPane scroll = new JScrollPane(affTxt);
 	private static JFrame frame;
-	
+	private static Container pane ;
 	private static JTextField text;
 	private static JLabel affNotif;
+	//private static JPanel chatDisplay = new JPanel();
+	//private static JTextArea chatText = new JTextArea(500,400);
+	//private static JScrollPane chatScroll = new JScrollPane(chatText);
 
 	private static JList<String> list;
 	private static DefaultListModel<String> listModel = new DefaultListModel<String>();
@@ -71,17 +71,23 @@ public class ChatWindow implements ActionListener,KeyListener {
         	public void windowClosing(WindowEvent e) {
         		localHost.disconnect();
         		frame.dispose();
-        		new HomeWindow();
+            	System.exit(0);
         	}       	
         });
         
         //frame.setResizable(false);
-        Container pane = frame.getContentPane();
+        pane = frame.getContentPane();
         
 	    
 		pane.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();		
 		
+		/*  Ajout de la zone d'affichage des messages
+		chatText.setEditable(false);
+		chatScroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
+		chatDisplay.add(chatScroll);
+		*/
+	
 		
 		//affichage label "People Online"
 		JLabel onliners = new JLabel("Utilisateurs en ligne :");
@@ -98,14 +104,17 @@ public class ChatWindow implements ActionListener,KeyListener {
         c.gridx = 0;
 		c.gridy = 1;        
         pane.add(listScrollPane,c);
-        
-        JScrollPane listScrollMsg = new JScrollPane(listMsg); 
-		listScrollMsg.setPreferredSize(new Dimension(150, 490));
-        c.gridx = 1;
-		c.gridy = 1;
-		c.gridwidth = 3;
-		c.anchor = GridBagConstraints.LINE_END;
-        pane.add(listScrollMsg,c);
+    
+        //Création de la zone d'affichage de texte
+		
+  		JScrollPane listScrollMsg = new JScrollPane(listMsg); 
+  		listScrollMsg.setPreferredSize(new Dimension(520,490));
+  		c.gridx = 1;
+  		c.gridy = 1;
+  		c.gridwidth = 2;
+  		c.anchor = GridBagConstraints.LINE_START;
+          
+  		pane.add(listScrollMsg,c);
         
         
         /*		Chat Options 	*/
@@ -131,7 +140,6 @@ public class ChatWindow implements ActionListener,KeyListener {
 		changeLogin.addActionListener(this);
 		pane.add(changeLogin,c);
         
-        //Test de l'envoi de fichier
         sendFile = new JButton("Envoyer un fichier");
         c.gridx = 3;
         c.gridy = 0;
@@ -145,6 +153,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 		c.gridy = 0;
 		affNom.setText("");
 		pane.add(affNom,c);
+		
 		
 		
 		/*1
@@ -168,6 +177,8 @@ public class ChatWindow implements ActionListener,KeyListener {
 		
 		pane.add(affBorder,c);*/
 		
+		
+		
 		//Création zone de saisie de texte
 		text = new JTextField("");
 		c.gridx = 1;
@@ -185,7 +196,6 @@ public class ChatWindow implements ActionListener,KeyListener {
 		c.gridy = 4;
 		c.insets = new Insets(0,0,10,0);
 		pane.add(affNotif,c);
-		//affTxt.add(scroll);
 		frame.pack();
         frame.setVisible(true);
 	
@@ -195,7 +205,7 @@ public class ChatWindow implements ActionListener,KeyListener {
     	if (e.getActionCommand().equals("Deconnexion")) {
     		ChatWindow.localHost.disconnect();
     		frame.dispose();
-    		new LoginWindow();
+        	System.exit(0);
     	}
     	else if (e.getActionCommand().equals("Fin de session")) {
     		/** Clear l'affichage 
@@ -223,7 +233,7 @@ public class ChatWindow implements ActionListener,KeyListener {
             
             if (r == JFileChooser.APPROVE_OPTION) { 
             	
-            	localHost.sendFile(chooser.getSelectedFile().getAbsolutePath());
+            	localHost.sendFile(dest,chooser.getSelectedFile().getAbsolutePath());
             }    
     	}else if (e.getActionCommand().equals("save")){
     		JFileChooser chooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory()); 
@@ -231,7 +241,7 @@ public class ChatWindow implements ActionListener,KeyListener {
             
             if (r == JFileChooser.APPROVE_OPTION) { 
             	
-            	localHost.sendFile(chooser.getSelectedFile().getAbsolutePath());
+            	localHost.sendFile(dest,chooser.getSelectedFile().getAbsolutePath());
             }    
     	}
     }
@@ -245,7 +255,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 	    while(iterator.hasNext()){
 	     	current = iterator.next() ;
 			listModel.addElement(current.getLogin());
-			
+	    }
 			list = new JList<String>(listModel);
 	        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	        list.setSelectedIndex(0);
@@ -259,7 +269,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 	        	}
 	        });
 	        list.setVisibleRowCount(15);
-	    }
+	    
     }
     
 public static void updateSession(String user) {
@@ -273,7 +283,7 @@ public static void updateSession(String user) {
 	
 }
     
-public static void updateMessagesGraphic(List<Message> messages) {
+/*public static void updateMessagesGraphic(List<Message> messages) {
     	
     	listModelMsg.removeAllElements();
     	
@@ -289,29 +299,22 @@ public static void updateMessagesGraphic(List<Message> messages) {
 	    }
 	    listModelMsg.addElement("Hello");
     }
-    
+*/    
     public static void notificationMessage(String message) {
     	 affNotif.setText(message);
     	 affNotif.setForeground (Color.red);
     }
     
     
-    
-    
+     
     public static void updateMessageDisplay(List<Message> newList) {
-    	
-    	
-    	affTxt = new JLabel();
-    	affTxt.setText(newList.toString());
-    	
-    	/*ListIterator<Message> iterator = newList.listIterator() ;
-		Message current = null; 
-	    while(iterator.hasNext()){
-	     	current = iterator.next() ;
-	     	//affInner.add(new JLabel(current.toString()));
-	     	affTxt.add(new JLabel(current.toString()));
-			//Another magic trick ^^ 
-	    }*/
+        ListIterator<Message> iterator = newList.listIterator() ;
+    	Message current = null; 
+    	String finalDisplay = "";
+    	while(iterator.hasNext()){
+    	   	current = iterator.next() ;
+    	   	finalDisplay = finalDisplay + "\n" + current.toString();    	        
+    	}
     }
     
     public void keyTyped(KeyEvent keyEvent) {
@@ -320,9 +323,8 @@ public static void updateMessagesGraphic(List<Message> messages) {
 	    	if(localHost.findSessionWith(dest) != null) {
 				//Send message
 		    	localHost.sendMessage(dest,text.getText());
-				//updateMessageDisplay(localHost.findSessionWith(dest).getHistory());
+				updateMessageDisplay(localHost.findSessionWith(dest).getHistory());
 		    	text.setText("");;
-		    	listModelMsg.addElement(text.getText());
 	    	}else {
 	    		/**
 	    		 * TODO

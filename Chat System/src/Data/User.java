@@ -53,6 +53,6 @@ public class User {
 	}
 	
 	public String toString() {
-		return ("User : \t " + login + " \t @Ip : \t" + ipAddress.toString() +"   :   "+ serverPort);
+		return ("User : \t " + login + "   @Ip : \t" + ipAddress.toString() );
 	}
 }

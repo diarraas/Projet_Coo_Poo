@@ -5,7 +5,6 @@ import java.net.*;
 import Data.ChatSession;
 import Data.LocalUser;
 import Data.RemoteUser;
-import GraphicUserInterface.ChatWindow;
 
 public class BroadcastServer extends Thread {
 	
@@ -44,7 +43,6 @@ public class BroadcastServer extends Thread {
 	         		packet = new DatagramPacket(buf, buf.length, address, port);
 		            broadcastSocket.send(packet);
 		            address = InetAddress.getByName(infos[2]);	
-	         		//ChatWindow.notificationMessage(infos[0] + " est connecté");   	
 		            System.out.println("Nouvelle connexion, maj de la liste des onliners\t" );
 		            RemoteUser newUser = new RemoteUser(infos[0],address);
 		            synchronized(this){
@@ -52,14 +50,12 @@ public class BroadcastServer extends Thread {
 		            } 
 		            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
 	         	}else if(infos[1].contentEquals("logoff")) {
-	         		ChatWindow.notificationMessage(infos[0] + " est deconnecté");   	
 		            synchronized(this){
 	         			localHost.removeUser(localHost.findUserByLogin(infos[0]));
 		            }
 	         		System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
 
 		        }else if(infos[1].contentEquals("change")) {
-		        	ChatWindow.notificationMessage(infos[0] + " est maintenant "+ infos[3]);
 		           	localHost.updateOnliners(infos[0],infos[3]);
 		           	ChatSession session = (localHost.findSessionWith(infos[0]));
 		           	if(session != null)

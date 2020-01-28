@@ -48,8 +48,9 @@ public class LocalUser extends User {
 	        this.setLogin(newLog);
 	        updateChatSession(newLog);
 	        Database.updateLogin(getIpAddress().getHostAddress(), newLog);
-    		ChatWindow.updateUsers(onliners);
-	     }
+    		DiscussionWindow.updateOnlineUsers(onliners);
+ 
+    	}
     	return changed ;
     }
     
@@ -63,6 +64,7 @@ public class LocalUser extends User {
 	        setStatus(true);
 	        Database.addUser(authentified);
 		}
+		System.out.println("Login got : " + authentified);
 		return authentified ;
     }
      
@@ -72,33 +74,44 @@ public class LocalUser extends User {
     	broadcastServer.setRunning(false);
     	messageServer.setRunning(false);
     	setStatus(false);
-
     }
     
     public void sendMessage(String dest,String msg){
-    	
     	RemoteUser remote = findUserByLogin(dest);
-    	if(remote != null){
-    		ongoing.add(new ChatSession(getLogin(),dest));
-    		InetAddress remoteAddr = remote.getIpAddress();
-        	int remotePort = remote.getServerPort();
-        	messageClient = new MessageSender(this,remoteAddr,remotePort);
-        	messageClient.sendMessage(msg);
+    	if(findSessionWith(dest) != null) {
+	    	if(remote != null){
+	    		InetAddress remoteAddr = remote.getIpAddress();
+	        	int remotePort = remote.getServerPort();
+	        	messageClient = new MessageSender(this,remoteAddr,remotePort);
+	        	messageClient.sendMessage(msg);
+	    	}
+    	}else {
+    		new NotificationWindow("Pas de session avec " + dest);
+
     	}
     }   
     
-    public void sendFile(String path){
-    	messageClient.sendFile(path);
-    }
+    public void sendFile(String dest,String path){
+    	RemoteUser remote = findUserByLogin(dest);
+    	if(findSessionWith(dest) != null) {
+	    	if(remote != null){
+	    		InetAddress remoteAddr = remote.getIpAddress();
+	        	int remotePort = remote.getServerPort();
+	        	messageClient = new MessageSender(this,remoteAddr,remotePort);
+	        	messageClient.sendFile(path);
+	    	}
+    	}else {
+    		new NotificationWindow("Pas de session avec " + dest);
+
+    	}
+    }   
     
-    
-    public void startSession(String dest){
+    public synchronized void startSession(String dest){
 	    	RemoteUser remote = findUserByLogin(dest);
 	    	if(remote != null){
-	    		ongoing.add(new ChatSession(getLogin(),dest));
-	        	 
+	    		if(findSessionWith(dest) == null)		ongoing.add(new ChatSession(getLogin(),dest));
 	    	} else{
-	    		ChatWindow.notificationMessage("Utilisateur offline ou non existant");
+	    		new NotificationWindow("Utilisateur offline ou non existant");
 	    	}
     }
     
@@ -106,15 +119,18 @@ public class LocalUser extends User {
     public synchronized void addUser(RemoteUser user){
     	if((onliners.size() != 0 && !onliners.contains(user)) || onliners.size() == 0) {
     		onliners.add(user);
-    		ChatWindow.updateUsers(onliners);
+    		//ChatWindow.updateUsers(onliners);
+    		//DiscussionWindow.updateOnlineUsers(onliners);
     	}
 
     }
     
-    public void removeUser(RemoteUser user){
+    public synchronized void removeUser(RemoteUser user){
     	if(onliners.size() != 0 && onliners.contains(user)) {
     		onliners.remove(user);
-    		ChatWindow.updateUsers(onliners);
+    		//ChatWindow.updateUsers(onliners);
+    		DiscussionWindow.updateOnlineUsers(onliners);
+
     	}
     }
     
@@ -145,13 +161,12 @@ public class LocalUser extends User {
     	return temp ;
 	}
 
-	public void endSessionWith(String dest){
-		
+	public synchronized void endSessionWith(String dest){
+		sendMessage(dest,"END");
 		if(ongoing.remove(findSessionWith(dest))){
-			messageClient.close();
-			ChatWindow.notificationMessage("Fin de session avec:  " + dest);
+			new NotificationWindow("Fin de session avec:  " + dest);
 		}else {
-			ChatWindow.notificationMessage("Pas de session en cours avec " + dest);
+			new NotificationWindow("Pas de session en cours avec " + dest);
 		}
 	}
 	
@@ -183,7 +198,7 @@ public class LocalUser extends User {
 	}
 	public void updateOnliners(String old, String newLog) {
 		findUserByLogin(old).setLogin(newLog);
-		ChatWindow.updateUsers(onliners);
+		DiscussionWindow.updateOnlineUsers(onliners);
 	}
 	
 	

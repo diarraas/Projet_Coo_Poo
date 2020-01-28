@@ -67,7 +67,7 @@ public class LoginWindow implements ActionListener, KeyListener {
 		localHost = new LocalUser();
 		localHost = localHost.authentify(lgc);
 		if(localHost != null) {
-			new ChatWindow(localHost);
+			new DiscussionWindow(localHost);
 			frame.dispose();	
 		}else {
 			errConnectLogin.setText("Login déjà utilisé");

@@ -86,10 +86,11 @@ public class Notifier {
 			    		localHost.addUser(newUser);
 			    	}
 			    }
-			    
-			    senderSocket.setSoTimeout(3000);
+			    response = new byte [65535];
+				RespondingPacket = new DatagramPacket(response,response.length);								
+			    senderSocket.setSoTimeout(1500);
 			    senderSocket.receive(RespondingPacket);
-			    received = new String(RespondingPacket.getData(), 0, packet.getLength());
+			    received = new String(RespondingPacket.getData(), 0, RespondingPacket.getLength());
 		    }
 			
 		}catch(IOException e) {	}
@@ -125,19 +126,14 @@ public class Notifier {
 			DatagramPacket RespondingPacket = new DatagramPacket(response,response.length);		
 		    senderSocket.setSoTimeout(3000);
 			senderSocket.receive(RespondingPacket);
-			//String received = new String(RespondingPacket.getData(), 0, RespondingPacket.getLength());
+			String received = new String(RespondingPacket.getData(), 0, RespondingPacket.getLength());
 		    
 			if(RespondingPacket!=null) {
 		    	unic = false ;
 		    }
-			
-		    //System.out.println(" length of response :    "+value[0].length() );
-		    //System.out.println(" Reponse du broadcast :    "+value[0]+"   Value is " + unic );
-			
+			System.out.println("Got received : " +received + unic );
 		}catch(IOException e) {	
 			unic = true ;
-			//System.out.println("Erreur de demande d'information en raison de \t" + e.getMessage());
-			//e.printStackTrace();
 		}
 		close();
 		return unic ;

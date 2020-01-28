@@ -84,7 +84,7 @@ public class ChangeWindow  implements ActionListener, KeyListener{
 	
 	public void login(String lgn) {		
 		if(!localHost.changeLogin(lgn))	{
-			errArea.setText("Pseudo déjà utilisé");
+			errArea.setText("Pseudo deja utilise");
 		}
 		else{
 			ChatWindow.updateUsers(localHost.getOnliners());

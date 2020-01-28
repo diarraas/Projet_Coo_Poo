@@ -1,9 +1,10 @@
 package Network;
 import java.io.*;
 import java.net.*;
+import java.util.ConcurrentModificationException;
 
 import Data.*;
-import GraphicUserInterface.ChatWindow;
+import GraphicUserInterface.DiscussionWindow;
 
 public class MessageListener extends Thread{
     
@@ -39,51 +40,68 @@ public class MessageListener extends Thread{
 			try{
 				Socket remote = serverSocket.accept();
 				Runnable messageHandler = new Runnable() {
+					private BufferedOutputStream bos;
+
 					public void run() {
 		            	try {
 							byte [] byteData = new byte [65535];					
 					        InputStream is = remote.getInputStream();
-					        InputStream wrappedStream = new PushbackInputStream(is, 65535);
-					        int bytesRead = is.read(byteData,0,byteData.length);	
-					        int current = bytesRead;
-			
-					        while(bytesRead > -1) {
-					           bytesRead = is.read(byteData, current, (byteData.length-current));
-					           if(bytesRead >= 0) current += bytesRead;
-					        } 
-
-					        Object data = deserialize(byteData);
-					        if(data == null) System.out.println("data null ---- why ?");
-					        Class<? extends Object> object = data.getClass();
-					        if(object !=null){
-					        	if(object.getCanonicalName().equals(Message.class.getCanonicalName())){
-					        		Message msg = (Message) data;
-					        		String exp = msg.getExp();
-				                	localHost.startSession(exp);
-				                	localHost.findSessionWith(exp).addMessage(msg);
-				        	        Database.addMessage(msg);
-				                	ChatWindow.updateSession(exp);
-					        	}else if(object.getCanonicalName().equals(File.class.getCanonicalName())){
-					        		System.out.println("Got a file");
-					        		File file = (File) data ;
-						        	FileOutputStream fos = new FileOutputStream("Chat System/Files/"+file.getName());
-						            BufferedOutputStream bos = new BufferedOutputStream(fos);
-					                byteData = new byte[65535];
-							        bytesRead = 0;	
-							        //N'entre pas de le while
-							        ((PushbackInputStream) wrappedStream).unread(byteData, 0, current);
-							        while((bytesRead=wrappedStream.read(byteData)) > -1) {
-							        	bos.write(byteData,0,bytesRead);
-									    System.out.println("Bytes read :" + bytesRead);
-   
-							        } 
-					                bos.flush();
-					        	}
+					        if(is!= null) {
+						        InputStream wrappedStream = new PushbackInputStream(is, 65535);
+						        int bytesRead = is.read(byteData,0,byteData.length);	
+						        int current = bytesRead;
+				
+						        while(bytesRead > -1) {
+						           bytesRead = is.read(byteData, current, (byteData.length-current));
+						           if(bytesRead >= 0) current += bytesRead;
+						        } 
+	
+						        Object data = deserialize(byteData);
+						        Class<? extends Object> object = data.getClass();
+						        if(object !=null){
+						        	if(object.getCanonicalName().equals(Message.class.getCanonicalName())){
+						        		Message msg = (Message) data;
+						        		String exp = msg.getExp();
+					                	if(msg.getBody().equals("END")) {
+					                		System.out.println("Demande de cloture");
+					                		synchronized(this) {
+					                			localHost.endSessionWith(exp);
+					                		}
+					                	}else {
+					                		synchronized(this) {
+					                			localHost.startSession(exp);
+					                			localHost.findSessionWith(exp).addMessage(msg);
+					                		}
+					                		Database.addMessage(msg);
+					                		DiscussionWindow.updateSession(exp);
+					                	}
+						        	}else if(object.getCanonicalName().equals(File.class.getCanonicalName())){
+						        		System.out.println("Got a file");
+						        		File file = (File) data ;
+						        		File myfile = new File("Chat System/Files/"+file.getName());
+							        	FileOutputStream fos = new FileOutputStream(myfile);
+							            bos = new BufferedOutputStream(fos);
+						                byteData = new byte[65535];
+								        bytesRead = 0;	
+								        //N'entre pas de le while
+								        ((PushbackInputStream) wrappedStream).unread(byteData, 0, current);
+								        while((bytesRead=wrappedStream.read(byteData)) > -1) {
+								        	bos.write(byteData,0,bytesRead);
+										    System.out.println("Bytes read :" + bytesRead);
+	   
+								        } 
+						                bos.flush();
+						        	}
+						        }
 					        }
 			                	
 			                
-		            	} catch ( Exception e) {
-	                  		//System.out.println("Erreur d'extraction du message en raison de :\t" + e.getMessage() );
+		            	}catch(ConcurrentModificationException e) {
+		            		
+		            	} 
+		            	
+		            	catch ( Exception e) {
+	                  		System.out.println("Erreur d'extraction du message en raison de :\t" + e.getMessage() );
 	            			e.printStackTrace();
 	                  }
 	            }

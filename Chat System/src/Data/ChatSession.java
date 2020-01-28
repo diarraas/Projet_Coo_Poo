@@ -1,7 +1,6 @@
 package Data;
 
 import java.util.List;
-import GraphicUserInterface.* ;
 
 public class ChatSession {
 	private String exp ;
@@ -26,13 +25,8 @@ public class ChatSession {
     }
     
     public void addMessage(Message msg) {
-    	if(this!= null)	{
-    		this.sentMessages.add(msg);
-    	}
-    	ChatWindow.updateMessagesGraphic(this.sentMessages);
+		this.sentMessages.add(msg);
     	System.out.println(sentMessages.toString());
-
-    	//System.out.println("Sent Messages :  \n" + getHistory().toString());
     }
 
 	public String getExp() {

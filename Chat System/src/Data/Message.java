@@ -18,7 +18,6 @@ public class Message implements Serializable {
 	}
 	
 	public String toString(){
-		//return ("\n de  \t " + exp + "\n Le : \t" + date + "\n Message : \t" + body);
 		return("[ " + date +" ] "+ exp+" : \t"+ body+"\n") ;
 	}
 
