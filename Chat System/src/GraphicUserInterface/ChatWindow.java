@@ -14,17 +14,25 @@ public class ChatWindow implements ActionListener,KeyListener {
 	/**
 	 * /!\ NEW GUIDELINES /!\
 	 * Commence par les TODO ?? (icone notepad sur le cot�) --- l� c'est que du front-end du coup
+	 * 
 	 * Faire une fonction statique g�n�rique "erreur" ---- comme ca local user can notify the GUI when
 	   there's an issue. L'afficher quelque part sur la fen�tre or pop up --- whatever's easier for ya
+	   
 	 * Only keep login, change log and chat window
+	 * 
 	 * J'ai rajout� updateChat ou chaipukoi la qui est cens�e rafraichir l'affichage de l'historique � chaque envoi
 	   Elle doit appeler la m�thode getHistory de ChatSession ---- you'll need me for this one
+	   
 	 * Pr�voir le cas ou un user veut commencer une session avec qqun d'autre alors qu'il a une session en cours ---- tu peux faire un
 	 	pop up pour notifier ou mettre une condition (test if dest != null par exemple) and end session before starting anew (i'd rather you do that tbh :) ).
+	 	
 	 * Is there a way to let the user know -- graphiquement --- that a remote user started a session with him ? like a thread or sum ?
+	 * 
 	 * Can we find a way to resize the window ? chui suure que c'est faisable
+	 * 
 	 * Pourquoi quand on commence une session la liste des connect�s disparait ?
 	 * */
+	
 	private static JPanel affBorder = new JPanel();
 	private static JPanel affInner = new JPanel();
 	private static JLabel affTxt = new JLabel();
@@ -37,6 +45,10 @@ public class ChatWindow implements ActionListener,KeyListener {
 
 	private static JList<String> list;
 	private static DefaultListModel<String> listModel = new DefaultListModel<String>();
+	
+	private static JList<String> listMsg;
+	private static DefaultListModel<String> listModelMsg = new DefaultListModel<String>();
+	
 	private static LocalUser localHost ;
 	
 	
@@ -87,6 +99,14 @@ public class ChatWindow implements ActionListener,KeyListener {
 		c.gridy = 1;        
         pane.add(listScrollPane,c);
         
+        JScrollPane listScrollMsg = new JScrollPane(listMsg); 
+		listScrollMsg.setPreferredSize(new Dimension(150, 490));
+        c.gridx = 1;
+		c.gridy = 1;
+		c.gridwidth = 3;
+		c.anchor = GridBagConstraints.LINE_END;
+        pane.add(listScrollMsg,c);
+        
         
         /*		Chat Options 	*/
         logOut = new JButton("Deconnexion");
@@ -126,8 +146,8 @@ public class ChatWindow implements ActionListener,KeyListener {
 		affNom.setText("");
 		pane.add(affNom,c);
 		
-					
 		
+		/*1
 		//Création zone d'affichage de la conversation		
 		Border border = BorderFactory.createLineBorder(Color.BLACK, 1);	
 		affBorder.setBorder(border);
@@ -146,7 +166,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 		affInner.add(affTxt);
 		affBorder.add(affInner);
 		
-		pane.add(affBorder,c);
+		pane.add(affBorder,c);*/
 		
 		//Création zone de saisie de texte
 		text = new JTextField("");
@@ -165,7 +185,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 		c.gridy = 4;
 		c.insets = new Insets(0,0,10,0);
 		pane.add(affNotif,c);
-		affTxt.add(scroll);
+		//affTxt.add(scroll);
 		frame.pack();
         frame.setVisible(true);
 	
@@ -235,7 +255,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 			            int index = list.locationToIndex(e.getPoint());
 			            dest = (String) listModel.getElementAt(index);
 			            localHost.startSession(dest);
-			            affNom.setText("Conversation avec " + listModel.getElementAt(index));			            
+			            affNom.setText("Conversation avec " + dest);			            
 			            quitSession.setEnabled(true);
 			            sendFile.setEnabled(true);
 	        		}
@@ -245,32 +265,45 @@ public class ChatWindow implements ActionListener,KeyListener {
 	    }
     }
     
+public static void updateMessagesGraphic(List<Message> messages) {
+    	
+    	listModelMsg.removeAllElements();
+    	
+    	ListIterator<Message> iterator = messages.listIterator() ;
+		Message current = null; 
+	    while(iterator.hasNext()){
+	     	current = iterator.next() ;
+			listModelMsg.addElement(current.getBody());
+			
+			listMsg = new JList<String>(listModelMsg);			
+	        listMsg.setVisibleRowCount(15);
+	        
+	    }
+	    listModelMsg.addElement("Hello");
+    }
+    
     public static void notificationMessage(String message) {
     	 affNotif.setText(message);
     	 affNotif.setForeground (Color.red);
     }
     
     
-    /**
-     * 
-     * JscrollPad
-     * TODO : Ce serait bien une liste de message qui s'affichent l� ou t'affiche le message envoy�.
-     * Pour le back-end  ----- localHost.findSessionWith(Dest).getSentMessage() ---- check it out
-      * */
+    
     
     public static void updateMessageDisplay(List<Message> newList) {
     	
     	
     	affTxt = new JLabel();
+    	affTxt.setText(newList.toString());
     	
-    	ListIterator<Message> iterator = newList.listIterator() ;
+    	/*ListIterator<Message> iterator = newList.listIterator() ;
 		Message current = null; 
 	    while(iterator.hasNext()){
 	     	current = iterator.next() ;
-	     	affInner.add(new JLabel(current.toString()));
+	     	//affInner.add(new JLabel(current.toString()));
 	     	affTxt.add(new JLabel(current.toString()));
 			//Another magic trick ^^ 
-	    }
+	    }*/
     }
     
     public void keyTyped(KeyEvent keyEvent) {
@@ -281,6 +314,7 @@ public class ChatWindow implements ActionListener,KeyListener {
 		    	localHost.sendMessage(text.getText());
 				updateMessageDisplay(localHost.findSessionWith(dest).getHistory());
 		    	text.setText("");;
+		    	listModelMsg.addElement(text.getText());
 	    	}else {
 	    		/**
 	    		 * TODO

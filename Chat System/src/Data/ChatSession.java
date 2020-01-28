@@ -1,7 +1,7 @@
 package Data;
 
-import java.util.ArrayList;
 import java.util.List;
+import GraphicUserInterface.* ;
 
 public class ChatSession {
 	private String exp ;
@@ -13,7 +13,6 @@ public class ChatSession {
     	exp = send ;
     	dest = rec ;
     	this.updateMessages();
-    	if(this.sentMessages == null)	this.sentMessages = new ArrayList<Message>();
     	active = true ;
     }
     
@@ -30,6 +29,7 @@ public class ChatSession {
     	if(this!= null)	{
     		this.sentMessages.add(msg);
     	}
+    	ChatWindow.updateMessagesGraphic(this.sentMessages);
     	System.out.println(sentMessages.toString());
 
     	//System.out.println("Sent Messages :  \n" + getHistory().toString());

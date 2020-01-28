@@ -69,7 +69,6 @@ public class Database {
 			Statement stmt1 = con.createStatement();
 			String ipSender = findIpAddress(sender);
 			String ipRecipient = findIpAddress(recipient);
-			if(ipSender== null || ipRecipient == null ) return null ;
 			ResultSet set1 = stmt1.executeQuery("SELECT DISTINCT * FROM Message WHERE ( exp =\'"+ipSender+"\' AND dest =\'"+ipRecipient+"\') OR ( exp =\'"+ipRecipient+"\' AND dest =\'"+ipSender+"\')" );
 			System.out.println("");
 			while (set1.next()) {
