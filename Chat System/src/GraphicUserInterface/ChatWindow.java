@@ -186,6 +186,7 @@ public class ChatWindow implements ActionListener,KeyListener {
     		 */
 
     		localHost.endSessionWith(dest);
+    		dest = null ;
     		quitSession.setEnabled(false);
     		   	
     		
@@ -278,8 +279,8 @@ public class ChatWindow implements ActionListener,KeyListener {
 	    if(typed == '\n') {
 	    	if(localHost.findSessionWith(dest) != null) {
 				//Send message
-		    	localHost.sendMessage(text.getText());
-				updateMessageDisplay(localHost.findSessionWith(dest).getHistory());
+		    	localHost.sendMessage(dest,text.getText());
+				//updateMessageDisplay(localHost.findSessionWith(dest).getHistory());
 		    	text.setText("");;
 	    	}else {
 	    		/**

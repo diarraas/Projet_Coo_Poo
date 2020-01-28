@@ -51,6 +51,7 @@ public class MessageSender {
 	        os.flush();												
 	        os.close();	 
 	        localHost.findSessionWith(remoteUser.getLogin()).addMessage(sentMessage);
+	        clientSocket.close();
 		}catch(Exception e){
 	    	System.out.println("Erreur d'envoi de message en raison de : \t " + e.getMessage());
 	    	e.printStackTrace();
