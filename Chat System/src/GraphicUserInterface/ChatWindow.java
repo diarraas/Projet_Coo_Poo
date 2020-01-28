@@ -102,9 +102,7 @@ public class ChatWindow implements ActionListener,KeyListener {
         JScrollPane listScrollMsg = new JScrollPane(listMsg); 
 		listScrollMsg.setPreferredSize(new Dimension(150, 490));
         c.gridx = 1;
-		c.gridy = 1;
-		c.gridwidth = 3;
-		c.anchor = GridBagConstraints.LINE_END;
+		c.gridy = 1;		
         pane.add(listScrollMsg,c);
         
         
@@ -145,28 +143,6 @@ public class ChatWindow implements ActionListener,KeyListener {
 		c.gridy = 0;
 		affNom.setText("");
 		pane.add(affNom,c);
-		
-		
-		/*1
-		//Création zone d'affichage de la conversation		
-		Border border = BorderFactory.createLineBorder(Color.BLACK, 1);	
-		affBorder.setBorder(border);
-		affInner.setBorder(border);
-		
-		//affBorder.setBounds(500,0,500, (noms.length * 410)/15 );
-		//affBorder.setMaximumSize(new Dimension(500,(noms.length*410)/15));
-		//affBorder.setMinimumSize(new Dimension(500,(noms.length*410)/15));
-		
-		c.gridx = 1;
-		c.gridy = 1;
-		c.ipadx = 500; // Ne pas mettre de ipadxy ce sont des marges intérieures !
-		c.ipady = 470;
-		c.gridwidth = 3;
-		c.insets = new Insets(0,0,10,10);
-		affInner.add(affTxt);
-		affBorder.add(affInner);
-		
-		pane.add(affBorder,c);*/
 		
 		//Création zone de saisie de texte
 		text = new JTextField("");
@@ -260,8 +236,30 @@ public class ChatWindow implements ActionListener,KeyListener {
 	        });
 	        list.setVisibleRowCount(15);
 	    }
+	    System.out.println("Tous les gens : " + listModel);
     }
     
+    public static void updateMessagesGraphic(List<Message> messages) {
+    	
+    	listModelMsg.removeAllElements();
+    	
+    	
+    	ListIterator<Message> iterator = messages.listIterator() ;
+		Message current = null; 
+	    while(iterator.hasNext()){
+	     	current = iterator.next() ;
+			listModelMsg.addElement(current.getBody());
+			listMsg = new JList<String>(listModelMsg);	
+		    listMsg.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	        listMsg.setSelectedIndex(0);
+	        listMsg.setVisibleRowCount(15);
+	        
+	    }
+	    
+	    System.out.println("Tous les messages : " + listModelMsg);
+	    
+    }
+
 public static void updateSession(String user) {
 	
 	dest = user;
@@ -272,23 +270,6 @@ public static void updateSession(String user) {
     sendFile.setEnabled(true);
 	
 }
-    
-public static void updateMessagesGraphic(List<Message> messages) {
-    	
-    	listModelMsg.removeAllElements();
-    	
-    	ListIterator<Message> iterator = messages.listIterator() ;
-		Message current = null; 
-	    while(iterator.hasNext()){
-	     	current = iterator.next() ;
-			listModelMsg.addElement(current.getBody());
-			
-			listMsg = new JList<String>(listModelMsg);			
-	        listMsg.setVisibleRowCount(15);
-	        
-	    }
-	    listModelMsg.addElement("Hello");
-    }
     
     public static void notificationMessage(String message) {
     	 affNotif.setText(message);
