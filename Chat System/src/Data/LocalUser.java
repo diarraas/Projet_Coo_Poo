@@ -75,8 +75,16 @@ public class LocalUser extends User {
 
     }
     
-    public void sendMessage(String msg){
-	    messageClient.sendMessage(msg);	    
+    public void sendMessage(String dest,String msg){
+    	
+    	RemoteUser remote = findUserByLogin(dest);
+    	if(remote != null){
+    		ongoing.add(new ChatSession(getLogin(),dest));
+    		InetAddress remoteAddr = remote.getIpAddress();
+        	int remotePort = remote.getServerPort();
+        	messageClient = new MessageSender(this,remoteAddr,remotePort);
+        	messageClient.sendMessage(msg);
+    	}
     }   
     
     public void sendFile(String path){
@@ -88,9 +96,7 @@ public class LocalUser extends User {
 	    	RemoteUser remote = findUserByLogin(dest);
 	    	if(remote != null){
 	    		ongoing.add(new ChatSession(getLogin(),dest));
-	    		InetAddress remoteAddr = remote.getIpAddress();
-	        	int remotePort = remote.getServerPort();
-	        	messageClient = new MessageSender(this,remoteAddr,remotePort); 
+	        	 
 	    	} else{
 	    		ChatWindow.notificationMessage("Utilisateur offline ou non existant");
 	    	}

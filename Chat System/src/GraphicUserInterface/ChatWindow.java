@@ -206,6 +206,7 @@ public class ChatWindow implements ActionListener,KeyListener {
     		 */
 
     		localHost.endSessionWith(dest);
+    		dest = null ;
     		quitSession.setEnabled(false);
     		   	
     		
@@ -311,8 +312,8 @@ public static void updateMessagesGraphic(List<Message> messages) {
 	    if(typed == '\n') {
 	    	if(localHost.findSessionWith(dest) != null) {
 				//Send message
-		    	localHost.sendMessage(text.getText());
-				updateMessageDisplay(localHost.findSessionWith(dest).getHistory());
+		    	localHost.sendMessage(dest,text.getText());
+				//updateMessageDisplay(localHost.findSessionWith(dest).getHistory());
 		    	text.setText("");;
 		    	listModelMsg.addElement(text.getText());
 	    	}else {
