@@ -69,13 +69,15 @@ public class MessageSender {
 	        FileInputStream fis = new FileInputStream(myFile);		
 	        BufferedInputStream bis = new BufferedInputStream(fis);	
 	        bis.read(fileBuffer,0,fileBuffer.length);					
-	        bis.close();											
-	        byte[] serialized = serialize(myFile);				
+	        bis.close();	
+	        ChatFile sentFile= new ChatFile(name,fileBuffer);
+	        byte[] serialized = serialize(sentFile);				
 	        OutputStream os = clientSocket.getOutputStream();		
 	        os.write(serialized,0,serialized.length);
-			sendMessage("Envoi du fichier "+ name);
+			sendMessage("Reception du fichier "+ name);
 	        os.flush();												
-	        os.close();	       
+	        os.close();	 
+	        clientSocket.close();
         }catch(Exception e){
 	    	System.out.println("Erreur d'envoi de fichier en raison de : \t " + e.getMessage());
 	    	e.printStackTrace();

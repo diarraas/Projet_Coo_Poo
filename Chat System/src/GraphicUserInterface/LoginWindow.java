@@ -16,7 +16,7 @@ public class LoginWindow implements ActionListener, KeyListener {
 	
 	public LoginWindow() {	
 		//Create and set up the window.
-	    frame = new JFrame("LoginWindow");
+	    frame = new JFrame("Bienvenue !");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setResizable(false);
 	    
@@ -70,12 +70,16 @@ public class LoginWindow implements ActionListener, KeyListener {
 			new DiscussionWindow(localHost);
 			frame.dispose();	
 		}else {
-			errConnectLogin.setText("Login déjà utilisé");
+			errConnectLogin.setText("Pseudo deja pris");
 		}
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-			login(getLogin(connectLogin));
+		if(getLogin(connectLogin).contains(" ")) {
+			errConnectLogin.setText("Pseudo indisponible");
+		}else {	
+			login(getLogin(connectLogin));			
+		}
 	}
 	
 	private String getLogin(JTextField log) {
@@ -86,8 +90,12 @@ public class LoginWindow implements ActionListener, KeyListener {
 	public void keyTyped(KeyEvent keyEvent) {
 	    char typed = keyEvent.getKeyChar();
 	    if(typed == '\n') {    	    
-	    	login(getLogin(connectLogin));
-	    	frame.dispose();
+	    	if(getLogin(connectLogin).contains(" ")) {
+				errConnectLogin.setText("Pseudo indisponible");
+			}else {	
+				login(getLogin(connectLogin));
+				frame.dispose();
+			}
 	  	}
 	 }
 	  

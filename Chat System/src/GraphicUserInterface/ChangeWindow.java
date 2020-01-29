@@ -27,7 +27,7 @@ public class ChangeWindow  implements ActionListener, KeyListener{
 	public ChangeWindow(LocalUser user) {
 		localHost = user ;
 		//Create and set up the window.
-	    frame = new JFrame("ChangeWindow");
+	    frame = new JFrame("Changement de pseudo");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setResizable(false);
 	    
@@ -35,8 +35,8 @@ public class ChangeWindow  implements ActionListener, KeyListener{
 		pane.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		
-		//Création de la premiere zone : creer un compte
-		JLabel changeLogin = new JLabel("Entrer un nouveau login");
+		//Création de la premiere zone : cnewLoginreer un compte
+		JLabel changeLogin = new JLabel("Entrer un nouveau pseudo");
 		c.gridx = 0;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.CENTER;
@@ -83,8 +83,8 @@ public class ChangeWindow  implements ActionListener, KeyListener{
 	}
 	
 	public void login(String lgn) {		
-		if(!localHost.changeLogin(lgn))	{
-			errArea.setText("Pseudo deja utilise");
+		if(lgn.contains(" ") || !localHost.changeLogin(lgn))	{
+			errArea.setText("Pseudo deja pris");
 		}
 		else{
 			ChatWindow.updateUsers(localHost.getOnliners());
@@ -98,22 +98,27 @@ public class ChangeWindow  implements ActionListener, KeyListener{
 	
 	public void keyTyped(KeyEvent keyEvent) {
 	    char typed = keyEvent.getKeyChar();
-	    if(typed == '\n') {    
-			login(getLogin(newLogin));	  
-	}
+	    if(typed == '\n') { 
+	    	if(getLogin(newLogin).contains(" ")|| !localHost.changeLogin(getLogin(newLogin))) {
+	    		errArea.setText("Pseudo indisponible");
+			}else {	
+				login(getLogin(newLogin));
+				frame.dispose();
+			}
+	    }
 	}
 
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
+		// N/A
 		
 	}
 
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
+		// N/A
 		
 	}
 }

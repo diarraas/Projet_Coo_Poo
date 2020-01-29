@@ -55,9 +55,12 @@ public class DiscussionWindow extends javax.swing.JFrame implements ActionListen
         onlinersLabel = new JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        updateOnlineUsers(localHost.getOnliners());
-        
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                localHost.disconnect();
+            }
+        });
         logOut.setText("Deconnexion");
         logOut.addActionListener(this);
 
@@ -75,8 +78,9 @@ public class DiscussionWindow extends javax.swing.JFrame implements ActionListen
         textField.setText("");
         textField.addKeyListener(this);
 
+    	updateOnlineUsers(localHost.getOnliners());
 
-
+        
         onlinersLabel.setText("Utilisateurs en ligne :");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -127,7 +131,6 @@ public class DiscussionWindow extends javax.swing.JFrame implements ActionListen
                 .addComponent(changeLogin)
                 .addContainerGap())
         );
-
         pack();
         this.setVisible(true);
     }                       
@@ -211,11 +214,10 @@ public class DiscussionWindow extends javax.swing.JFrame implements ActionListen
 		RemoteUser current = null; 
 	    while(iterator.hasNext()){
 	     	current = iterator.next() ;
-	     	System.out.println("Current user is : " + current.toString());
 	     	onlinersModel.addElement(current.getLogin());
 	    }
 		
-		listOnliners.setModel(onlinersModel);
+		listOnliners = new JList<String>(onlinersModel);
 		listOnliners.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		listOnliners.setSelectedIndex(0);
 		listOnliners.addMouseListener(new MouseAdapter() { 
@@ -227,6 +229,7 @@ public class DiscussionWindow extends javax.swing.JFrame implements ActionListen
         		}
         	}
         });
+		onlinersDisplay = new JScrollPane();
 		onlinersDisplay.setViewportView(listOnliners);
         
 	}

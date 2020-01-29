@@ -64,7 +64,6 @@ public class LocalUser extends User {
 	        setStatus(true);
 	        Database.addUser(authentified);
 		}
-		System.out.println("Login got : " + authentified);
 		return authentified ;
     }
      
@@ -84,12 +83,13 @@ public class LocalUser extends User {
 	        	int remotePort = remote.getServerPort();
 	        	messageClient = new MessageSender(this,remoteAddr,remotePort);
 	        	messageClient.sendMessage(msg);
+	        	DiscussionWindow.updateMessageDisplay(findSessionWith(dest).getSentMessages());
 	    	}
     	}else {
     		new NotificationWindow("Pas de session avec " + dest);
-
     	}
     }   
+    
     
     public void sendFile(String dest,String path){
     	RemoteUser remote = findUserByLogin(dest);
@@ -99,12 +99,13 @@ public class LocalUser extends User {
 	        	int remotePort = remote.getServerPort();
 	        	messageClient = new MessageSender(this,remoteAddr,remotePort);
 	        	messageClient.sendFile(path);
+	        	DiscussionWindow.updateMessageDisplay(findSessionWith(dest).getSentMessages());
 	    	}
     	}else {
     		new NotificationWindow("Pas de session avec " + dest);
-
     	}
     }   
+    
     
     public synchronized void startSession(String dest){
 	    	RemoteUser remote = findUserByLogin(dest);
@@ -114,13 +115,12 @@ public class LocalUser extends User {
 	    		new NotificationWindow("Utilisateur offline ou non existant");
 	    	}
     }
-    
+   
     
     public synchronized void addUser(RemoteUser user){
     	if((onliners.size() != 0 && !onliners.contains(user)) || onliners.size() == 0) {
     		onliners.add(user);
-    		//ChatWindow.updateUsers(onliners);
-    		//DiscussionWindow.updateOnlineUsers(onliners);
+    		DiscussionWindow.updateOnlineUsers(onliners);
     	}
 
     }
@@ -128,7 +128,6 @@ public class LocalUser extends User {
     public synchronized void removeUser(RemoteUser user){
     	if(onliners.size() != 0 && onliners.contains(user)) {
     		onliners.remove(user);
-    		//ChatWindow.updateUsers(onliners);
     		DiscussionWindow.updateOnlineUsers(onliners);
 
     	}
@@ -249,7 +248,6 @@ public class LocalUser extends User {
 	public MessageSender getMessageClient() {
 		return messageClient;
 	}
-
 
 
 

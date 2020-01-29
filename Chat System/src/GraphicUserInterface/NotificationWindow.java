@@ -16,7 +16,7 @@ public class NotificationWindow  {
 	public NotificationWindow(String message) {
 		
 		frame = new JFrame("");
-		frame.setPreferredSize(new Dimension(100, 50));
+		frame.setPreferredSize(new Dimension(300, 200));
 	    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	    
 	    Container pane = frame.getContentPane();

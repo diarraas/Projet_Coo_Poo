@@ -40,14 +40,11 @@ public class MessageListener extends Thread{
 			try{
 				Socket remote = serverSocket.accept();
 				Runnable messageHandler = new Runnable() {
-					private BufferedOutputStream bos;
-
 					public void run() {
 		            	try {
 							byte [] byteData = new byte [65535];					
 					        InputStream is = remote.getInputStream();
 					        if(is!= null) {
-						        InputStream wrappedStream = new PushbackInputStream(is, 65535);
 						        int bytesRead = is.read(byteData,0,byteData.length);	
 						        int current = bytesRead;
 				
@@ -73,24 +70,30 @@ public class MessageListener extends Thread{
 					                			localHost.findSessionWith(exp).addMessage(msg);
 					                		}
 					                		Database.addMessage(msg);
+					                		DiscussionWindow.updateMessageDisplay(localHost.findSessionWith(exp).getSentMessages());
 					                		DiscussionWindow.updateSession(exp);
 					                	}
-						        	}else if(object.getCanonicalName().equals(File.class.getCanonicalName())){
+						        	}else if(object.getCanonicalName().equals(ChatFile.class.getCanonicalName())){
 						        		System.out.println("Got a file");
-						        		File file = (File) data ;
-						        		File myfile = new File("Chat System/Files/"+file.getName());
-							        	FileOutputStream fos = new FileOutputStream(myfile);
-							            bos = new BufferedOutputStream(fos);
-						                byteData = new byte[65535];
-								        bytesRead = 0;	
-								        //N'entre pas de le while
-								        ((PushbackInputStream) wrappedStream).unread(byteData, 0, current);
-								        while((bytesRead=wrappedStream.read(byteData)) > -1) {
-								        	bos.write(byteData,0,bytesRead);
-										    System.out.println("Bytes read :" + bytesRead);
-	   
-								        } 
-						                bos.flush();
+						        		ChatFile file = (ChatFile) data ;
+						        		
+						        		File outfile = new File("Files/"+file.getName());
+						        		 
+						        		InputStream content = new ByteArrayInputStream(file.getContent());
+						        		FileOutputStream outstream = new FileOutputStream(outfile);
+						     
+						        	    byte[] buffer = new byte[1024];
+						     
+						        	    int length;
+						        	    
+						        	    while ((length = content.read(buffer)) > 0){
+						        	    	outstream.write(buffer, 0, length);
+						        	    }
+
+						        	    content.close();
+						        	    outstream.close();
+
+						        		
 						        	}
 						        }
 					        }
