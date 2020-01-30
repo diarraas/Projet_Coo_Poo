@@ -2,6 +2,7 @@ package GraphicUserInterface;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import Data.*;
 
@@ -19,7 +20,6 @@ public class LoginWindow implements ActionListener, KeyListener {
 	    frame = new JFrame("Bienvenue !");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setResizable(false);
-	    
 	    Container pane = frame.getContentPane();
 		pane.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
@@ -75,7 +75,7 @@ public class LoginWindow implements ActionListener, KeyListener {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		if(getLogin(connectLogin).contains(" ")) {
+		if(getLogin(connectLogin).contains(" ") || getLogin(connectLogin).contains("\"")|| getLogin(connectLogin).contains("\'")) {
 			errConnectLogin.setText("Pseudo indisponible");
 		}else {	
 			login(getLogin(connectLogin));			
@@ -90,7 +90,7 @@ public class LoginWindow implements ActionListener, KeyListener {
 	public void keyTyped(KeyEvent keyEvent) {
 	    char typed = keyEvent.getKeyChar();
 	    if(typed == '\n') {    	    
-	    	if(getLogin(connectLogin).contains(" ")) {
+	    	if(getLogin(connectLogin).contains(" ") || getLogin(connectLogin).contains("\"")|| getLogin(connectLogin).contains("\'")) {
 				errConnectLogin.setText("Pseudo indisponible");
 			}else {	
 				login(getLogin(connectLogin));

@@ -124,14 +124,12 @@ public class Notifier {
 			senderSocket.send(packet);
 			byte[] response = new byte [65535];
 			DatagramPacket RespondingPacket = new DatagramPacket(response,response.length);		
-		    senderSocket.setSoTimeout(3000);
+		    senderSocket.setSoTimeout(1500);
 			senderSocket.receive(RespondingPacket);
-			String received = new String(RespondingPacket.getData(), 0, RespondingPacket.getLength());
 		    
 			if(RespondingPacket!=null) {
 		    	unic = false ;
 		    }
-			System.out.println("Got received : " +received + unic );
 		}catch(IOException e) {	
 			unic = true ;
 		}

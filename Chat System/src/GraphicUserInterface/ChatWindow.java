@@ -332,7 +332,7 @@ public static void updateSession(String user) {
 	    	if(localHost.findSessionWith(dest) != null) {
 				//Send message
 		    	localHost.sendMessage(dest,text.getText());
-				updateMessageDisplay(localHost.findSessionWith(dest).getHistory());
+				//updateMessageDisplay(localHost.findSessionWith(dest).getHistory());
 		    	text.setText("");;
 	    	}else {
 	    		/**

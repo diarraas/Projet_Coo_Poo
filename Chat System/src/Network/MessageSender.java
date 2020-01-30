@@ -51,7 +51,7 @@ public class MessageSender {
 	        os.flush();												
 	        os.close();	 
 	        synchronized(this) {
-	        	localHost.findSessionWith(remoteUser.getLogin()).addMessage(sentMessage);
+	        	if(!sentMessage.getBody().equals("end"))	localHost.findSessionWith(remoteUser.getLogin()).addMessage(sentMessage);
 	        }	        	
 	        clientSocket.close();
 		}catch(Exception e){
@@ -74,7 +74,7 @@ public class MessageSender {
 	        byte[] serialized = serialize(sentFile);				
 	        OutputStream os = clientSocket.getOutputStream();		
 	        os.write(serialized,0,serialized.length);
-			sendMessage("Reception du fichier "+ name);
+			sendMessage(localHost.getLogin() + " a envoyé le fichier "+ name);
 	        os.flush();												
 	        os.close();	 
 	        clientSocket.close();

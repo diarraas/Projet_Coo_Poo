@@ -66,15 +66,14 @@ public class Database {
 		ArrayList<Message> retrieved = new ArrayList<Message>();
 		try {
 			Connection con = startNewConnection();
-			Statement stmt1 = con.createStatement();
+			Statement stmt = con.createStatement();
 			String ipSender = findIpAddress(sender);
 			String ipRecipient = findIpAddress(recipient);
-			ResultSet set1 = stmt1.executeQuery("SELECT DISTINCT * FROM Message WHERE ( exp =\'"+ipSender+"\' AND dest =\'"+ipRecipient+"\') OR ( exp =\'"+ipRecipient+"\' AND dest =\'"+ipSender+"\')" );
-			System.out.println("");
-			while (set1.next()) {
-				retrieved.add(new Message(findLogin(set1.getString("exp")),findLogin(set1.getString("dest")),set1.getString("date"),set1.getString("body")));
+			ResultSet set = stmt.executeQuery("SELECT DISTINCT * FROM Message WHERE ( exp =\'"+ipSender+"\' AND dest =\'"+ipRecipient+"\') OR ( exp =\'"+ipRecipient+"\' AND dest =\'"+ipSender+"\')" );
+			while (set.next()) {
+				retrieved.add(new Message(findLogin(set.getString("exp")),findLogin(set.getString("dest")),set.getString("date"),set.getString("body")));
 			}
-			set1.close();
+			set.close();
 			con.close();
 		}catch(Exception e) {
 			System.out.println("Erreur de connection à la BDD en raison de \t" + e.getMessage());
@@ -122,7 +121,7 @@ public class Database {
 	
 	public static void addUser(User user) {
 		try {
-			if(isSaved(user.getIpAddress().getHostAddress())){
+			if(!isSaved(user.getIpAddress().getHostAddress())){
 				Connection con = startNewConnection();
 				String query = "INSERT INTO User (login,ipAddress)" + " VALUES (?,?)";
 				PreparedStatement preparedStmt = con.prepareStatement(query);
@@ -139,30 +138,16 @@ public class Database {
 		}
 	}
 	
-	public static void removeUser(User user) {
-		try {
-			Connection con = startNewConnection();
-			String query = "DELETE FROM User WHERE login = ? AND ipAddress = ? ";
-		      PreparedStatement preparedStmt = con.prepareStatement(query);
-		      preparedStmt.setString(1, user.getLogin());
-		      preparedStmt.setString(2, user.getIpAddress().getHostAddress());
-		      preparedStmt.execute();
-		    con.close();
-		}catch(Exception e) {
-			System.out.println("Erreur de connection à la BDD en raison de \t" + e.getMessage());
-			e.printStackTrace();
-		}
-	}
-	
+
 	public static boolean isSaved(String ipAddress) {
-		boolean result = true ;
+		boolean result = false ;
 		try {
 			Connection con = startNewConnection();
 			Statement stmt = con.createStatement();
 			ResultSet set = stmt.executeQuery("SELECT COUNT(*) AS count FROM User WHERE ipAddress = \'" +ipAddress+"\'" );
 			set.next();
 			if(set.getInt("count") !=0) {
-				result = false ;
+				result = true ;
 			}
 			set.close();
 			con.close();
@@ -172,12 +157,6 @@ public class Database {
 		}
 		
 		return result ;
-	}
-	
-	
-	public static void main (String args[]) {
-		
-		
 	}
 	
 	

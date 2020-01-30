@@ -2,6 +2,8 @@ package Data;
 
 import java.util.List;
 
+import GraphicUserInterface.DiscussionWindow;
+
 public class ChatSession {
 	private String exp ;
 	private String dest ;
@@ -15,17 +17,13 @@ public class ChatSession {
     	active = true ;
     }
     
-   
-    public List<Message> getHistory(){
-    	return Database.getHistory(exp,dest);
-    }
-   
     public void updateMessages(){
     	this.sentMessages = Database.getHistory(exp,dest);
     }
     
     public void addMessage(Message msg) {
 		this.sentMessages.add(msg);
+		DiscussionWindow.updateMessageDisplay(this.sentMessages);
     	System.out.println(sentMessages.toString());
     }
 

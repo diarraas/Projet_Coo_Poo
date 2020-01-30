@@ -11,6 +11,10 @@ public class Message implements Serializable {
 	private String body ;
 	
 	public Message(String sender, String receiver,String time, String text) {
+
+		if(text.contains("\"")) text = text.replace('\"', ' ');
+		if(text.contains("\\")) text = text.replace('\\', ' ');
+		if(text.contains("\'")) text = text.replace('\'', ' ');
 		exp = sender ;
 		dest = receiver ;
 		date = time ;

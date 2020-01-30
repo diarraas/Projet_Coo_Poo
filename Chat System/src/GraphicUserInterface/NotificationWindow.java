@@ -15,7 +15,7 @@ public class NotificationWindow  {
 	private JFrame frame;
 	public NotificationWindow(String message) {
 		
-		frame = new JFrame("");
+		frame = new JFrame("Notification");
 		frame.setPreferredSize(new Dimension(300, 200));
 	    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	    

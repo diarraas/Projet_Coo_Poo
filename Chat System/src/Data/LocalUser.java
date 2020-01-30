@@ -48,7 +48,6 @@ public class LocalUser extends User {
 	        this.setLogin(newLog);
 	        updateChatSession(newLog);
 	        Database.updateLogin(getIpAddress().getHostAddress(), newLog);
-    		DiscussionWindow.updateOnlineUsers(onliners);
  
     	}
     	return changed ;
@@ -83,7 +82,6 @@ public class LocalUser extends User {
 	        	int remotePort = remote.getServerPort();
 	        	messageClient = new MessageSender(this,remoteAddr,remotePort);
 	        	messageClient.sendMessage(msg);
-	        	DiscussionWindow.updateMessageDisplay(findSessionWith(dest).getSentMessages());
 	    	}
     	}else {
     		new NotificationWindow("Pas de session avec " + dest);
@@ -99,7 +97,6 @@ public class LocalUser extends User {
 	        	int remotePort = remote.getServerPort();
 	        	messageClient = new MessageSender(this,remoteAddr,remotePort);
 	        	messageClient.sendFile(path);
-	        	DiscussionWindow.updateMessageDisplay(findSessionWith(dest).getSentMessages());
 	    	}
     	}else {
     		new NotificationWindow("Pas de session avec " + dest);
@@ -120,7 +117,6 @@ public class LocalUser extends User {
     public synchronized void addUser(RemoteUser user){
     	if((onliners.size() != 0 && !onliners.contains(user)) || onliners.size() == 0) {
     		onliners.add(user);
-    		DiscussionWindow.updateOnlineUsers(onliners);
     	}
 
     }
@@ -128,8 +124,6 @@ public class LocalUser extends User {
     public synchronized void removeUser(RemoteUser user){
     	if(onliners.size() != 0 && onliners.contains(user)) {
     		onliners.remove(user);
-    		DiscussionWindow.updateOnlineUsers(onliners);
-
     	}
     }
     

@@ -83,8 +83,8 @@ public class ChangeWindow  implements ActionListener, KeyListener{
 	}
 	
 	public void login(String lgn) {		
-		if(lgn.contains(" ") || !localHost.changeLogin(lgn))	{
-			errArea.setText("Pseudo deja pris");
+		if(lgn.contains(" ") || lgn.contains("\'") ||lgn.contains("\"") ||!localHost.changeLogin(lgn))	{
+			errArea.setText("Pseudo indisponible");
 		}
 		else{
 			ChatWindow.updateUsers(localHost.getOnliners());
@@ -99,7 +99,7 @@ public class ChangeWindow  implements ActionListener, KeyListener{
 	public void keyTyped(KeyEvent keyEvent) {
 	    char typed = keyEvent.getKeyChar();
 	    if(typed == '\n') { 
-	    	if(getLogin(newLogin).contains(" ")|| !localHost.changeLogin(getLogin(newLogin))) {
+	    	if(getLogin(newLogin).contains(" ")|| getLogin(newLogin).contains("\'")|| getLogin(newLogin).contains("\"")||!localHost.changeLogin(getLogin(newLogin))) {
 	    		errArea.setText("Pseudo indisponible");
 			}else {	
 				login(getLogin(newLogin));
@@ -114,7 +114,6 @@ public class ChangeWindow  implements ActionListener, KeyListener{
 		// N/A
 		
 	}
-
 
 	@Override
 	public void keyReleased(KeyEvent e) {

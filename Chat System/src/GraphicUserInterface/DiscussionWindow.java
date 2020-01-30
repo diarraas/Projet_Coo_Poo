@@ -5,18 +5,14 @@ import java.awt.event.*;
 import java.util.List;
 import java.util.ListIterator;
 
-import javax.swing.*;
-import javax.swing.filechooser.FileSystemView;
+import  javax.swing.*;
+import  javax.swing.filechooser.FileSystemView;
 
 import Data.*;
 
 
-public class DiscussionWindow extends javax.swing.JFrame implements ActionListener,KeyListener {
+public class DiscussionWindow extends  JFrame implements ActionListener,KeyListener {
 
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private static JButton changeLogin;
@@ -24,8 +20,10 @@ public class DiscussionWindow extends javax.swing.JFrame implements ActionListen
     private static JButton endSession;
     private static JScrollPane onlinersDisplay;
     private static JList<String> listOnliners;
+    private static DefaultListModel<String> onlinersModel;
     private static JButton logOut;
     private static JList<String> messageList;
+    private static DefaultListModel<String> messageModel;
     private static JLabel onlinersLabel;
     private static JButton sendFile;
     private static JTextField textField;
@@ -49,18 +47,21 @@ public class DiscussionWindow extends javax.swing.JFrame implements ActionListen
         endSession = new JButton();
         textField = new JTextField();
         chatTextDisplay = new JScrollPane();
-        messageList = new JList<String>();
+        messageModel = new DefaultListModel<String>();
+        messageList = new JList<String>(messageModel);
+        onlinersModel = new DefaultListModel<String>();
         onlinersDisplay = new JScrollPane();
-        listOnliners = new JList<String>();
+        listOnliners = new JList<String>(onlinersModel);
         onlinersLabel = new JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
-            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+            public void windowClosing(WindowEvent windowEvent) {
                 localHost.disconnect();
             }
         });
+        
         logOut.setText("Deconnexion");
         logOut.addActionListener(this);
 
@@ -83,54 +84,55 @@ public class DiscussionWindow extends javax.swing.JFrame implements ActionListen
         
         onlinersLabel.setText("Utilisateurs en ligne :");
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+         GroupLayout layout = new  GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            layout.createParallelGroup( GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(57, 57, 57)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(onlinersLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup( GroupLayout.Alignment.LEADING, false)
+                    .addComponent(onlinersLabel,  GroupLayout.DEFAULT_SIZE,  GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(onlinersDisplay)
-                    .addComponent(changeLogin, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 196, Short.MAX_VALUE)
-                    .addComponent(logOut, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(changeLogin,  GroupLayout.Alignment.TRAILING,  GroupLayout.DEFAULT_SIZE, 196, Short.MAX_VALUE)
+                    .addComponent(logOut,  GroupLayout.Alignment.TRAILING,  GroupLayout.DEFAULT_SIZE,  GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup( GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(54, 54, 54)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup( GroupLayout.Alignment.LEADING)
                             .addComponent(chatTextDisplay)
                             .addComponent(textField)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 309, Short.MAX_VALUE)
-                        .addComponent(endSession, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup( GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap( LayoutStyle.ComponentPlacement.RELATED, 309, Short.MAX_VALUE)
+                        .addComponent(endSession,  GroupLayout.PREFERRED_SIZE, 196,  GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(sendFile, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(sendFile,  GroupLayout.PREFERRED_SIZE, 196,  GroupLayout.PREFERRED_SIZE)))
                 .addGap(31, 31, 31))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            layout.createParallelGroup( GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup( GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(32, 32, 32)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(layout.createParallelGroup( GroupLayout.Alignment.BASELINE)
                             .addComponent(sendFile)
                             .addComponent(endSession)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup( GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(onlinersLabel)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addPreferredGap( LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup( GroupLayout.Alignment.LEADING)
                     .addComponent(chatTextDisplay)
-                    .addComponent(onlinersDisplay, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 605, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(onlinersDisplay,  GroupLayout.Alignment.TRAILING,  GroupLayout.DEFAULT_SIZE, 605, Short.MAX_VALUE))
+                .addPreferredGap( LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup( GroupLayout.Alignment.BASELINE)
                     .addComponent(logOut)
-                    .addComponent(textField, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(textField,  GroupLayout.PREFERRED_SIZE, 25,  GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap( LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(changeLogin)
                 .addContainerGap())
         );
+        setTitle("Fenetre de discussion");
         pack();
         this.setVisible(true);
     }                       
@@ -178,6 +180,8 @@ public class DiscussionWindow extends javax.swing.JFrame implements ActionListen
     		localHost.endSessionWith(dest);
     		dest = null ;
     		endSession.setEnabled(false);
+    		sendFile.setEnabled(false);
+
     		   	
     		
     	}
@@ -187,7 +191,7 @@ public class DiscussionWindow extends javax.swing.JFrame implements ActionListen
     		
     	}
     	else if (e.getActionCommand().equals("Envoyer un fichier")) {
-    		
+    		if(dest == null) new NotificationWindow("Veuillez commencer une session");
             JFileChooser chooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory()); 
             int r = chooser.showSaveDialog(null); 
             
@@ -208,7 +212,11 @@ public class DiscussionWindow extends javax.swing.JFrame implements ActionListen
 	
 	
 	public static void updateOnlineUsers(List<RemoteUser> newList) {
-		DefaultListModel<String> onlinersModel = new DefaultListModel<String>();
+		if(onlinersModel != null) {
+			onlinersModel.removeAllElements();
+		}else {
+			onlinersModel = new DefaultListModel<String>();
+		}
 		
 		ListIterator<RemoteUser> iterator = newList.listIterator() ;
 		RemoteUser current = null; 
@@ -236,7 +244,7 @@ public class DiscussionWindow extends javax.swing.JFrame implements ActionListen
 	
 	public static void updateMessageDisplay(List<Message> newList) {
 		if(newList != null) {
-			DefaultListModel<String> messageModel = new DefaultListModel<String>();
+			messageModel.removeAllElements();
 			ListIterator<Message> iterator = newList.listIterator() ;
 			Message current = null; 
 		    while(iterator.hasNext()){

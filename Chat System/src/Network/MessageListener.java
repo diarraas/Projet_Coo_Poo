@@ -70,7 +70,6 @@ public class MessageListener extends Thread{
 					                			localHost.findSessionWith(exp).addMessage(msg);
 					                		}
 					                		Database.addMessage(msg);
-					                		DiscussionWindow.updateMessageDisplay(localHost.findSessionWith(exp).getSentMessages());
 					                		DiscussionWindow.updateSession(exp);
 					                	}
 						        	}else if(object.getCanonicalName().equals(ChatFile.class.getCanonicalName())){
@@ -92,7 +91,6 @@ public class MessageListener extends Thread{
 
 						        	    content.close();
 						        	    outstream.close();
-
 						        		
 						        	}
 						        }
@@ -100,7 +98,6 @@ public class MessageListener extends Thread{
 			                	
 			                
 		            	}catch(ConcurrentModificationException e) {
-		            		
 		            	} 
 		            	
 		            	catch ( Exception e) {

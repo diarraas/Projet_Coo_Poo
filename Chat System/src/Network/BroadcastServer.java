@@ -5,6 +5,7 @@ import java.net.*;
 import Data.ChatSession;
 import Data.LocalUser;
 import Data.RemoteUser;
+import GraphicUserInterface.DiscussionWindow;
 
 public class BroadcastServer extends Thread {
 	
@@ -48,11 +49,13 @@ public class BroadcastServer extends Thread {
 		            synchronized(this){
 		               localHost.addUser(newUser);
 		            } 
+		    		DiscussionWindow.updateOnlineUsers(localHost.getOnliners());
 		            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
 	         	}else if(infos[1].contentEquals("logoff")) {
 		            synchronized(this){
 	         			localHost.removeUser(localHost.findUserByLogin(infos[0]));
 		            }
+		    		DiscussionWindow.updateOnlineUsers(localHost.getOnliners());
 	         		System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
 
 		        }else if(infos[1].contentEquals("change")) {
@@ -60,6 +63,7 @@ public class BroadcastServer extends Thread {
 		           	ChatSession session = (localHost.findSessionWith(infos[0]));
 		           	if(session != null)
 		           		session.setDest(infos[3]);
+		    		DiscussionWindow.updateOnlineUsers(localHost.getOnliners());
 		            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
 		            
 		        }else if(infos[1].contentEquals("request")) {
@@ -76,7 +80,7 @@ public class BroadcastServer extends Thread {
 		        
 			}catch(Exception e){
 				if(!isRunning()) {
-					System.out.println("Serveur arr�t�");
+					System.out.println("Server stopped");
 				}else {
 					System.out.println("Erreur de lancement du serveur UDP en raison de : \t " + e.getMessage());
 					e.printStackTrace();
