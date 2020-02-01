@@ -61,8 +61,10 @@ public class BroadcastServer extends Thread {
 		        }else if(infos[1].contentEquals("change")) {
 		           	localHost.updateOnliners(infos[0],infos[3]);
 		           	ChatSession session = (localHost.findSessionWith(infos[0]));
-		           	if(session != null)
+		           	if(session != null) {
 		           		session.setDest(infos[3]);
+			    		DiscussionWindow.updateSession(session.getDest());
+		           	}
 		    		DiscussionWindow.updateOnlineUsers(localHost.getOnliners());
 		            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
 		            

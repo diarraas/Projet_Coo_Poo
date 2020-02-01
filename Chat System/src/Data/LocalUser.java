@@ -191,7 +191,6 @@ public class LocalUser extends User {
 	}
 	public void updateOnliners(String old, String newLog) {
 		findUserByLogin(old).setLogin(newLog);
-		DiscussionWindow.updateOnlineUsers(onliners);
 	}
 	
 	

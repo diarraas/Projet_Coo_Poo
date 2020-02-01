@@ -28,7 +28,7 @@ public class ChangeWindow  implements ActionListener, KeyListener{
 		localHost = user ;
 		//Create and set up the window.
 	    frame = new JFrame("Changement de pseudo");
-	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	    frame.setResizable(false);
 	    
 	    Container pane = frame.getContentPane();
@@ -83,11 +83,10 @@ public class ChangeWindow  implements ActionListener, KeyListener{
 	}
 	
 	public void login(String lgn) {		
-		if(lgn.contains(" ") || lgn.contains("\'") ||lgn.contains("\"") ||!localHost.changeLogin(lgn))	{
+		if(lgn.contains(" ") || lgn.contains("\\")|| lgn.contains("\'") ||lgn.contains("\"") ||!localHost.changeLogin(lgn))	{
 			errArea.setText("Pseudo indisponible");
 		}
 		else{
-			ChatWindow.updateUsers(localHost.getOnliners());
 			frame.dispose();
 		}
 	}
@@ -99,7 +98,7 @@ public class ChangeWindow  implements ActionListener, KeyListener{
 	public void keyTyped(KeyEvent keyEvent) {
 	    char typed = keyEvent.getKeyChar();
 	    if(typed == '\n') { 
-	    	if(getLogin(newLogin).contains(" ")|| getLogin(newLogin).contains("\'")|| getLogin(newLogin).contains("\"")||!localHost.changeLogin(getLogin(newLogin))) {
+	    	if(getLogin(newLogin).contains(" ")|| getLogin(newLogin).contains("\\")|| getLogin(newLogin).contains("\'")|| getLogin(newLogin).contains("\"")||!localHost.changeLogin(getLogin(newLogin))) {
 	    		errArea.setText("Pseudo indisponible");
 			}else {	
 				login(getLogin(newLogin));

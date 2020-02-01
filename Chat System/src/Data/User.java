@@ -9,7 +9,7 @@ public class User {
     
     private boolean status ;
                 
-    public static int serverPort = 12537 ;
+    private int serverPort = 12537 ;
                     
     private InetAddress ipAddress ;
     
@@ -53,6 +53,6 @@ public class User {
 	}
 	
 	public String toString() {
-		return ("User : \t " + login + "   @Ip : \t" + ipAddress.toString() );
+		return ("User: " + login + " @Ip: " + ipAddress.getHostAddress() );
 	}
 }

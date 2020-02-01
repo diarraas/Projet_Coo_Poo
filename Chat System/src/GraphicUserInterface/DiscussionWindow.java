@@ -212,8 +212,10 @@ public class DiscussionWindow extends  JFrame implements ActionListener,KeyListe
 	
 	
 	public static void updateOnlineUsers(List<RemoteUser> newList) {
+		int preSelected = -1 ;
 		if(onlinersModel != null) {
-			onlinersModel.removeAllElements();
+				preSelected = listOnliners.getSelectedIndex();
+				onlinersModel.removeAllElements();
 		}else {
 			onlinersModel = new DefaultListModel<String>();
 		}
@@ -227,7 +229,6 @@ public class DiscussionWindow extends  JFrame implements ActionListener,KeyListe
 		
 		listOnliners = new JList<String>(onlinersModel);
 		listOnliners.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		listOnliners.setSelectedIndex(0);
 		listOnliners.addMouseListener(new MouseAdapter() { 
         	public void mouseClicked(MouseEvent e) {
         
@@ -237,6 +238,7 @@ public class DiscussionWindow extends  JFrame implements ActionListener,KeyListe
         		}
         	}
         });
+		if(preSelected != -1)	updateSession((String) onlinersModel.getElementAt(preSelected));
 		onlinersDisplay = new JScrollPane();
 		onlinersDisplay.setViewportView(listOnliners);
         
