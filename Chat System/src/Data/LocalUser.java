@@ -155,7 +155,7 @@ public class LocalUser extends User {
 	}
 
 	public synchronized void endSessionWith(String dest){
-		sendMessage(dest,"END");
+		sendMessage(dest,"end");
 		if(ongoing.remove(findSessionWith(dest))){
 			new NotificationWindow("Fin de session avec:  " + dest);
 		}else {

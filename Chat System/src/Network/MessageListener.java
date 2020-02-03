@@ -5,6 +5,7 @@ import java.util.ConcurrentModificationException;
 
 import Data.*;
 import GraphicUserInterface.DiscussionWindow;
+import GraphicUserInterface.NotificationWindow;
 
 public class MessageListener extends Thread{
     
@@ -52,17 +53,22 @@ public class MessageListener extends Thread{
 						           bytesRead = is.read(byteData, current, (byteData.length-current));
 						           if(bytesRead >= 0) current += bytesRead;
 						        } 
-	
+						        
 						        Object data = deserialize(byteData);
+
 						        Class<? extends Object> object = data.getClass();
 						        if(object !=null){
 						        	if(object.getCanonicalName().equals(Message.class.getCanonicalName())){
 						        		Message msg = (Message) data;
 						        		String exp = msg.getExp();
-					                	if(msg.getBody().equals("END")) {
+					                	if(msg.getBody().equals("end")) {
 					                		System.out.println("Demande de cloture");
 					                		synchronized(this) {
-					                			localHost.endSessionWith(exp);
+					                			if(localHost.getOngoing().remove(localHost.findSessionWith(exp))){
+					                				new NotificationWindow("Fin de session avec:  " + exp);
+					                			}else {
+					                				new NotificationWindow("Pas de session en cours avec " + exp);
+					                			}
 					                		}
 					                	}else {
 					                		synchronized(this) {
@@ -73,7 +79,6 @@ public class MessageListener extends Thread{
 					                		DiscussionWindow.updateSession(exp);
 					                	}
 						        	}else if(object.getCanonicalName().equals(ChatFile.class.getCanonicalName())){
-						        		System.out.println("Got a file");
 						        		ChatFile file = (ChatFile) data ;
 						        		
 						        		File outfile = new File("Files/"+file.getName());
@@ -84,7 +89,7 @@ public class MessageListener extends Thread{
 						        	    byte[] buffer = new byte[1024];
 						     
 						        	    int length;
-						        	    
+		
 						        	    while ((length = content.read(buffer)) > 0){
 						        	    	outstream.write(buffer, 0, length);
 						        	    }
@@ -94,11 +99,10 @@ public class MessageListener extends Thread{
 						        		
 						        	}
 						        }
-					        }
+						   }
 			                	
 			                
-		            	}catch(ConcurrentModificationException e) {
-		            	} 
+		            	}catch(ConcurrentModificationException e) {} 
 		            	
 		            	catch ( Exception e) {
 	                  		System.out.println("Erreur d'extraction du message en raison de :\t" + e.getMessage() );

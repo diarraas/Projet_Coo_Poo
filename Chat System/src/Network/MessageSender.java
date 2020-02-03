@@ -2,7 +2,6 @@ package Network;
 import java.net.*;
 import java.sql.Date;
 import java.text.DateFormat;
-
 import Data.*;
 import java.io.*;
 
@@ -63,20 +62,22 @@ public class MessageSender {
 	
 	public void sendFile(String path) {
         try{
-			File myFile = new File (path);							
-	        String name = myFile.getName();							
+			File myFile = new File (path);
+		    String name = myFile.getName();							
 	        byte [] fileBuffer  = new byte [(int)myFile.length()];	
 	        FileInputStream fis = new FileInputStream(myFile);		
 	        BufferedInputStream bis = new BufferedInputStream(fis);	
 	        bis.read(fileBuffer,0,fileBuffer.length);					
 	        bis.close();	
 	        ChatFile sentFile= new ChatFile(name,fileBuffer);
-	        byte[] serialized = serialize(sentFile);				
+	        byte[] serialized = serialize(sentFile);	
 	        OutputStream os = clientSocket.getOutputStream();		
 	        os.write(serialized,0,serialized.length);
-			sendMessage(localHost.getLogin() + " a envoyé le fichier "+ name);
-	        os.flush();												
-	        os.close();	 
+			synchronized(this) {
+				localHost.sendMessage(localHost.findUserByAddress(serverAddr).getLogin(), localHost.getLogin() + " a envoyé le fichier " + name);
+			}
+			os.flush();												
+	        os.close();	
 	        clientSocket.close();
         }catch(Exception e){
 	    	System.out.println("Erreur d'envoi de fichier en raison de : \t " + e.getMessage());
