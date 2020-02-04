@@ -9,6 +9,12 @@ import java.util.List;
 import Data.* ;
 
 public class Notifier {
+	/**
+	 * 
+	 *Envoie des notifications sur le réseaux local à chaque changement notable effectué par l'utilisateur local
+	 * 
+	 * */
+	
 	
 	private DatagramSocket senderSocket ;
 	private int port = 12245 ;
@@ -17,6 +23,7 @@ public class Notifier {
 	
 	
 	public Notifier(){
+		
 		try{
 			
 			senderSocket = new DatagramSocket(port);

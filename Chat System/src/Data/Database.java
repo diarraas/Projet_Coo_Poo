@@ -24,18 +24,20 @@ public class Database {
 	
 	public static boolean updateLogin(String userAddress,String newLogin) {
 		boolean changed = false ;
-		try {
-			Connection con = startNewConnection();
-			String query = "UPDATE User SET login = ? WHERE ipAddress LIKE ?";
-			PreparedStatement preparedStmt = con.prepareStatement(query);
-			preparedStmt.setString(1, newLogin);
-			preparedStmt.setString(2, userAddress);
-			preparedStmt.executeUpdate();
-			changed = true ;
-			con.close();
-		}catch(Exception e) {
-			System.out.println("Erreur de connection à la BDD en raison de \t" + e.getMessage());
-			e.printStackTrace();
+		if(isSaved(userAddress)) {
+			try {
+				Connection con = startNewConnection();
+				String query = "UPDATE User SET login = ? WHERE ipAddress LIKE ?";
+				PreparedStatement preparedStmt = con.prepareStatement(query);
+				preparedStmt.setString(1, newLogin);
+				preparedStmt.setString(2, userAddress);
+				preparedStmt.executeUpdate();
+				changed = true ;
+				con.close();
+			}catch(Exception e) {
+				System.out.println("Erreur de connection à la BDD en raison de \t" + e.getMessage());
+				e.printStackTrace();
+			}
 		}
 		return changed ;
 	}

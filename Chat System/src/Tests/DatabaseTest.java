@@ -1,5 +1,6 @@
 package Tests;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
@@ -8,25 +9,34 @@ import java.net.UnknownHostException;
 import java.sql.*;
 import java.text.DateFormat;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.jupiter.api.Test;
-
-import com.sun.jdi.connect.spi.Connection;
 
 import Data.*;
 
+
+/**                                                  /!\                         EXPLICATIONS                            /!\ 
+
+ CONTEXT : Les tests les plus importants portent sur les methodes d'ajout, de mise à jour et de récupération. Les adresse ip de la BDD sont uniques, on ne peut donc pas
+ ajouter plusieurs fois une même addresse. Une fois le changement de login effectué, il faut rajouter l'utilisateur ou mettre à jour ses informations dans la BDD pour qu'elle
+ en tienne compte. Ceci explique pourquoi certains tests ne portent que sur une variable ou le fait qu'ils portent sur des constantes au lieu des attributs des variables 
+ 
+  
+*/
+
+
+
+
 class DatabaseTest {
-	LocalUser exemple1 ;
+	LocalUser exemple1;
 	LocalUser exemple1bis ;
 	LocalUser exemple2 ;
+	LocalUser exemple3 ;
 	Message msg1, msg2,msg3 ;
-	Connection con ;
-	Statement stmt ;
-	ResultSet set ;
 	
-	@Before
+	@BeforeClass
 	void init() throws IOException{
-		exemple1 = new LocalUser("");
+		exemple1 = new LocalUser();
 		exemple1.setIpAddress(InetAddress.getLocalHost());
 		exemple1.setLogin("exemple1");
 		
@@ -35,13 +45,17 @@ class DatabaseTest {
 		exemple1bis.setLogin("exemple1bis");
 		
 		exemple2 = new LocalUser();
+		
 		exemple2.setIpAddress(InetAddress.getLocalHost());
 		exemple2.setLogin("exemple avec espace");
 		
-		msg1 = new Message("exemple2","exemple1bis",(DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT)).format(new Date(System.currentTimeMillis())), "exemple de message");
-		msg2 = new Message("exemple2","exemple1bis",(DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT)).format(new Date(System.currentTimeMillis())), "exemple de message avec caractère spécial\' !");
-		msg3 = new Message("exemple1bis","exemple2",(DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT)).format(new Date(System.currentTimeMillis())), "");
+	
 
+		
+		msg1 = new Message(exemple2.getLogin(),exemple1.getLogin(),(DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT)).format(new Date(System.currentTimeMillis())), "exemple de message");
+		msg2 = new Message(exemple2.getLogin(),exemple1.getLogin(),(DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT)).format(new Date(System.currentTimeMillis())), "exemple de message avec caractère spécial\' !");
+		msg3 = new Message(exemple2.getLogin(),exemple1.getLogin(),(DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT)).format(new Date(System.currentTimeMillis())), "");
+		System.out.println("INITIALIZATION OK");
 	}
 	
 	@Test
@@ -52,13 +66,14 @@ class DatabaseTest {
 	
 	@Test
 	void testAddUser() throws SQLException, IOException {
+		init();
 		Database.addUser(exemple1bis);
 		Database.addUser(exemple2);
-		con = (Connection) Database.startNewConnection();
-		stmt = ((java.sql.Connection) con).createStatement();
-		set = stmt.executeQuery("SELECT * FROM User");
+		java.sql.Connection con = Database.startNewConnection();
+		Statement stmt = con.createStatement();
+		ResultSet set = stmt.executeQuery("SELECT * FROM User WHERE login =\'" + exemple2.getLogin() + "\'");
 		set.next();
-		assertTrue(set.getString("login").contentEquals(exemple1bis.getLogin()) ||(set.getString("login").contentEquals(exemple2.getLogin())));
+		assertTrue(set.getString("login").contentEquals("exemple avec espace"));
 		con.close();
 		stmt.close();
 		set.close();
@@ -79,35 +94,41 @@ class DatabaseTest {
 	}
 	
 	@Test
-	void testFindLogin() throws UnknownHostException {
+	void testFindLogin() throws IOException {
+		init();
 		/**		Cas : null		**/
 		assertTrue(Database.findLogin("")== null);
 		
 		/**		Cas : normal	**/
-		assertTrue(Database.findLogin(InetAddress.getLocalHost().getHostAddress()).contentEquals("exemple1bis")||Database.findLogin(InetAddress.getLocalHost().getHostAddress()).contentEquals("exemple2"));
+		assertEquals("NouveauLoginExemple1",Database.findLogin(InetAddress.getLocalHost().getHostAddress()));
+		assertFalse(Database.findLogin(InetAddress.getLocalHost().getHostAddress()).equals(exemple1bis.getLogin()));
+
 	
 		/**		Cas : pas une adresse		**/
 		assertTrue(Database.findLogin("pas une adresse ip")== null);
 	}
 	
 	@Test
-	void testFindIpAddress() throws UnknownHostException {
-		assertTrue(Database.findIpAddress("exemple1bis").contentEquals(Database.findIpAddress("exemple2")) && Database.findIpAddress("exemple2").contentEquals(InetAddress.getLocalHost().getHostAddress()));
+	void testFindIpAddress() throws IOException {
+		init();
+		assertTrue(Database.findIpAddress("exemple1bis") == null && Database.findIpAddress("NouveauLoginExemple1").equals(InetAddress.getLocalHost().getHostAddress()));
 	}
 	
 	@Test
 	void testUpdateLogin() throws SQLException, IOException {
+		init();
 		/** 	Pas ajouté à la BDD		**/
-		assertFalse(Database.updateLogin(exemple1.getIpAddress().getHostAddress(), "NouveauLoginExemple1"));
+		boolean obtained = Database.updateLogin("pas une adresse", "NouveauLoginExemple1");
+		assertFalse(obtained);
 		
-		
+		obtained = Database.updateLogin(exemple1bis.getIpAddress().getHostAddress(), "NouveauLoginExemple1");
 		/**		Après ajout à la BDD 	**/
-		assertTrue(Database.updateLogin(exemple1bis.getIpAddress().getHostAddress(), "NouveauLoginExemple1"));
+		assertTrue(obtained);
 	
 		/**		Verification changement 	**/
-		con = (Connection) Database.startNewConnection();
-		stmt = ((java.sql.Connection) con).createStatement();
-		set = stmt.executeQuery("SELECT ipAddress FROM User WHERE login =\'" + "NouveauLoginExemple1"+"\'");
+		java.sql.Connection con = Database.startNewConnection();
+		Statement stmt = con.createStatement();
+		ResultSet set = stmt.executeQuery("SELECT ipAddress FROM User WHERE login =\'" + "NouveauLoginExemple1"+"\'");
 		assertTrue(set.next());
 		con.close();
 		stmt.close();
@@ -116,15 +137,11 @@ class DatabaseTest {
 	}
 
 	@Test
-	void testAddMessage() {
+	void testAddMessage() throws IOException {
+		init();
 		Database.addMessage(msg1);
 		Database.addMessage(msg2);
 		Database.addMessage(msg3);
-	}
-
-	@Test
-	void testGetHistory() {
-		fail("Not yet implemented");
 	}
 
 

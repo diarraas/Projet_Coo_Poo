@@ -3,7 +3,9 @@ package Data;
 import java.io.Serializable;
 
 public class Message implements Serializable {
-
+	/**
+	 * Message echangé entre deux utilisateur
+	 * */
 	private static final long serialVersionUID = 1L;
 	private String exp;
 	private String dest ;

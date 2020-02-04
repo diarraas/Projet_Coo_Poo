@@ -5,6 +5,13 @@ import java.util.List;
 import GraphicUserInterface.DiscussionWindow;
 
 public class ChatSession {
+	
+	/**
+	 * 
+	 * Session de chat entre deux utilisateurs. Contient l'ensemble des messages échangés.
+	 *
+	 */
+	
 	private String exp ;
 	private String dest ;
     private List<Message> sentMessages ;

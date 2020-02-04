@@ -45,7 +45,7 @@ public class LocalUser extends User {
     
     public boolean changeLogin(String newLog) {
     	boolean changed = false ; 
-    	if(findUserByLogin(newLog) == null) {
+    	if(isCorrect(newLog) && findUserByLogin(newLog) == null) {
 	       	changed = true ;
 		    broadcastClient.notifyLoginChange(newLog);
 	        this.setLogin(newLog);
@@ -60,7 +60,7 @@ public class LocalUser extends User {
 	public LocalUser authentify (String log) {
 		LocalUser authentified = null ;
 		broadcastDataRequest = new Notifier();
-		if(broadcastDataRequest.requestData(log)) {
+		if(isCorrect(log) && broadcastDataRequest.requestData(log)) {
 	        authentified = new LocalUser(log);
 			authentified.broadcastClient.notifyAuthentification();
 	        setStatus(true);
@@ -69,8 +69,8 @@ public class LocalUser extends User {
 		return authentified ;
     }
      
-    
-    public void disconnect() { 
+	
+	public void disconnect() { 
     	broadcastClient.notifyDisconnection();
     	broadcastServer.setRunning(false);
     	messageServer.setRunning(false);
@@ -194,10 +194,16 @@ public class LocalUser extends User {
         }
 		
 	}
+	
 	public void updateOnliners(String old, String newLog) {
 		findUserByLogin(old).setLogin(newLog);
 	}
 	
+	
+	private static boolean isCorrect(String log) {
+		if(!log.contains(" ") || !log.contains("\\") || !log.contains("\'") || !log.contains("\"")) return true ;
+		return false;
+	}
 	
 	private static InetAddress findIpAddress() {
 		InetAddress retrieved = null ;

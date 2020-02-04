@@ -33,7 +33,7 @@ public class LoginWindow implements ActionListener, KeyListener {
 		c.anchor = GridBagConstraints.CENTER;
 		pane.add(seConnecter,c);	 
 		
-		//Creation zone de saisie
+		//Creation zone de saisie 
 		connectLogin = new JTextField("");
 		c.gridx = 0;
 		c.gridy = 1;
