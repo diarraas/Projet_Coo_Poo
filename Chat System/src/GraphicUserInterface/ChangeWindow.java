@@ -24,8 +24,9 @@ public class ChangeWindow  implements ActionListener, KeyListener{
 	private LocalUser localHost;
 	private JFrame frame;
 	
-	public ChangeWindow(LocalUser user) {
-		localHost = user ;
+	public ChangeWindow() {	}
+	
+	public void init() {
 		//Create and set up the window.
 	    frame = new JFrame("Changement de pseudo");
 	    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -77,7 +78,6 @@ public class ChangeWindow  implements ActionListener, KeyListener{
 		frame.setVisible(true);
 	}
 	
-
 	private String getLogin(JTextField log) {
 		return(log.getText());
 	}
@@ -118,5 +118,9 @@ public class ChangeWindow  implements ActionListener, KeyListener{
 	public void keyReleased(KeyEvent e) {
 		// N/A
 		
+	}
+	
+	public void setLocalHost(LocalUser localHost) {
+		this.localHost = localHost;
 	}
 }

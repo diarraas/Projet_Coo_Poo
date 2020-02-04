@@ -16,8 +16,7 @@ public class Notifier {
 	public static InetAddress broadcastAddr;
 	
 	
-	public Notifier(LocalUser user){
-		localHost = user ;
+	public Notifier(){
 		try{
 			
 			senderSocket = new DatagramSocket(port);
@@ -139,5 +138,9 @@ public class Notifier {
 	
 	public void close() {
 		senderSocket.close();
+	}
+	
+	public void setLocalHost(LocalUser localHost) {
+		this.localHost = localHost;
 	}
 }			    

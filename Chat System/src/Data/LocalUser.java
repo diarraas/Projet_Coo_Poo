@@ -29,9 +29,12 @@ public class LocalUser extends User {
 		this.setIpAddress(findIpAddress());
 		onliners = new ArrayList<RemoteUser>();
         ongoing = new ArrayList<ChatSession>(); 
-        broadcastServer = new BroadcastServer(this);
-        broadcastClient = new Notifier(this);
-        messageServer = new MessageListener(this);
+        broadcastServer = new BroadcastServer();
+        broadcastClient = new Notifier();
+        messageServer = new MessageListener(getServerPort(),getIpAddress());
+        broadcastServer.setLocalHost(this);
+        broadcastClient.setLocalHost(this);
+        messageServer.setLocalHost(this);
         broadcastServer.setRunning(true);
     	messageServer.setRunning(true);
         broadcastServer.start();
@@ -56,7 +59,7 @@ public class LocalUser extends User {
 
 	public LocalUser authentify (String log) {
 		LocalUser authentified = null ;
-		broadcastDataRequest = new Notifier(this);
+		broadcastDataRequest = new Notifier();
 		if(broadcastDataRequest.requestData(log)) {
 	        authentified = new LocalUser(log);
 			authentified.broadcastClient.notifyAuthentification();
@@ -80,7 +83,8 @@ public class LocalUser extends User {
 	    	if(remote != null){
 	    		InetAddress remoteAddr = remote.getIpAddress();
 	        	int remotePort = remote.getServerPort();
-	        	messageClient = new MessageSender(this,remoteAddr,remotePort);
+	        	messageClient = new MessageSender(remoteAddr,remotePort);
+	        	messageClient.setLocalHost(this);
 	        	messageClient.sendMessage(msg);
 	    	}
     	}else {
@@ -95,7 +99,8 @@ public class LocalUser extends User {
 	    	if(remote != null){
 	    		InetAddress remoteAddr = remote.getIpAddress();
 	        	int remotePort = remote.getServerPort();
-	        	messageClient = new MessageSender(this,remoteAddr,remotePort);
+	        	messageClient = new MessageSender(remoteAddr,remotePort);
+	        	messageClient.setLocalHost(this);
 	        	messageClient.sendFile(path);
 	    	}
     	}else {

@@ -14,9 +14,7 @@ public class BroadcastServer extends Thread {
 	private LocalUser localHost ;
 	private boolean running ;
 
-	public BroadcastServer(LocalUser user) {
-		localHost = user ;
-		
+	public BroadcastServer() {		
 		try{
 			
 			broadcastSocket = new DatagramSocket(BROADCAST_PORT);
@@ -99,6 +97,10 @@ public class BroadcastServer extends Thread {
 
 	public void setRunning(boolean running) {
 		this.running = running;
+	}
+	
+	public void setLocalHost(LocalUser localHost) {
+		this.localHost = localHost;
 	}
 	
 }

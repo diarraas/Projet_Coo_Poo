@@ -11,9 +11,8 @@ public class MessageSender {
 	private int serverPort ;
 	private LocalUser localHost ;
 	
-	public MessageSender(LocalUser user, InetAddress remoteAddr, int remotePort){
+	public MessageSender(InetAddress remoteAddr, int remotePort){
 		try{
-			localHost = user ;
 			serverAddr = remoteAddr ;
 			serverPort = remotePort ;
 			clientSocket = new Socket(serverAddr, serverPort);
@@ -92,5 +91,9 @@ public class MessageSender {
 			System.out.println("Erreur de fermeture de socket");
 			e.printStackTrace();
 		}
+	}
+
+	public void setLocalHost(LocalUser localHost) {
+		this.localHost = localHost;
 	}
 }

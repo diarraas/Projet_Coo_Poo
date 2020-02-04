@@ -14,11 +14,10 @@ public class MessageListener extends Thread{
 	private LocalUser localHost ;
 	private boolean	running ;
 	
-	public MessageListener(LocalUser user){
+	public MessageListener(int serverPort, InetAddress ipAddress){
 		
 		try{
-			localHost = user ;
-			serverSocket = new ServerSocket(localHost.getServerPort(),MAX_LOG,localHost.getIpAddress());
+			serverSocket = new ServerSocket(serverPort,MAX_LOG,ipAddress);
 		}catch(Exception e){
 	    	System.out.println("Erreur de création du serveur TCP en raison de : \t " + e.getMessage());
 		}
@@ -73,7 +72,7 @@ public class MessageListener extends Thread{
 					                	}else {
 					                		synchronized(this) {
 					                			localHost.startSession(exp);
-					                			localHost.findSessionWith(exp).addMessage(msg);
+					                			if(!exp.equals(localHost.getLogin()))	localHost.findSessionWith(exp).addMessage(msg);
 					                		}
 					                		Database.addMessage(msg);
 					                		DiscussionWindow.updateSession(exp);
@@ -135,5 +134,9 @@ public class MessageListener extends Thread{
 		}catch(Exception e){
 			
 		}
+	}
+	
+	public void setLocalHost(LocalUser localHost) {
+		this.localHost = localHost;
 	}
 }

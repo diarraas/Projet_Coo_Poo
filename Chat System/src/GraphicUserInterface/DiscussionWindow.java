@@ -33,13 +33,10 @@ public class DiscussionWindow extends  JFrame implements ActionListener,KeyListe
 
     
     
-    public DiscussionWindow(LocalUser user) {
-    	localHost = user ;
-        initComponents();
-    }
+    public DiscussionWindow() {    }
 
 
-    private void initComponents() {
+    public void initComponents() {
 
         logOut = new JButton();
         changeLogin = new JButton();
@@ -186,8 +183,9 @@ public class DiscussionWindow extends  JFrame implements ActionListener,KeyListe
     		
     	}
     	else if (e.getActionCommand().equals("Changer de pseudo")) {
-  
-    		new ChangeWindow(localHost);
+    		ChangeWindow change = new ChangeWindow();
+    		change.setLocalHost(localHost);
+    		change.init();
     		
     	}
     	else if (e.getActionCommand().equals("Envoyer un fichier")) {
@@ -245,7 +243,7 @@ public class DiscussionWindow extends  JFrame implements ActionListener,KeyListe
 	}
 	
 	public static void updateMessageDisplay(List<Message> newList) {
-		if(newList != null) {
+		if(newList != null && messageModel != null) {
 			messageModel.removeAllElements();
 			ListIterator<Message> iterator = newList.listIterator() ;
 			Message current = null; 
@@ -270,6 +268,10 @@ public class DiscussionWindow extends  JFrame implements ActionListener,KeyListe
 	    endSession.setEnabled(true);
 	    sendFile.setEnabled(true);
 		
+	}
+	
+	public void setLocalHost(LocalUser localHost) {
+		DiscussionWindow.localHost = localHost;
 	}
 	
                  

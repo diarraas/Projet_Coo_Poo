@@ -67,7 +67,9 @@ public class LoginWindow implements ActionListener, KeyListener {
 		localHost = new LocalUser();
 		localHost = localHost.authentify(lgc);
 		if(localHost != null) {
-			new DiscussionWindow(localHost);
+			DiscussionWindow main =	new DiscussionWindow();
+			main.setLocalHost(localHost);
+			main.initComponents();
 			frame.dispose();	
 		}else {
 			errConnectLogin.setText("Pseudo deja pris");
