@@ -67,7 +67,6 @@ public class MessageListener extends Thread{
 							        		Message msg = (Message) data;
 							        		String exp = msg.getExp();
 						                	if(msg.getBody().equals("end")) {
-						                		System.out.println("Demande de cloture");
 						                		synchronized(this) {
 						                			if(!localHost.getLogin().equals(exp)&&localHost.getOngoing().remove(localHost.findSessionWith(exp))){
 						                				new NotificationWindow("Fin de session avec:  " + exp);
@@ -105,8 +104,7 @@ public class MessageListener extends Thread{
 							        	}
 							        }
 							   }
-				                	
-				                
+						   				                
 			            	}catch(ConcurrentModificationException e) {} 
 			            	
 			            	catch ( Exception e) {

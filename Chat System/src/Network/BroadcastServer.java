@@ -11,7 +11,7 @@ public class BroadcastServer extends Thread {
 	
     /**
      * 
-     * Serveur d'écoute des notifications broadcastés sur le réseau local
+     * Serveur d'ï¿½coute des notifications broadcastï¿½s sur le rï¿½seau local
      * 
      * */
 	
@@ -49,30 +49,28 @@ public class BroadcastServer extends Thread {
 		         		packet = new DatagramPacket(buf, buf.length, address, port);
 			            broadcastSocket.send(packet);
 			            address = InetAddress.getByName(infos[2]);	
-			            System.out.println("Nouvelle connexion, maj de la liste des onliners\t" );
 			            RemoteUser newUser = new RemoteUser(infos[0],address);
 			            synchronized(this){
 			               localHost.addUser(newUser);
 			            } 
 			    		DiscussionWindow.updateOnlineUsers(localHost.getOnliners());
-			            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
+			            System.out.println("/!\\ CONNEXION /!\\ New onliners list \t" + localHost.getOnliners().toString() );
 		         	}else if(infos[1].contentEquals("logoff")) {
 			            synchronized(this){
 		         			localHost.removeUser(localHost.findUserByLogin(infos[0]));
 			            }
 			    		DiscussionWindow.updateOnlineUsers(localHost.getOnliners());
-		         		System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
+		         		System.out.println("/!\\ DISCONNEXION /!\\ New onliners list \t" + localHost.getOnliners().toString() );
 	
 			        }else if(infos[1].contentEquals("change")) {
 			           	localHost.updateOnliners(infos[0],infos[3]);
 			           	ChatSession session = (localHost.findSessionWith(infos[0]));
 			           	if(session != null) {
-			           	 System.out.println("Currently chatting with \t" + infos[3]);
 			           		session.setDest(infos[3]);
 				    		DiscussionWindow.updateSession(infos[3]);
 			           	}
 			    		DiscussionWindow.updateOnlineUsers(localHost.getOnliners());
-			            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
+			            System.out.println("/!\\ CHANGE /!\\ New onliners list \t" + localHost.getOnliners().toString() );
 			            
 			        }else if(infos[1].contentEquals("request")) {
 			        	System.out.println("Demande d'information pour \t"+ infos[0]);

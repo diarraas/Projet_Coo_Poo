@@ -214,7 +214,6 @@ public class DiscussionWindow extends  JFrame implements ActionListener,KeyListe
 		if(onlinersModel != null) {
 				preSelected = listOnliners.getSelectedIndex();
 				onlinersModel.removeAllElements();
-				System.out.println("selected : " + preSelected );
 		}else {
 			onlinersModel = new DefaultListModel<String>();
 		}
@@ -267,7 +266,6 @@ public class DiscussionWindow extends  JFrame implements ActionListener,KeyListe
 
 	
 	public static void updateSession(String user) {
-		System.out.println("Now talking to : \t " + user);
 		dest = user;
 		localHost.startSession(dest);
 	    endSession.setEnabled(true);
