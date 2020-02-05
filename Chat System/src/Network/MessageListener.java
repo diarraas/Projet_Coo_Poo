@@ -69,7 +69,7 @@ public class MessageListener extends Thread{
 						                	if(msg.getBody().equals("end")) {
 						                		System.out.println("Demande de cloture");
 						                		synchronized(this) {
-						                			if(localHost.getOngoing().remove(localHost.findSessionWith(exp))){
+						                			if(!localHost.getLogin().equals(exp)&&localHost.getOngoing().remove(localHost.findSessionWith(exp))){
 						                				new NotificationWindow("Fin de session avec:  " + exp);
 						                			}else {
 						                				new NotificationWindow("Pas de session en cours avec " + exp);
@@ -119,9 +119,12 @@ public class MessageListener extends Thread{
 		        new Thread(messageHandler).start();
 		        
 				}catch(Exception e){
-			    	System.out.println("Erreur de lancement du serveur TCP en raison de : \t " + e.getMessage());
-					e.printStackTrace();
-	
+					if(!isRunning()) { 
+						System.out.println("TCP server stopped");
+					}else {
+						System.out.println("Erreur de lancement du serveur TCP en raison de : \t " + e.getMessage());
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -139,7 +142,7 @@ public class MessageListener extends Thread{
 		try{
 			serverSocket.close();
 		}catch(Exception e){
-			
+			System.out.println("Erreur de fermeture du serveur TCP en raison de : \t " + e.getMessage());
 		}
 	}
 	

@@ -1,8 +1,10 @@
 package Data;
 
+
 import GraphicUserInterface.LoginWindow;
 
 public class ChatSystem {
+
 /**
  * 
  * Classe principale de l'application.

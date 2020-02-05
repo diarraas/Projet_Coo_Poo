@@ -67,8 +67,9 @@ public class BroadcastServer extends Thread {
 			           	localHost.updateOnliners(infos[0],infos[3]);
 			           	ChatSession session = (localHost.findSessionWith(infos[0]));
 			           	if(session != null) {
+			           	 System.out.println("Currently chatting with \t" + infos[3]);
 			           		session.setDest(infos[3]);
-				    		DiscussionWindow.updateSession(session.getDest());
+				    		DiscussionWindow.updateSession(infos[3]);
 			           	}
 			    		DiscussionWindow.updateOnlineUsers(localHost.getOnliners());
 			            System.out.println("New onliners list \t" + localHost.getOnliners().toString() );
@@ -94,11 +95,13 @@ public class BroadcastServer extends Thread {
 					}
 				}
 			}
-			broadcastSocket.close();
 		}
      }
 		
-
+	public void close() {
+		broadcastSocket.close();
+	}
+	
 	public boolean isRunning() {
 		return running;
 	}
