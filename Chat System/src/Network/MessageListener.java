@@ -44,7 +44,7 @@ public class MessageListener extends Thread{
 		while(isRunning()){
 			if(serverSocket != null) {
 				try{
-					Socket remote = serverSocket.accept();
+					final Socket remote = serverSocket.accept();
 					Runnable messageHandler = new Runnable() {
 						public void run() {
 			            	try {
