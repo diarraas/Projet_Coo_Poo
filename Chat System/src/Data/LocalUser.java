@@ -75,6 +75,8 @@ public class LocalUser extends User {
     	broadcastServer.setRunning(false);
     	messageServer.setRunning(false);
     	setStatus(false);
+    	broadcastClient.close();
+    	messageServer.close();
     }
     
     public void sendMessage(String dest,String msg){

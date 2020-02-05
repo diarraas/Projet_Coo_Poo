@@ -60,6 +60,7 @@ public class LoginWindow implements ActionListener, KeyListener {
 	    frame.pack();
 	    frame.setLocationRelativeTo(null);
 	    frame.setVisible(true);    
+
 	
 	}
 	
