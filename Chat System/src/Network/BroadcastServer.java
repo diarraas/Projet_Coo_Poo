@@ -11,7 +11,7 @@ public class BroadcastServer extends Thread {
 	
     /**
      * 
-     * Serveur d'Ã©coute des notifications broadcastÃ© sur le rÃ©seau local
+     * Serveur d'écoute des notifications broadcastés sur le réseau local
      * 
      * */
 	

@@ -34,7 +34,7 @@ class DatabaseTest {
 	LocalUser exemple3 ;
 	Message msg1, msg2,msg3 ;
 	
-	@BeforeClass
+	
 	void init() throws IOException{
 		exemple1 = new LocalUser();
 		exemple1.setIpAddress(InetAddress.getLocalHost());
@@ -58,7 +58,7 @@ class DatabaseTest {
 		System.out.println("INITIALIZATION OK");
 	}
 	
-	@Test
+	@org.junit.Test
 	void testStartNewConnection() {
 		Database.startNewConnection();
 		System.out.println("CONNEXION OK");
