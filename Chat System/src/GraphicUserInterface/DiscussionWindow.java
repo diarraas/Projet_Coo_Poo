@@ -151,21 +151,18 @@ public class DiscussionWindow extends  JFrame implements ActionListener,KeyListe
 	}
 
 
-	@Override
 	public  void keyPressed(KeyEvent e) {
 		// N/A
 		
 	}
 
 
-	@Override
 	public  void keyReleased(KeyEvent e) {
 		// N/A
 		
 	}
 
 
-	@Override
 	public void actionPerformed(ActionEvent e) {
     	if (e.getActionCommand().equals("Deconnexion")) {
     		localHost.disconnect();
